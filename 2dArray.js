@@ -85,6 +85,8 @@ function renderMap(map) {
 }
 
 
+// TODO: Make dda
+
 // DDA logic?? Not done
 function ChooseMapByADD() {
     

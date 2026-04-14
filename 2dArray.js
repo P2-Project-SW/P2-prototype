@@ -16,8 +16,16 @@ const maps = {
     small:  { grid: create2D(15, 15), active: false },
     medium: { grid: create2D(25, 25), active: false },
     large:  { grid: create2D(35, 35), active: false },
-    xl:     { grid: create2D(51, 51), active: false }
+    xl:     { grid: create2D(51, 51), active: false }  //no initial 10x10 map?
 };
+
+//Bounds validation from maps
+function isInBounds(map, row, col) {
+    const rows = map.grid.length;
+    const cols = map.grid[0].length;
+
+    return row >= 0 && row < rows && col >= 0 && col < cols; 
+}
 
 
 //Change tile sizes based on map size
@@ -31,12 +39,14 @@ function getTileSize(map) {
 }
 
 
+
 // Function that picks a map and sets it to "active"
 function pickMap(name) {
     for (const key in maps) {
         maps[key].active = false;
     }
     maps[name].active = true;
+    renderActiveMap();
 }
 
 
@@ -83,10 +93,6 @@ function renderMap(map) {
         });
     });
 }
-
-
-// TODO: Make dda
-//FIXME 
 
 // DDA logic?? Not done
 function ChooseMapByADD() {

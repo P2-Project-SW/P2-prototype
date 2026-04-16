@@ -1,10 +1,14 @@
-import {mapsize} from "../MapGen.js"; //import the mapsize from the js file, MapGen
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const _2dArray_js_1 = require("../../2dArray.js"); //import the mapsize from the js file, MapGen
 let size_of_mapA = 10;
 let directions = [];
-
-function RecursiveBacktracker(mapsize, sizeofmap, directions) {
+function RecursiveBacktracker(sizeofmap, directions) {
+    let Map = (0, _2dArray_js_1.create2D)(sizeofmap, sizeofmap);
+    console.log(Map);
     //Select a random cell to start.
-    let startcell = mapsize[0][0];
+    let currentcell = Map[0][0];
+    /*
     let top_left_border = 0;
     let low_right_border = sizeofmap - 1;
     
@@ -18,13 +22,13 @@ function RecursiveBacktracker(mapsize, sizeofmap, directions) {
 
             if (i > top_left_border) {
                 directions[i][j].up = mapsize[i-1][j];
-            } 
+            }
             if (i < low_right_border) {
                 directions[i][j].down = mapsize[i+1][j];
             }
             if (j > top_left_border) {
                 directions[i][j].left = mapsize[i][j-1];
-            } 
+            }
             if (j < low_right_border) {
                 directions[i][j].right = mapsize[i][j+1];
             }
@@ -35,22 +39,16 @@ function RecursiveBacktracker(mapsize, sizeofmap, directions) {
     if (up && up.visited == false) {
 
     }
+    */
 }
-
-
-
 //Choose a random adjacent cell. Only create a passage if that cell has not been visited yet.
-
 //Repeat the process until there are no more adjacent cells to choose from.
-
 //Start backtracking until you can choose a cell again.
-
 //The algorithm is done when you return to the starting cell.
-
-
 //Kig på naboer, som ikke er besøgt endnu
 //Vælg en tilfældig nabo
 //“Bryd væggen” mellem dem
 //Gå videre derfra
 //Når der ikke er flere muligheder, går funktionen automatisk tilbage til forrige celle
 //Fortsæt indtil alt er besøgt
+//# sourceMappingURL=RecursiveBacktracking.js.map

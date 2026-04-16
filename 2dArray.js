@@ -1,3 +1,5 @@
+export{maps, create2D}; 
+
 // 2D Array Creator
 function create2D(rows, cols, value = 0) {
     const arr = [];

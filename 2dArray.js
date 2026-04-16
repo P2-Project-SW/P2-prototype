@@ -97,7 +97,7 @@ function renderMap(map) {
 // DDA logic?? Not done
 function ChooseMapByADD() {
     
-    return "large";
+    return "medium";
 }
 
 

@@ -28,9 +28,17 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
         }
     }
 
+    validateNumbers(visited);
+
+    //TODO: make 0.5 cells from visited array into 1's in map array 
+
+    return map;
+}
+
+function validateNumbers(visited: number[][]){
     let validNumbers: number[] = [];
 
-    for (let x = 2; x < map.length; x += 2) {
+    for (let x = 2; x < visited.length; x += 2) {
         validNumbers.push(x);
     }
 
@@ -41,10 +49,6 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
     let sx: number = validNumbers[indexSx]!;
 
     generate(visited, sy, sx);
-
-    //TODO: make 0.5 cells from visited array into 1's in map array 
-
-    return map;
 }
 
 function generate(map: number[][], y: number, x: number) {

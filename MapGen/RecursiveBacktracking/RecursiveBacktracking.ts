@@ -1,11 +1,6 @@
 import {maps, create2D} from "../../2dArray.js"     //import the mapsize from the js file, MapGen
 export {recursiveBacktracker}
 
-let size_of_mapA: number = 10;
-let directions: number[] = [];
-const mapHeight : number = map.length;
-const mapWidth : number = map[0]!.length;
-
 enum direction {
     UP,
     DOWN,
@@ -13,12 +8,13 @@ enum direction {
     LEFT
 };
 
-
 function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : number[][] {
     let map: number[][] = create2D(sizeOfMap, sizeOfMap);
     let visited : number[][] = create2D(sizeOfMap, sizeOfMap);
     //let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     
+    const mapHeight : number = map.length;
+    const mapWidth : number = map[0]!.length;
 
     for(let i = 0; i < mapHeight ; i++){
         for(let j = 0; j < mapWidth ; j++){
@@ -31,10 +27,12 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
             }
         }
     }
+
+    //generate(visited, y, x);
     return map;
 }
 
-function generate(map: number[][], x: number, y: number) {
+function generate(map: number[][], y: number, x: number) {
     map[y]![x] = 0.5;
 
     const right = map[y]![x+2];
@@ -48,11 +46,14 @@ function generate(map: number[][], x: number, y: number) {
         let li: number[] = [1, 2, 3, 4];
 
         while (li.length > 0) {
+            const mapHeight : number = map.length;
+            const mapWidth : number = map[0]!.length;
             const dir: number = Math.floor(Math.random() * li.length);
             let nx: number;
             let mx: number;
             let ny: number;
             let my: number;
+            
 
             if (li.length === 0) {
                 console.log(undefined);
@@ -88,7 +89,7 @@ function generate(map: number[][], x: number, y: number) {
                 my = y;
             }
 
-            if(nx >= 0 && ny <= map[0]!.length && ny >= 0 && ny <= map.length && map[ny]![nx] !== 0.5) {
+            if(nx >= 0 && ny <= mapWidth && ny >= 0 && ny <= mapHeight && map[ny]![nx] !== 0.5) {
                 map[my]![mx] = 0.5;
                 generate(map, nx, ny);
             }

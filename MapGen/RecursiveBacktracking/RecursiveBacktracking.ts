@@ -48,6 +48,10 @@ function generate(map: number[][], x: number, y: number) {
 
         while (li.length > 0) {
             const dir: number = Math.floor(Math.random() * li.length);
+            let nx: number;
+            let mx: number;
+            let ny: number;
+            let my: number;
 
             if (li.length === 0) {
                 console.log(undefined);
@@ -57,30 +61,30 @@ function generate(map: number[][], x: number, y: number) {
             }
 
             if (dir === direction.UP) {
-                let nx: number = x;
-                let mx: number = x;
-                let ny: number = y - 2;
-                let my: number = y - 1;
+                nx = x;
+                mx = x;
+                ny = y - 2;
+                my = y - 1;
             } else if (dir === direction.DOWN) {
-                let nx: number = x;
-                let mx: number = x;
-                let ny: number = y + 2;
-                let my: number = y + 1;
+                nx = x;
+                mx = x;
+                ny = y + 2;
+                my = y + 1;
             } else if (dir === direction.LEFT) {
-                let nx: number = x - 2;
-                let mx: number = x - 1;
-                let ny: number = y;
-                let my: number = y;
+                nx = x - 2;
+                mx = x - 1;
+                ny = y;
+                my = y;
             } else if (dir === direction.RIGHT) {
-                let nx: number = x + 2;
-                let mx: number = x + 1;
-                let ny: number = y;
-                let my: number = y;
+                nx = x + 2;
+                mx = x + 1;
+                ny = y;
+                my = y;
             } else {
-                let nx: number = x;
-                let mx: number = x;
-                let ny: number = y;
-                let my: number = y;
+                nx = x;
+                mx = x;
+                ny = y;
+                my = y;
             }
 
             if(map[ny]![nx] != 0.5) {

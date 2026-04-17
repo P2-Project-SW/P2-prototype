@@ -1,16 +1,41 @@
-import {maps, create2D} from "../../2dArray.js"; //import the mapsize from the js file, MapGen
+import {map, create2D} from "../../2dArray.js"     //import the mapsize from the js file, MapGen
 let size_of_mapA: number = 10;
 let directions: number[] = [];
 
-function RecursiveBacktracker(sizeofmap: number, directions: number[]): void {
-    let Map: any = create2D(sizeofmap, sizeofmap);
-    console.log(Map);
-    //Select a random cell to start.
-    let currentcell: number[][] = Map[1][1];
 
+
+function recursiveBacktracker(sizeofmap: number, directions: number[]): void {
+    // let map: number[][] = create2D(sizeofmap, sizeofmap);
+    let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    
+    const mapHeight = map.length;
+    const mapWidth = map[0]!.length;
+
+    for(let i = 0; i < map.length ; i++){
+        for(let j = 0; j < map.length ; j++){
+            if(i % 2 === 1 || j % 2 === 1) {
+                map[i]![j] = 1; // free tile
+            }
+
+            if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1){
+                map[i]![j] = 0.5; // visited
+            }
+        }
+    }
 }
 
+function generate(map: number[][], x: number, y: number) {
+    map[x]![y] = 0.5;
 
+    const right = map[x]![y+2];
+    const up = map[x-2]![y];
+    const left = map[x]![y-2];
+    const down = map[x+2]![y];
+
+    if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
+        
+    }
+}
 
 //Choose a random adjacent cell. Only create a passage if that cell has not been visited yet.
 
@@ -21,12 +46,17 @@ function RecursiveBacktracker(sizeofmap: number, directions: number[]): void {
 //The algorithm is done when you return to the starting cell.
 
 
+
 //Kig på naboer, som ikke er besøgt endnu
 //Vælg en tilfældig nabo
 //“Bryd væggen” mellem dem
 //Gå videre derfra
 //Når der ikke er flere muligheder, går funktionen automatisk tilbage til forrige celle
 //Fortsæt indtil alt er besøgt
+
+
+
+
 
 /* 
 let top_left_border: number = 0;

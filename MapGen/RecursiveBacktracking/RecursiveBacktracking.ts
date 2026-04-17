@@ -33,6 +33,8 @@ function generate(map: number[][], x: number, y: number) {
     const down = map[x+2]![y];
 
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
+        //pass
+    } else {
         
     }
 }

@@ -31,6 +31,8 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
 
     chooseStartCell(visited);
     convertVisitedToMap(visited, map);
+
+    return map;
 }
 
 function chooseStartCell(visited: number[][]){
@@ -121,7 +123,13 @@ function generateMazeFromCell(visited: number[][], y: number, x: number) {
 
 function convertVisitedToMap(visited: number[][], map: number[][]): void {
     //TODO: make 0.5 cells from visited array into 1's in map array 
-
+    for(let i = 1; i < visited.length - 1; i++){
+        for(let j = 1; j < visited[0]!.length - 1; j++){
+            if(visited[i]![j] === 0.5) {
+                map[i]![j] = 1;
+            }
+        }
+    }
 }
 
 

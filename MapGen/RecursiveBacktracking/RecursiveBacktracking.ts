@@ -35,7 +35,12 @@ function generate(map: number[][], x: number, y: number) {
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
         //pass
     } else {
-        
+        let li: number[] =[1, 2, 3, 4];
+        if (li.length === 0) {
+            console.log(undefined);
+        } else {
+            const ind: number = Math.floor(Math.random() * Array.length)
+        }
     }
 }
 

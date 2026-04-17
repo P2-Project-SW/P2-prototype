@@ -28,29 +28,41 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
         }
     }
 
-    let validX: number[] = [];
+    let validNumbers: number[] = [];
 
     for (let x = 2; x < map.length; x += 2) {
-        validX.push(x);
+        validNumbers.push(x);
     }
 
     //choose random cell
-    let indexSy: number = Math.floor((Math.random() * validX.length));
-    let indexSx: number = Math.floor((Math.random() * validX.length));
-    let sy: number = validX[indexSy]!;
-    let sx: number = validX[indexSx]!;
+    let indexSy: number = Math.floor((Math.random() * validNumbers.length));
+    let indexSx: number = Math.floor((Math.random() * validNumbers.length));
+    let sy: number = validNumbers[indexSy]!;
+    let sx: number = validNumbers[indexSx]!;
 
     generate(visited, sy, sx);
+
+    //TODO: make 0.5 cells from visited array into 1's in map array 
+
     return map;
 }
 
 function generate(map: number[][], y: number, x: number) {
     map[y]![x] = 0.5;
+    let up, down, left, right;
 
-    const right = map[y]![x+2];
-    const up = map[y-2]![x];
-    const left = map[y]![x-2];
-    const down = map[y+2]![x];
+    if(y >= 2) {
+        up = map[y-2]![x];
+    }
+    if(y < map.length - 3) {
+        down = map[y+2]![x];
+    }
+    if(x >= 2) {
+        left = map[y]![x-2];
+    }
+    if(x < map[0]!.length - 3) {
+        right = map[y]![x+2];
+    }
 
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
         //pass

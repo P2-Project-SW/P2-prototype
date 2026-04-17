@@ -28,7 +28,19 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
         }
     }
 
-    //generate(visited, y, x);
+    let validX: number[] = [];
+
+    for (let x = 2; x < map.length; x += 2) {
+        validX.push(x);
+    }
+
+    //choose random cell
+    let indexSy: number = Math.floor((Math.random() * validX.length));
+    let indexSx: number = Math.floor((Math.random() * validX.length));
+    let sy: number = validX[indexSy]!;
+    let sx: number = validX[indexSx]!;
+
+    generate(visited, sy, sx);
     return map;
 }
 
@@ -43,23 +55,22 @@ function generate(map: number[][], y: number, x: number) {
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
         //pass
     } else {
-        let li: number[] = [1, 2, 3, 4];
+        let li: number[] = [0, 1, 2, 3];
 
         while (li.length > 0) {
             const mapHeight : number = map.length;
             const mapWidth : number = map[0]!.length;
-            const dir: number = Math.floor(Math.random() * li.length);
+            const indexDir: number = Math.floor(Math.random() * li.length);
+            const dir: number = li[indexDir]!;
             let nx: number;
             let mx: number;
             let ny: number;
             let my: number;
             
-
             if (li.length === 0) {
                 console.log(undefined);
             } else {
-                const result: number = li[dir]!;
-                li.splice(result, 1); //removes the element from the array
+                li.splice(indexDir, 1); //removes the element from the array
             }
 
             if (dir === direction.UP) {
@@ -89,9 +100,9 @@ function generate(map: number[][], y: number, x: number) {
                 my = y;
             }
 
-            if(nx >= 0 && ny <= mapWidth && ny >= 0 && ny <= mapHeight && map[ny]![nx] !== 0.5) {
+            if(nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight && map[ny]![nx] !== 0.5) {
                 map[my]![mx] = 0.5;
-                generate(map, nx, ny);
+                generate(map, ny, nx);
             }
         }
     }

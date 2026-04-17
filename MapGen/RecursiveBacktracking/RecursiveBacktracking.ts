@@ -3,6 +3,9 @@ export {recursiveBacktracker}
 
 let size_of_mapA: number = 10;
 let directions: number[] = [];
+const mapHeight : number = map.length;
+const mapWidth : number = map[0]!.length;
+
 enum direction {
     UP,
     DOWN,
@@ -16,8 +19,6 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
     let visited : number[][] = create2D(sizeOfMap, sizeOfMap);
     //let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     
-    const mapHeight : number = map.length;
-    const mapWidth : number = map[0]!.length;
 
     for(let i = 0; i < mapHeight ; i++){
         for(let j = 0; j < mapWidth ; j++){
@@ -87,9 +88,9 @@ function generate(map: number[][], x: number, y: number) {
                 my = y;
             }
 
-            if(map[ny]![nx] != 0.5) {
+            if(nx >= 0 && ny <= map[0]!.length && ny >= 0 && ny <= map.length && map[ny]![nx] !== 0.5) {
                 map[my]![mx] = 0.5;
-                //call recursively
+                generate(map, nx, ny);
             }
         }
     }
@@ -102,48 +103,3 @@ function generate(map: number[][], x: number, y: number) {
 //Start backtracking until you can choose a cell again.
 
 //The algorithm is done when you return to the starting cell.
-
-
-
-//Kig på naboer, som ikke er besøgt endnu
-//Vælg en tilfældig nabo
-//“Bryd væggen” mellem dem
-//Gå videre derfra
-//Når der ikke er flere muligheder, går funktionen automatisk tilbage til forrige celle
-//Fortsæt indtil alt er besøgt
-
-
-
-
-
-/* 
-let top_left_border: number = 0;
-let low_right_border: number = sizeofmap - 1;
-//Add a visited variable to cell object (here the object is aldready made)
-for (let i: number = 0; i < sizeofmap; i++) {
-    directions[i] = []; //create directions array
-
-    for(let j: number = 0; j < sizeofmap; j++) {
-        mapsize[i][j].visited = false; //set visited variable to false
-        directions[i][j] = {}; //create object for directions
-
-        if (i > top_left_border) {
-            directions[i][j].up = mapsize[i-1][j];
-        } 
-        if (i < low_right_border) {
-            directions[i][j].down = mapsize[i+1][j];
-        }
-        if (j > top_left_border) {
-            directions[i][j].left = mapsize[i][j-1];
-        } 
-        if (j < low_right_border) {
-            directions[i][j].right = mapsize[i][j+1];
-        }
-    }
-}
-startcell.visited = true;
-
-if (up && up.visited == false) {
-
-}
-*/

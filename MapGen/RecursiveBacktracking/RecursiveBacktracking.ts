@@ -22,20 +22,18 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
                 map[i]![j] = 1; // free tile
             }
 
+            //mark borders as visited
             if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1){
                 visited[i]![j] = 0.5; // visited
             }
         }
     }
 
-    validateNumbers(visited);
-
-    //TODO: make 0.5 cells from visited array into 1's in map array 
-
-    return map;
+    chooseStartCell(visited);
+    convertVisitedToMap(visited, map);
 }
 
-function validateNumbers(visited: number[][]){
+function chooseStartCell(visited: number[][]){
     let validNumbers: number[] = [];
 
     for (let x = 2; x < visited.length; x += 2) {
@@ -48,24 +46,24 @@ function validateNumbers(visited: number[][]){
     let sy: number = validNumbers[indexSy]!;
     let sx: number = validNumbers[indexSx]!;
 
-    generate(visited, sy, sx);
+    generateMazeFromCell(visited, sy, sx);
 }
 
-function generate(map: number[][], y: number, x: number) {
-    map[y]![x] = 0.5;
+function generateMazeFromCell(visited: number[][], y: number, x: number) {
+    visited[y]![x] = 0.5;
     let up, down, left, right;
 
     if(y >= 2) {
-        up = map[y-2]![x];
+        up = visited[y-2]![x];
     }
-    if(y < map.length - 3) {
-        down = map[y+2]![x];
+    if(y < visited.length - 3) {
+        down = visited[y+2]![x];
     }
     if(x >= 2) {
-        left = map[y]![x-2];
+        left = visited[y]![x-2];
     }
-    if(x < map[0]!.length - 3) {
-        right = map[y]![x+2];
+    if(x < visited[0]!.length - 3) {
+        right = visited[y]![x+2];
     }
 
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
@@ -74,14 +72,11 @@ function generate(map: number[][], y: number, x: number) {
         let li: number[] = [0, 1, 2, 3];
 
         while (li.length > 0) {
-            const mapHeight : number = map.length;
-            const mapWidth : number = map[0]!.length;
+            const visitedHeight: number = visited.length;
+            const visitedWidth: number = visited[0]!.length;
             const indexDir: number = Math.floor(Math.random() * li.length);
             const dir: number = li[indexDir]!;
-            let nx: number;
-            let mx: number;
-            let ny: number;
-            let my: number;
+            let nx: number, ny: number, mx: number, my: number;
             
             if (li.length === 0) {
                 console.log(undefined);
@@ -116,13 +111,19 @@ function generate(map: number[][], y: number, x: number) {
                 my = y;
             }
 
-            if(nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight && map[ny]![nx] !== 0.5) {
-                map[my]![mx] = 0.5;
-                generate(map, ny, nx);
+            if(nx >= 0 && nx < visitedWidth && ny >= 0 && ny < visitedHeight && visited[ny]![nx] !== 0.5) {
+                visited[my]![mx] = 0.5;
+                generateMazeFromCell(visited, ny, nx);
             }
         }
     }
 }
+
+function convertVisitedToMap(visited: number[][], map: number[][]): void {
+    //TODO: make 0.5 cells from visited array into 1's in map array 
+
+}
+
 
 //Choose a random adjacent cell. Only create a passage if that cell has not been visited yet.
 

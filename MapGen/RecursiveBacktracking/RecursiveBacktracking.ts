@@ -3,7 +3,12 @@ export {recursiveBacktracker}
 
 let size_of_mapA: number = 10;
 let directions: number[] = [];
-
+enum direction {
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT
+};
 
 
 function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : number[][] {
@@ -29,21 +34,59 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
 }
 
 function generate(map: number[][], x: number, y: number) {
-    map[x]![y] = 0.5;
+    map[y]![x] = 0.5;
 
-    const right = map[x]![y+2];
-    const up = map[x-2]![y];
-    const left = map[x]![y-2];
-    const down = map[x+2]![y];
+    const right = map[y]![x+2];
+    const up = map[y-2]![x];
+    const left = map[y]![x-2];
+    const down = map[y+2]![x];
 
     if(right === 0.5 && up === 0.5 && left === 0.5 && down === 0.5) {
         //pass
     } else {
-        let li: number[] =[1, 2, 3, 4];
-        if (li.length === 0) {
-            console.log(undefined);
-        } else {
-            const ind: number = Math.floor(Math.random() * Array.length)
+        let li: number[] = [1, 2, 3, 4];
+
+        while (li.length > 0) {
+            const dir: number = Math.floor(Math.random() * li.length);
+
+            if (li.length === 0) {
+                console.log(undefined);
+            } else {
+                const result: number = li[dir]!;
+                li.splice(result, 1); //removes the element from the array
+            }
+
+            if (dir === direction.UP) {
+                let nx: number = x;
+                let mx: number = x;
+                let ny: number = y - 2;
+                let my: number = y - 1;
+            } else if (dir === direction.DOWN) {
+                let nx: number = x;
+                let mx: number = x;
+                let ny: number = y + 2;
+                let my: number = y + 1;
+            } else if (dir === direction.LEFT) {
+                let nx: number = x - 2;
+                let mx: number = x - 1;
+                let ny: number = y;
+                let my: number = y;
+            } else if (dir === direction.RIGHT) {
+                let nx: number = x + 2;
+                let mx: number = x + 1;
+                let ny: number = y;
+                let my: number = y;
+            } else {
+                let nx: number = x;
+                let mx: number = x;
+                let ny: number = y;
+                let my: number = y;
+            }
+
+            if(map[ny]![nx] != 0.5) {
+                map[my]![mx] = 0.5;
+                //call recursively
+            }
         }
     }
 }

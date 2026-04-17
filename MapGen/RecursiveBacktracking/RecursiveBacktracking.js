@@ -2,6 +2,14 @@ import { maps, create2D } from "../../2dArray.js"; //import the mapsize from the
 export { recursiveBacktracker };
 let size_of_mapA = 10;
 let directions = [];
+var direction;
+(function (direction) {
+    direction[direction["UP"] = 0] = "UP";
+    direction[direction["DOWN"] = 1] = "DOWN";
+    direction[direction["RIGHT"] = 2] = "RIGHT";
+    direction[direction["LEFT"] = 3] = "LEFT";
+})(direction || (direction = {}));
+;
 function recursiveBacktracker(sizeOfMap) {
     let map = create2D(sizeOfMap, sizeOfMap);
     let visited = create2D(sizeOfMap, sizeOfMap);
@@ -30,6 +38,14 @@ function generate(map, x, y) {
         //pass
     }
     else {
+        let li = [1, 2, 3, 4];
+        if (li.length === 0) {
+            console.log(undefined);
+        }
+        else {
+            const dir = Math.floor(Math.random() * li.length);
+            const result = li[dir];
+        }
     }
 }
 //Choose a random adjacent cell. Only create a passage if that cell has not been visited yet.

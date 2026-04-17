@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-
-export{maps, create2D};
+export { maps, create2D };
+import { recursiveBacktracker } from "./MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 // 2D Array Creator
 function create2D(rows, cols, value = 0) {
     const arr = [];
@@ -16,10 +14,10 @@ function create2D(rows, cols, value = 0) {
 }
 // Map sizes
 const maps = {
-    small: { grid: create2D(15, 15), active: false },
-    medium: { grid: create2D(25, 25), active: false },
-    large: { grid: create2D(35, 35), active: false },
-    xl: { grid: create2D(51, 51), active: false } //no initial 10x10 map?
+    small: { grid: recursiveBacktracker(15), active: false },
+    medium: { grid: recursiveBacktracker(25), active: false },
+    large: { grid: recursiveBacktracker(35), active: false },
+    xl: { grid: recursiveBacktracker(51), active: false } //no initial 10x10 map?
 };
 //Bounds validation from maps
 function isInBounds(map, row, col) {

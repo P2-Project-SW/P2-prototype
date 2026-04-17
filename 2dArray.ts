@@ -1,3 +1,5 @@
+export{maps, create2D};
+import { recursiveBacktracker } from "./MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 // 2D Array Creator
 function create2D(rows : number, cols : number, value : number = 0) : number[][] {
     const arr : number[][] = [];
@@ -14,10 +16,10 @@ function create2D(rows : number, cols : number, value : number = 0) : number[][]
 
 // Map sizes
 const maps = {
-    small:  { grid: create2D(15, 15), active: false },
-    medium: { grid: create2D(25, 25), active: false },
-    large:  { grid: create2D(35, 35), active: false },
-    xl:     { grid: create2D(51, 51), active: false }  //no initial 10x10 map?
+    small:  { grid: recursiveBacktracker(15), active: false },
+    medium: { grid: recursiveBacktracker(25), active: false },
+    large:  { grid: recursiveBacktracker(35), active: false },
+    xl:     { grid: recursiveBacktracker(51), active: false }  //no initial 10x10 map?
 };
 
 type MapName = keyof typeof maps;
@@ -57,7 +59,7 @@ function pickMap(name: MapName) {
 }
 
 // Function find the active map and return it
-function getActiveMap() {
+function getActiveMap() : (typeof maps)[keyof typeof maps] | null {
     for (const key of Object.keys(maps) as MapName[]) {
         if (maps[key].active) return maps[key];
     }

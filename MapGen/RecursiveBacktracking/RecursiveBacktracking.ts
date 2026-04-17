@@ -1,27 +1,31 @@
-import {map, create2D} from "../../2dArray.js"     //import the mapsize from the js file, MapGen
+import {maps, create2D} from "../../2dArray.js"     //import the mapsize from the js file, MapGen
+export {recursiveBacktracker}
+
 let size_of_mapA: number = 10;
 let directions: number[] = [];
 
 
 
-function recursiveBacktracker(sizeofmap: number, directions: number[]): void {
-    // let map: number[][] = create2D(sizeofmap, sizeofmap);
-    let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : number[][] {
+    let map: number[][] = create2D(sizeOfMap, sizeOfMap);
+    let visited : number[][] = create2D(sizeOfMap, sizeOfMap);
+    //let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     
-    const mapHeight = map.length;
-    const mapWidth = map[0]!.length;
+    const mapHeight : number = map.length;
+    const mapWidth : number = map[0]!.length;
 
-    for(let i = 0; i < map.length ; i++){
-        for(let j = 0; j < map.length ; j++){
+    for(let i = 0; i < mapHeight ; i++){
+        for(let j = 0; j < mapWidth ; j++){
             if(i % 2 === 1 || j % 2 === 1) {
                 map[i]![j] = 1; // free tile
             }
 
             if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1){
-                map[i]![j] = 0.5; // visited
+                visited[i]![j] = 0.5; // visited
             }
         }
     }
+    return map;
 }
 
 function generate(map: number[][], x: number, y: number) {

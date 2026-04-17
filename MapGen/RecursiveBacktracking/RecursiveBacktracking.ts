@@ -122,7 +122,7 @@ function generateMazeFromCell(visited: number[][], y: number, x: number) {
 }
 
 function convertVisitedToMap(visited: number[][], map: number[][]): void {
-    //TODO: make 0.5 cells from visited array into 1's in map array 
+    //0.5 cells from visited array is made into 1 cells in map array 
     for(let i = 1; i < visited.length - 1; i++){
         for(let j = 1; j < visited[0]!.length - 1; j++){
             if(visited[i]![j] === 0.5) {

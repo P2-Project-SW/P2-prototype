@@ -115,3 +115,5 @@ function ChooseMapByADD() : MapName {
 const chosen = ChooseMapByADD();
 pickMap(chosen);
 renderActiveMap();
+
+(window as any).pickMap = pickMap;

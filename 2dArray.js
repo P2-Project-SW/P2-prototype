@@ -94,4 +94,5 @@ function ChooseMapByADD() {
 const chosen = ChooseMapByADD();
 pickMap(chosen);
 renderActiveMap();
+window.pickMap = pickMap;
 //# sourceMappingURL=2dArray.js.map

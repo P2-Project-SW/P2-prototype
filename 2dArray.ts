@@ -1,5 +1,6 @@
-export{maps, create2D};
 import { recursiveBacktracker } from "./MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
+
+/*
 // 2D Array Creator
 function create2D(rows : number, cols : number, value : number = 0) : number[][] {
     const arr : number[][] = [];
@@ -12,7 +13,7 @@ function create2D(rows : number, cols : number, value : number = 0) : number[][]
     }
     return arr;
 }
-
+*/
 
 // Map sizes
 const maps = {

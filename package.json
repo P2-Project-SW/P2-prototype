@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "plotly.js-dist": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/plotly.js": "^3.0.10",
+    "typescript": "^5.0.0"
+  }
+}

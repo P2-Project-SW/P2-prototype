@@ -96,7 +96,6 @@ function renderMap(map) {
 
 // DDA logic?? Not done
 function ChooseMapByADD() {
-    
     return "large";
 }
 
@@ -104,4 +103,5 @@ function ChooseMapByADD() {
 // Example
 const chosen = ChooseMapByADD();
 pickMap(chosen);
+
 renderActiveMap();

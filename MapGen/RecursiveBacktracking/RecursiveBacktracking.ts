@@ -18,7 +18,7 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
     for(let i = 0; i < mapHeight ; i++){
         for(let j = 0; j < mapWidth ; j++){
             //mark borders as visited - so the algorithm does not go outside the maze
-            if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1){
+            if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1) {
                 visited[i]![j] = 0.5; // visited
             }
         }

@@ -30,8 +30,8 @@
             border-radius: 3px;
         }
 
-        .wall { background: #111; }
-        .path { background: #eee; }
+        .wall { background: #7e2121; }
+        .path { background: #1a1a2e; }
         .start { background: #4caf50; }
         .end { background: #e91e63; }
     </style>
@@ -42,14 +42,15 @@
     <h1>A-Maze-Ing</h1>
 
         <div class="controls">
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('small')">Small (15×15)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('medium')">Medium (25×25)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('large')">Large (35×35)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('xl')">XL (51×51)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('small')">Small (15x15)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('medium')">Medium (25x25)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('large')">Large (35x35)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('xl')">XL (51x51)</button>
         </div>
 
     <div id="map"></div>
 
-    <script src="2dArray.js"></script>
+    <script>var exports = {};</script>
+    <script type="module" src="2dArray.js"></script>
 </body>
 </html>

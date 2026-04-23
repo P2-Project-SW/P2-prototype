@@ -11,17 +11,12 @@ enum direction {
 function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : number[][] {
     let map: number[][] = create2D(sizeOfMap, sizeOfMap); //the final maze
     let visited : number[][] = create2D(sizeOfMap, sizeOfMap); //tracks visited cells
-    //let map: number[][] = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     
     const mapHeight : number = map.length;
     const mapWidth : number = map[0]!.length;
 
     for(let i = 0; i < mapHeight ; i++){
         for(let j = 0; j < mapWidth ; j++){
-            /*if(i % 2 === 1 || j % 2 === 1) {
-                map[i]![j] = 1; // free tile
-            }*/
-
             //mark borders as visited - so the algorithm does not go outside the maze
             if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1){
                 visited[i]![j] = 0.5; // visited

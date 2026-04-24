@@ -1,13 +1,61 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/* TODO:
+dataset + euclidian distance control flow
+updating cluster centers
+detect cluster and send signal to DDA trigger
+*/
 window.onload = () => {
     const TESTER = document.getElementById('tester');
+    //3 manual centroids
     const centroids = {
-        //[normal time, normal keys, normal step ratio]
-        EASY: [0.75, 1, 0.75], //
+        EASY: [0.75, 1, 0.75],
         FLOW: [0.5, 0.5, 0.35],
-        HARD: [0.25, 0.25, 0.15],
+        HARD: [0.25, 0.25, 0.15]
     };
+    const centroids_array = [
+        //[normal time, normal keys, normal step ratio]
+        [0.75, 1, 0.75], // EASY (Index 0)
+        [0.5, 0.5, 0.35], // FLOW (Index 1)
+        [0.25, 0.25, 0.15] // HARD (Index 2)
+    ];
+    function makeData(samples, centroid, stdDev = 0.05) {
+        let dataPoints = [];
+        if (!centroid)
+            return dataPoints;
+        for (let i = 0; i < samples; i++) {
+            // Box-Muller for 3D (x, y, z)
+            let u1 = Math.random(), u2 = Math.random();
+            let u3 = Math.random(), u4 = Math.random();
+            let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            let z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
+            let z2 = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
+            dataPoints.push([
+                centroid[0] + z0 * stdDev,
+                centroid[1] + z1 * stdDev,
+                centroid[2] + z2 * stdDev
+            ]);
+        }
+        return dataPoints;
+    }
+    //! = not empty
+    const easyCentroid = makeData(3, centroids_array[0]); //returns above 1
+    const flowCentroid = makeData(3, centroids_array[1]);
+    const HardCentroid = makeData(3, centroids_array[2]);
+    function createTrace(data, name, color) {
+        return {
+            x: data.map(p => p[0]),
+            y: data.map(p => p[1]),
+            z: data.map(p => p[2]),
+            mode: 'markers',
+            type: 'scatter3d',
+            name: name,
+            marker: { size: 6, color: color, opacity: 0.5 }
+        };
+    }
+    const easyTrace = createTrace(easyCentroid, 'Easy', 'red');
+    const flowTrace = createTrace(flowCentroid, 'Flow', 'blue');
+    const hardTrace = createTrace(HardCentroid, 'Hard', 'green');
     var centroid1 = {
         x: [centroids.EASY[0]],
         y: [centroids.EASY[1]],
@@ -38,47 +86,39 @@ window.onload = () => {
         text: ['C3'],
         marker: { color: 'green', size: 12 }
     };
-    var data = [centroid1, centroid2, centroid3];
-    /*
-        const data = [{
-            x: [0, 0.25, 0.5, 0.75, 1],
-            y: [0, 0.25, 0.5, 0.75, 1],
-            z: [0, 0.25, 0.5, 0.75, 1],
-            type: 'scatter3d',
-            mode: 'markers+text',
-            marker: {color: 'blue', size: 12},
-            name: 'PPI'
-        }];
-    */
+    //content of plot
+    var data = [centroid1, centroid2, centroid3, easyTrace, flowTrace, hardTrace];
+    //layout of plot
     const layout = {
         title: 'k-means centroids',
         scene: {
             xaxis: {
-                title: {
-                    text: 'AVG time'
-                },
+                text: 'AVG time',
                 range: [0, 1],
                 autorange: false // no zoom
             },
             yaxis: {
-                title: {
-                    text: 'Keys'
-                },
+                text: 'Keys',
                 range: [0, 1],
                 autorange: false
             },
             zaxis: {
-                title: {
-                    text: 'Step ratio'
-                },
+                text: 'Step ratio',
                 range: [0, 1],
                 autorange: false
             }
+            //dragmode: 'turntable',
+            //hovermode: false
         },
         margin: { l: 0, r: 0, b: 0, t: 40 }
     };
+    //Plotly function with centroids
     if (TESTER) {
-        Plotly.newPlot(TESTER, data, layout);
+        if (data && data.length > 0) {
+            setTimeout(() => {
+                Plotly.newPlot(TESTER, data, layout);
+            }, 100);
+        }
     }
     else {
         console.error("Kunne ikke finde 'tester' elementet");

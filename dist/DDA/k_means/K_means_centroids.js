@@ -69,9 +69,9 @@ window.onload = () => {
         pairwise(), tap((pair) => console.log(`O/P of pairwise: ${JSON.stringify(pair)}`)), map(([prev, curr]) => {
             // Beregn forskel (Math.abs inverts to avoid negative numbers)
             const diffs = curr.map((value, i) => (Math.abs(value - prev[i])).toFixed(3));
-            return { diffs, latestVector: curr };
+            return { diffs, latestVector: curr, previousVector: prev };
         })).subscribe(({ diffs, latestVector }) => {
-            console.log(`differens (x, y, z): ${diffs}`);
+            // console.log(`differens (x, y, z): ${diffs}`);
             const kMeansResult = euclideanDistance(latestVector); //skal sendes til euclidian distance funktion
             const assignColor = centroidColors[kMeansResult.newDifficultyIndex];
             //tilføjer data til plotly løbende
@@ -82,8 +82,8 @@ window.onload = () => {
                 'marker.color': [[assignColor]]
             }, [3]); // PPI_trace er trace 3
             //TODO: Last step i k-means: sæt funktionen ind der modtager den mindste distance og cluster til decision tree
-            console.log(`Ny vektor tilhører ${kMeansResult.difficulty}`);
-            console.log(`Afstan til centroid: ${kMeansResult.distance.toFixed(3)}`);
+            console.log(`Ny vektor tilhører ${kMeansResult.newDifficultyIndex}`);
+            console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
         });
     }
     let lastDifficultyIndex = 1; //starter i FLOW
@@ -97,12 +97,17 @@ window.onload = () => {
         const minDistance = Math.min(...distances);
         const newDifficultyIndex = distances.indexOf(minDistance);
         //Sætter nuværende sværhedsgrad til at være centroid med den mindste distance
-        const currentDist = distances[lastDifficultyIndex];
+        const lastDist = distances[lastDifficultyIndex];
         const improvementThreshold = 0.05; //buffer
+        // Beregn den procentvise forskel mellem ny og gammel afstand
+        const percentageChange = Math.abs(minDistance - lastDist) / lastDist;
         //Sammenligner forskel på sidste måling og nuværende måling. skifter kun centroid hvis froskellen er større end 5%
-        if (newDifficultyIndex !== lastDifficultyIndex && minDistance < currentDist * (1 - improvementThreshold)) {
+        if (newDifficultyIndex !== lastDifficultyIndex && percentageChange > improvementThreshold) {
             console.log(`SKIFTER CENTROID: Fra ${lastDifficultyIndex} til ${newDifficultyIndex}`);
             lastDifficultyIndex = newDifficultyIndex;
+        }
+        else {
+            console.log(`stays in ${lastDifficultyIndex} because value change is less than ${improvementThreshold}`);
         }
         return {
             newDifficultyIndex, // 0      1       2

@@ -1,8 +1,7 @@
 declare var Plotly: any;
-const {extendTraces} = Plotly;
 
 declare var rxjs: any;
-const { interval, from } = rxjs;
+const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
 
 
@@ -11,7 +10,7 @@ window.onload = () => {
     //plotly div
     const TESTER = document.getElementById('tester');
 
-    //Data generation L:16-51
+    //Manual centroids array
     const centroids_array: number[][] = [
         //[normal time, normal keys, normal step ratio]
         [0.75, 1, 0.75], // EASY (Index 0)
@@ -19,6 +18,7 @@ window.onload = () => {
         [0.25, 0.25, 0.15] // HARD (Index 2)
     ]
 
+    //Data generation (not needed in final iteration)
     function makeData(samples: number, centroid: any[], stdDev: number) {
         let dataPoints: number[][] = [];
 
@@ -64,7 +64,24 @@ window.onload = () => {
 
 
 //EUCLIDIAN DISTANCE
-    //keep tracks of latest PPI data 
+
+/*                                        NOTES                                                           
+PPI_stream:
+skal tage det array hvor vores normaliseret player data er.
+Den notere hele arrayets længde i perioder( eksempelvis 30 sekunder) looper igennem logikken.
+pairwise sammenligner forrige index med nyeste index og sender det nyeste videre til euc
+*Beregner størrelsesforskellen i [x, y, z] (tænkte vi måske skulle bruge det til noget)
+
+EuclideanDistance:
+    beregner euclidean distance mellem nyeste datapunkt og alle centroids, så enten index 0, 1 eller 2 *Se centroids array i toppen
+    giver også lige besked til index beregneren
+
+    linje 136-37 finder den mindste distance af de 3 distancer der er blevet målt. 
+    De bliver målt i samme rækkefølge som centroids_array så indextallene aligner. 
+
+
+
+*/
     function PPI_stream(array: number[][], period: number) {
 
         interval(period).pipe(
@@ -102,25 +119,28 @@ window.onload = () => {
         })   
     }
 
-
     
-    let currentDifficultyIndex = 1; //starter i FLOW
+    let lastDifficultyIndex = 1; //starter i FLOW
 
     //Afstand fra alle centroids til latestVector
     function euclideanDistance (newVector: number[]) {
+        //regner alle distancer mellem centroids og nyeste datapunkt
         const distances = centroids_array.map((centroid) => {
             return Math.hypot(...centroid.map((value, i) => value - newVector[i]!));
         });
 
-        const minDistance = Math.min(...distances); //Giver den mindste af distancerne
+        //Finder den mindste distance og assigner index
+        const minDistance = Math.min(...distances);
         const newDifficultyIndex = distances.indexOf(minDistance);
 
-        const currentDist = distances[currentDifficultyIndex]!;
-        const improvementThreshold = 0.05; 
+        //Sætter nuværende sværhedsgrad til at være centroid med den mindste distance
+        const currentDist = distances[lastDifficultyIndex]!;
+        const improvementThreshold = 0.05; //buffer
 
-        if (newDifficultyIndex!== currentDifficultyIndex && minDistance < currentDist * (1 - improvementThreshold)) {
-            console.log(`SKIFTER CENTROID: Fra ${currentDifficultyIndex} til ${newDifficultyIndex}`);
-            currentDifficultyIndex = newDifficultyIndex;
+        //Sammenligner forskel på sidste måling og nuværende måling. skifter kun centroid hvis froskellen er større end 5%
+        if (newDifficultyIndex!== lastDifficultyIndex && minDistance < currentDist * (1 - improvementThreshold)) {
+            console.log(`SKIFTER CENTROID: Fra ${lastDifficultyIndex} til ${newDifficultyIndex}`);
+            lastDifficultyIndex = newDifficultyIndex;
         }
 
         return {

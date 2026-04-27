@@ -18,9 +18,38 @@ function computeWeightedScore(v: number[], weights: number[]): number[] {
     return result;
 }
 
+//TODO: lav systemcontroller fil
+
+function computeStepRatio (rightSteps: number, wrongSteps: number){ 
+    let stepRatio: number;
+
+    stepRatio =  wrongSteps / (wrongSteps + rightSteps);
+
+    const clamp = (value: number) => {
+        let positive = Math.abs(value); //inverts (no negative)
+        return Math.min(1, Math.max(0, positive)) // bettween 0 and 1
+    }
+
+    clamp(stepRatio);
+
+    //vurderingslogik af A* optimalsteps
+
+}
+
 function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: number[]): number[] {
     const timeScore = normalizeInverted(state.currentTime, minMax.time[0], minMax.time[1]);
     const pathScore = normalizeInverted(state.pathEfficiency, minMax.path[0], minMax.path[1]);
     const collectScore = normalizeInverted(state.collectedKeys, minMax.keys[0], minMax.keys[1]);
     return computeWeightedScore([timeScore, pathScore, collectScore], weights);
+
+    let dataPoints: number [][] = [];
+
+    
+
+    dataPoints.push([
+        timeScore,
+        pathScore,
+
+
+    ])
 }

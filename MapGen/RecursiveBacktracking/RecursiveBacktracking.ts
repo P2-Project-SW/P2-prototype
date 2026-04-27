@@ -17,11 +17,11 @@ function recursiveBacktracker(sizeOfMap : number) : number[][] {
     chooseStartCell(map); //choose a random start cell and generate the map
 
     //create entrance on the left side
-    map[1]![0] = 1;
+    map[1]![0] = 2;
     map[1]![1] = 1; //connects the entrance to the maze
 
     //create exit on the right side
-    map[mapHeight-2]![mapWidth-1] = 1;
+    map[mapHeight-2]![mapWidth-1] = 3;
     map[mapHeight-2]![mapWidth-2] = 1; //connects the exit to the maze
 
     return map;

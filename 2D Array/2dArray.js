@@ -1,5 +1,6 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
-export { maps };
+import { playerMovement } from "../PlayerMovement/PlayerMovement.js";
+export { maps, getTileSize };
 /*
 // 2D Array Creator
 function create2D(rows : number, cols : number, value : number = 0) : number[][] {
@@ -87,6 +88,7 @@ function renderMap(map) {
             container.appendChild(div);
         });
     });
+    playerMovement(map);
 }
 // DDA logic?? Not done
 function ChooseMapByADD() {
@@ -95,6 +97,5 @@ function ChooseMapByADD() {
 // Example
 const chosen = ChooseMapByADD();
 pickMap(chosen);
-renderActiveMap();
 window.pickMap = pickMap; // We expose the function so the html file can see it. We do this, since this script is being loaded as a module
 //# sourceMappingURL=2dArray.js.map

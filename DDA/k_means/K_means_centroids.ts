@@ -12,7 +12,7 @@ window.onload = () => {
 
     //Manual centroids array
     const centroids_array: number[][] = [
-        //[normal time, normal keys, normal step ratio]
+        //[x: normal time, y: normal keys, z: normal step ratio]
         [0.75, 1, 0.75], // EASY (Index 0)
         [0.5, 0.5, 0.35], // FLOW (Index 1)
         [0.25, 0.25, 0.15] // HARD (Index 2)

@@ -1,67 +1,26 @@
-// -------------------------------
-//  Player State
-// -------------------------------
-export interface PlayerState {
-    currentTime: number;       // raw time spent in the maze
-    pathEfficiency: number;    // raw path efficiency (0–1)
-    collectedKeys: number;     // raw number of keys collected
-}
+import type { PlayerState, MinMax } from '../Types.js';
 
+export { normalizeInverted, buildPerformanceVector, computeWeightedScore };
 
-
-// -------------------------------
-//  1. normalizeInverted()
-// -------------------------------
-export function normalizeInverted(
-    value: number,
-    minValue: number,
-    maxValue: number
-): number {
-
-    // Normalize to 0–1
+function normalizeInverted(value: number, minValue: number, maxValue: number): number {
     let n = (value - minValue) / (maxValue - minValue);
-
-    // Invert so 1 = bad, 0 = good
     let inverted = 1 - n;
-
-    // Clamp to [0, 1]
     if (inverted < 0) inverted = 0;
     if (inverted > 1) inverted = 1;
-
     return inverted;
 }
 
-
-
-// -------------------------------
-//  2. buildPerformanceVector()
-// -------------------------------
-export function buildPerformanceVector(
-    timeScore: number,
-    pathScore: number,
-    collectibleScore: number
-): number[] {
-
-    // Return the 3D performance vector
-    return [timeScore, pathScore, collectibleScore];
+function computeWeightedScore(v: number[], weights: number[]): number[] {
+    let result: number[] = [];
+    for (let i = 0; i < v.length; i++) {
+        result.push((v[i] ?? 0) * (weights[i] ?? 0));
+    }
+    return result;
 }
 
-
-
-// -------------------------------
-//  3. computeWeightedScore()
-// -------------------------------
-export function computeWeightedScore(
-    v: number[],
-    weights: number[]
-): number {
-
-    let score = 0;
-
-    // Weighted sum (dot product)
-    for (let i = 0; i < v.length; i++) {
-        score += v[i] * weights[i];
-    }
-
-    return score;
+function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: number[]): number[] {
+    const timeScore = normalizeInverted(state.currentTime, minMax.time[0], minMax.time[1]);
+    const pathScore = normalizeInverted(state.pathEfficiency, minMax.path[0], minMax.path[1]);
+    const collectScore = normalizeInverted(state.collectedKeys, minMax.keys[0], minMax.keys[1]);
+    return computeWeightedScore([timeScore, pathScore, collectScore], weights);
 }

@@ -1,4 +1,4 @@
-import {create2D} from "../../create2D.js"     //creates a 2D-array
+import {create2D} from "../../2D Array/create2D.js"     //creates a 2D-array
 export {recursiveBacktracker}
 
 enum direction {
@@ -8,24 +8,13 @@ enum direction {
     LEFT
 };
 
-function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : number[][] {
-    let map: number[][] = create2D(sizeOfMap, sizeOfMap); //the final maze
-    let visited : number[][] = create2D(sizeOfMap, sizeOfMap); //tracks visited cells
+function recursiveBacktracker(sizeOfMap : number) : number[][] {
+    let map: number[][] = create2D(sizeOfMap, sizeOfMap); //the maze map
     
     const mapHeight : number = map.length;
     const mapWidth : number = map[0]!.length;
 
-    for(let i = 0; i < mapHeight ; i++){
-        for(let j = 0; j < mapWidth ; j++){
-            //mark borders as visited - so the algorithm does not go outside the maze
-            if(i === 0 || j === 0 || i === mapHeight - 1 || j === mapWidth - 1) {
-                visited[i]![j] = 0.5; // visited
-            }
-        }
-    }
-
-    chooseStartCell(visited); //choose a random start cell and generate the map
-    convertVisitedToMap(visited, map); //copy visited path cells into the final map
+    chooseStartCell(map); //choose a random start cell and generate the map
 
     //create entrance on the left side
     map[1]![0] = 1;
@@ -38,44 +27,47 @@ function recursiveBacktracker(sizeOfMap: number, /*directions: number[]*/) : num
     return map;
 }
 
-function chooseStartCell(visited: number[][]){
-    let validY: number[] = [];
-    let validX: number[] = [];
+function chooseStartCell(map: number[][]){
+    let validY : number[] = [];
+    let validX : number[] = [];
+    
+    const mapHeight : number = map.length;
+    const mapWidth : number = map[0]!.length;
 
     //only odd coordinates are used as actual maze cells
-    for (let y = 1; y < visited.length - 1; y += 2) {
+    for (let y = 1; y < mapHeight - 1; y += 2) {
         validY.push(y);
     }
-    for (let x = 1; x < visited[0]!.length - 1; x += 2) {
+    for (let x = 1; x < mapWidth - 1; x += 2) {
         validX.push(x);
     }
 
     //choose a random start cell
-    let indexSy: number = Math.floor((Math.random() * validY.length));
-    let indexSx: number = Math.floor((Math.random() * validX.length));
-    let sy: number = validY[indexSy]!;
-    let sx: number = validX[indexSx]!;
+    let indexSy : number = Math.floor((Math.random() * validY.length));
+    let indexSx : number = Math.floor((Math.random() * validX.length));
+    let sy : number = validY[indexSy]!;
+    let sx : number = validX[indexSx]!;
 
-    generateMazeFromCell(visited, sy, sx);
+    generateMazeFromCell(map, sy, sx);
 }
 
-function generateMazeFromCell(visited: number[][], y: number, x: number) {
-    //mark the current cell as visited
-    visited[y]![x] = 0.5;
+function generateMazeFromCell(map : number[][], y : number, x : number) {
+    //mark the current cell as map
+    map[y]![x] = 1;
 
     //list of possible directions
-    let li: number[] = [0, 1, 2, 3];
+    let li : number[] = [0, 1, 2, 3];
 
     while (li.length > 0) {
-        const visitedHeight: number = visited.length;
-        const visitedWidth: number = visited[0]!.length;
+        const mapHeight : number = map.length;
+        const mapWidth : number = map[0]!.length;
 
         //pick a random direction from the list
-        const indexDir: number = Math.floor(Math.random() * li.length);
-        const dir: number = li[indexDir]!;
+        const indexDir : number = Math.floor(Math.random() * li.length);
+        const dir : number = li[indexDir]!;
 
-        let nx: number, ny: number; //neighbor cell
-        let mx: number, my: number; //wall cell between current cell and neighbor
+        let nx : number, ny : number; //neighbor cell
+        let mx : number, my : number; //wall cell between current cell and neighbor
         
         //remove the chosen direction so it is not used again
         li.splice(indexDir, 1); 
@@ -107,23 +99,12 @@ function generateMazeFromCell(visited: number[][], y: number, x: number) {
             my = y;
         }
 
-        //only continue if the neighbor is inside the maze and has not yet been visited
-        if(nx > 0 && nx < visitedWidth - 1 && ny > 0 && ny < visitedHeight - 1 && visited[ny]![nx] !== 0.5) {
-            visited[my]![mx] = 0.5; //marks wall between current cell and neighbor cell as visited
+        //continue if the neighbor is inside the maze and has not yet been visited
+        if(nx > 0 && nx < mapWidth - 1 && ny > 0 && ny < mapHeight - 1 && map[ny]![nx] !== 1) {
+            map[my]![mx] = 1; //marks wall between current cell and neighbor cell as map
             
             //continue recursively from the neighbor cell
-            generateMazeFromCell(visited, ny, nx);
-        }
-    }
-}
-
-function convertVisitedToMap(visited: number[][], map: number[][]): void {
-    //convert visited cells into path cells in the final map 
-    for(let i = 1; i < visited.length - 1; i++){
-        for(let j = 1; j < visited[0]!.length - 1; j++){
-            if(visited[i]![j] === 0.5) {
-                map[i]![j] = 1;
-            }
+            generateMazeFromCell(map, ny, nx);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { maps } from "../2dArray.js";
+import { maps } from "../2D Array/2dArray.js";
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 
 let map = recursiveBacktracker(15);

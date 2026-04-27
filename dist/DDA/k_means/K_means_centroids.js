@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
 window.onload = () => {
@@ -223,4 +221,5 @@ window.onload = () => {
         console.error("Kunne ikke finde 'tester' elementet");
     }
 };
+export {};
 //# sourceMappingURL=K_means_centroids.js.map

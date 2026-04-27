@@ -1,4 +1,4 @@
-export { maps, getTileSize };
+export { maps, getTileSize, getActiveMap };
 declare const maps: {
     small: {
         grid: number[][];
@@ -18,4 +18,5 @@ declare const maps: {
     };
 };
 declare function getTileSize(map: (typeof maps)[keyof typeof maps]): 40 | 30 | 22 | 14;
+declare function getActiveMap(): (typeof maps)[keyof typeof maps] | null;
 //# sourceMappingURL=2dArray.d.ts.map

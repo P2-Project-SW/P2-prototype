@@ -1,6 +1,6 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 import { playerMovement } from "../PlayerMovement/PlayerMovement.js"
-export { maps, getTileSize };
+export { maps, getTileSize, getActiveMap };
 
 /*
 // 2D Array Creator
@@ -105,7 +105,7 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    playerMovement(map);
+    playerMovement(map, 0, 0);
 }
 
 // DDA logic?? Not done

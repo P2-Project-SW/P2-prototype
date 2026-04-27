@@ -1,6 +1,6 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 import { playerMovement } from "../PlayerMovement/PlayerMovement.js";
-export { maps, getTileSize };
+export { maps, getTileSize, getActiveMap };
 /*
 // 2D Array Creator
 function create2D(rows : number, cols : number, value : number = 0) : number[][] {
@@ -88,7 +88,7 @@ function renderMap(map) {
             container.appendChild(div);
         });
     });
-    playerMovement(map);
+    playerMovement(map, 0, 0);
 }
 // DDA logic?? Not done
 function ChooseMapByADD() {

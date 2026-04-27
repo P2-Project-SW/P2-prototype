@@ -52,8 +52,22 @@
 
     <div id="player"></div>
     <div id="map"></div>
+
+    <div>
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button> <!--UP-->
+    </div>
+
+    <div class="controls">
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(3)"> &larr; </button> <!--LEFT-->
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(2)"> &rarr; </button> <!--RIGHT-->
+    </div>
+
+    <div>
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(1)"> &darr; </button> <!--DOWN-->
+    </div>
   
     <script>var exports = {};</script>
     <script type="module" src="2dArray.js"></script>
+    <script type="module" src="../PlayerMovement/PlayerMovement.js"></script>
 </body>
 </html>

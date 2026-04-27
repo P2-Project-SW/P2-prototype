@@ -1,9 +1,45 @@
-import { getTileSize, maps } from "../2D Array/2dArray.js";
-export { playerMovement };
-document.addEventListener("keydown", (event) => {
-    //console.log(event.key)
-});
-function playerMovement(map) {
+import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+export { playerMovement, movePlayer };
+let y = 0;
+let x = 0;
+let nx = 0;
+let ny = 0;
+var directions;
+(function (directions) {
+    directions[directions["UP"] = 0] = "UP";
+    directions[directions["DOWN"] = 1] = "DOWN";
+    directions[directions["RIGHT"] = 2] = "RIGHT";
+    directions[directions["LEFT"] = 3] = "LEFT";
+})(directions || (directions = {}));
+function movePlayer(direction) {
+    if (direction === directions.UP) {
+        nx = x;
+        ny = y - 1;
+    }
+    else if (direction === directions.DOWN) {
+        nx = x;
+        ny = y + 1;
+    }
+    else if (direction === directions.RIGHT) {
+        nx = x + 1;
+        ny = y;
+    }
+    else if (direction === directions.LEFT) {
+        nx = x - 1;
+        ny = y;
+    }
+    else {
+        nx = x;
+        ny = y;
+    }
+    const map = getActiveMap();
+    if (map === null)
+        return;
+    playerMovement(map, ny, nx);
+    y = ny;
+    x = nx;
+}
+function playerMovement(map, y, x) {
     const div = document.createElement("div");
     div.classList.add("player");
     const container = document.getElementById("map");
@@ -11,26 +47,28 @@ function playerMovement(map) {
     if (container === null)
         return;
     div.innerHTML = "";
-    let startRow = 0;
-    let startCol = 0;
-    for (let i = 0; i < map.grid.length; i++) {
-        for (let j = 0; j < map.grid[0].length; j++) {
-            if (map.grid[i][j] === 2) {
-                startRow = i;
-                startCol = j;
+    //find start position in map array (value = 2)
+    if (x === 0 && y === 0) {
+        for (let i = 0; i < map.grid.length; i++) {
+            for (let j = 0; j < map.grid[0].length; j++) {
+                if (map.grid[i][j] === 2) {
+                    y = i;
+                    x = j;
+                }
             }
         }
     }
-    const mapGap = 2;
-    const mapPadding = 10;
+    const mapStyleGap = 2;
+    const mapStylePadding = 10;
     const TILE_SIZE = getTileSize(map);
     div.style.width = `${TILE_SIZE}px`;
     div.style.height = `${TILE_SIZE}px`;
-    div.style.top = `${TILE_SIZE * startRow + startRow * mapGap + mapPadding}px`;
-    div.style.left = `${TILE_SIZE * startCol + startCol * mapGap + mapPadding}px`;
+    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`;
+    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`;
     div.style.backgroundColor = "aqua";
     div.style.borderRadius = "3px";
     div.style.position = "absolute";
     container.appendChild(div);
 }
+window.movePlayer = movePlayer;
 //# sourceMappingURL=PlayerMovement.js.map

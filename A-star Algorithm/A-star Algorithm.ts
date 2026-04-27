@@ -1,3 +1,11 @@
+/*import { maps } from "../2dArray.js";
+import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
+
+let map = recursiveBacktracker(15);
+//eksempel: 
+// maps.small - henter small map
+*/
+
 // javascript-astar 0.4.1 — TypeScript port
 // http://github.com/bgrins/javascript-astar
 // Freely distributable under the MIT License.

@@ -32,6 +32,8 @@ function computeStepRatio (rightSteps: number, wrongSteps: number){
 
     clamp(stepRatio);
 
+    return stepRatio
+
     //vurderingslogik af A* optimalsteps
 
 }
@@ -42,14 +44,21 @@ function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: num
     const collectScore = normalizeInverted(state.collectedKeys, minMax.keys[0], minMax.keys[1]);
     return computeWeightedScore([timeScore, pathScore, collectScore], weights);
 
-    let dataPoints: number [][] = [];
+    let score: number [][] = [];
 
+    const timeScore = normalizeInverted(state.currentTime, minMax.time[0], minMax.time[1]);
+    //const pathScore = normalizeInverted(state.pathEfficiency, minMax.path[0], minMax.path[1]);
+    const pathScore = computeStepRatio(5, 10)
+    const collectScore = normalizeInverted(state.collectedKeys, minMax.keys[0], minMax.keys[1]);
     
 
-    dataPoints.push([
+    computeWeightedScore([timeScore, pathScore, collectScore], weights);
+
+    score.push([
         timeScore,
         pathScore,
-
-
+        collectScore
     ])
+
+    return score;
 }

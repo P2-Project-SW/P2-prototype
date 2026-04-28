@@ -1,12 +1,21 @@
-/*
-import { Graph, search, heuristics } from "./A-star Algorithm.js";
+import { Graph, search, heuristics, GridNode } from "./A-star Algorithm.js";
+import { maps } from "../2D Array/2dArray.js";
 
-//const grid;
+const graph = new Graph(maps.small.grid, { diagonal: false });
 
-const graph = new Graph(grid.small.grid, { diagonal: false });
-const start = graph.grid[1]![1]!;
-const end   = graph.grid[10]![10]!;
+function onPlayerMove(playerX: number, playerY: number, goalX: number, goalY: number) {
+  const start = graph.grid[playerX]![playerY]!;
+  const end   = graph.grid[goalX]![goalY]!;
 
-const path = search(graph, start, end, { heuristic: heuristics.manhattan });
-console.log(path.map(n => n.toString()));
-*/
+  const path = search(graph, start, end, {
+    heuristic: heuristics.manhattan
+  });
+
+  if (path.length === 0) {
+    console.log("No path found");
+  } else {
+    console.log(path.map((n: GridNode) => n.toString()));
+  }
+
+  return path;
+}

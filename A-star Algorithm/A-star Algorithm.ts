@@ -20,12 +20,15 @@ export interface AStarOptions {
   closest?: boolean;
   /** Heuristic function to use (defaults to manhattan). */
   heuristic?: (pos0: GridNode, pos1: GridNode) => number;
+
 }
 
 export interface GraphOptions {
   /** Allow diagonal movement. */
   diagonal?: boolean;
 }
+
+
 
 // ---------------------------------------------------------------------------
 // Helpers

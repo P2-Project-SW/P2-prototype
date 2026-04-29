@@ -1,4 +1,4 @@
-import { Graph, search, heuristics, GridNode } from "./A-star Algorithm.js";
+import { Graph, search, heuristics, GridNode } from "./AStarAlgorithm.js";
 import { maps } from "../2D Array/2dArray.js";
 
 const graph = new Graph(maps.small.grid, { diagonal: false });

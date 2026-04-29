@@ -37,7 +37,7 @@ function isInBounds(map : (typeof maps)[keyof typeof maps], row : number, col : 
 
 
 //Change tile sizes based on map size
-function getTileSize(map : (typeof maps)[keyof typeof maps]) {
+export function getTileSize(map: (typeof maps)[keyof typeof maps]) {
     const cols = map.grid[0]!.length;
 
     if (cols <= 15) return 40;   // small map → big tiles
@@ -61,7 +61,7 @@ function pickMap(name: MapName) {
 }
 
 // Function find the active map and return it
-function getActiveMap() : (typeof maps)[keyof typeof maps] | null {
+export function getActiveMap() : (typeof maps)[keyof typeof maps] | null {
     for (const key of Object.keys(maps) as MapName[]) {
         if (maps[key].active) return maps[key];
     }

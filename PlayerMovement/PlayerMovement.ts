@@ -62,7 +62,7 @@ function movePlayer(direction : number) {
 
             x = 0;
             y = 1;
-            
+
             const currentDiv = document.getElementById("playerId");
             currentDiv!.remove();
             movePlayerPosition(map, y, x);
@@ -70,7 +70,6 @@ function movePlayer(direction : number) {
 
     }
 }
-
 
 function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, x : number) {
     //if player is not at beginning, then remove earlier div

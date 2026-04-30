@@ -17,4 +17,6 @@ declare const maps: {
         active: boolean;
     };
 };
+export declare function getTileSize(map: (typeof maps)[keyof typeof maps]): 40 | 30 | 22 | 14;
+export declare function getActiveMap(): (typeof maps)[keyof typeof maps] | null;
 //# sourceMappingURL=2dArray.d.ts.map

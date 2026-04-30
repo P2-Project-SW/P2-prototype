@@ -1,18 +1,112 @@
-import { Graph, search, heuristics, GridNode } from "./AStarAlgorithm.js";
-import { maps } from "../2D Array/2dArray.js";
-const graph = new Graph(maps.small.grid, { diagonal: false });
-function onPlayerMove(playerX, playerY, goalX, goalY) {
-    const start = graph.grid[playerX][playerY];
-    const end = graph.grid[goalX][goalY];
-    const path = search(graph, start, end, {
-        heuristic: heuristics.manhattan
-    });
-    if (path.length === 0) {
-        console.log("No path found");
+import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+import { Graph, search, heuristics, GridNode } from "../AStarAlgorithm/AStarAlgorithm.js";
+export { playerMovement, movePlayer };
+let y = 0;
+let x = 0;
+let nx = 0;
+let ny = 0;
+let graph = null;
+let goalX = 0;
+let goalY = 0;
+// Build graph and find goal from the active map
+function initGraph() {
+    const map = getActiveMap();
+    if (!map)
+        return;
+    graph = new Graph(map.grid, { diagonal: false });
+    // Find start tile (value = 2) and goal tile (value = 3)
+    for (let i = 0; i < map.grid.length; i++) {
+        for (let j = 0; j < map.grid[i].length; j++) {
+            if (map.grid[i][j] === 2) {
+                y = i;
+                x = j;
+            }
+            if (map.grid[i][j] === 3) {
+                goalY = i;
+                goalX = j;
+            }
+        }
+    }
+}
+// Call once when the page loads
+initGraph();
+var directions;
+(function (directions) {
+    directions[directions["UP"] = 0] = "UP";
+    directions[directions["DOWN"] = 1] = "DOWN";
+    directions[directions["RIGHT"] = 2] = "RIGHT";
+    directions[directions["LEFT"] = 3] = "LEFT";
+})(directions || (directions = {}));
+function movePlayer(direction) {
+    if (direction === directions.UP) {
+        nx = x;
+        ny = y - 1;
+    }
+    else if (direction === directions.DOWN) {
+        nx = x;
+        ny = y + 1;
+    }
+    else if (direction === directions.RIGHT) {
+        nx = x + 1;
+        ny = y;
+    }
+    else if (direction === directions.LEFT) {
+        nx = x - 1;
+        ny = y;
     }
     else {
-        console.log(path.map((n) => n.toString()));
+        nx = x;
+        ny = y;
     }
-    return path;
+    const map = getActiveMap();
+    if (!map || !graph)
+        return;
+    // Move player visually
+    playerMovement(map, ny, nx);
+    // Run A* from new player position to goal
+    const start = graph.grid[ny]?.[nx];
+    const goal = graph.grid[goalY]?.[goalX];
+    if (start && goal) {
+        const path = search(graph, start, goal, {
+            heuristic: heuristics.manhattan,
+        });
+        if (path.length === 0) {
+            console.log("No path to goal found!");
+        }
+        else {
+            console.log(`Steps remaining: ${path.length}`);
+            console.log("Route:", path.map((n) => n.toString()));
+        }
+        // Check if player reached the goal
+        if (ny === goalY && nx === goalX) {
+            console.log("🎉 Player reached the goal!");
+        }
+    }
+    // Update position
+    y = ny;
+    x = nx;
 }
+function playerMovement(map, y, x) {
+    const container = document.getElementById("map");
+    if (container === null)
+        return;
+    // Remove old player div
+    const existing = container.querySelector(".player");
+    if (existing)
+        existing.remove();
+    const mapStyleGap = 2;
+    const mapStylePadding = 10;
+    const TILE_SIZE = getTileSize(map);
+    const div = document.createElement("div");
+    div.classList.add("player");
+    div.style.width = `${TILE_SIZE}px`;
+    div.style.height = `${TILE_SIZE}px`;
+    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`;
+    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`;
+    div.style.backgroundColor = "aqua";
+    div.style.borderRadius = "3px";
+    div.style.position = "absolute";
+    container.appendChild(div);
+}
+window.movePlayer = movePlayer;
 //# sourceMappingURL=Run%20A-star%20Algorithm.js.map

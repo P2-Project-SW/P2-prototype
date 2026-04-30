@@ -1,5 +1,5 @@
 import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
-import { Graph, search, heuristics, GridNode } from "../A-star Algorithm/A-star Algorithm.js";
+import { Graph, search, heuristics, GridNode } from "../AStarAlgorithm/AStarAlgorithm.js";
 
 export { playerMovement, movePlayer };
 

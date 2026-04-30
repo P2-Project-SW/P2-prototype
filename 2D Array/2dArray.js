@@ -28,7 +28,7 @@ function isInBounds(map, row, col) {
     return row >= 0 && row < rows && col >= 0 && col < cols;
 }
 //Change tile sizes based on map size
-function getTileSize(map) {
+export function getTileSize(map) {
     const cols = map.grid[0].length;
     if (cols <= 15)
         return 40; // small map → big tiles
@@ -48,7 +48,7 @@ function pickMap(name) {
     renderActiveMap();
 }
 // Function find the active map and return it
-function getActiveMap() {
+export function getActiveMap() {
     for (const key of Object.keys(maps)) {
         if (maps[key].active)
             return maps[key];

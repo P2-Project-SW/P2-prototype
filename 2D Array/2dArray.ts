@@ -1,5 +1,5 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
-import { playerMovement } from "../PlayerMovement/PlayerMovement.js"
+import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 export { maps, getTileSize, getActiveMap };
 
 /*
@@ -105,7 +105,7 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    playerMovement(map, 0, 0);
+    movePlayerPosition(map, 0, 0);
 }
 
 // DDA logic?? Not done

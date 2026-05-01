@@ -5,7 +5,9 @@ const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
 
 
-window.onload = () => {
+export {makeData, centroids_array};
+
+//window.onload = () => {
 
     //plotly div
     const TESTER = document.getElementById('tester');
@@ -19,7 +21,7 @@ window.onload = () => {
     ]
 
     //Data generation (not needed in final iteration)
-    function makeData(samples: number, centroid: any[], stdDev: number) {
+    function makeData(samples: number, centroid: any [], stdDev: number) {
         let dataPoints: number[][] = [];
 
         if (!centroid) return dataPoints;
@@ -53,14 +55,8 @@ window.onload = () => {
         return dataPoints;
     }
 
-    /*
-    //! = not empty
-    const easyCentroid = makeData(3, centroids_array[0]!, 0.1);
-    const flowCentroid = makeData(3, centroids_array[1]!, 0.1);
-    const HardCentroid = makeData(3, centroids_array[2]!, 0.1);
-    */
 
-    const PPI_array = makeData(10, centroids_array[1]!, 0.3);
+    const PPI_array = makeData(10, centroids_array[1]!, 0.10);
 
 
 //EUCLIDIAN DISTANCE
@@ -277,7 +273,9 @@ EuclideanDistance:
     } else {
         console.error("Kunne ikke finde 'tester' elementet");
     }
-};
+
+
+//};
 
 
 

@@ -1,9 +1,7 @@
 // @ts-nocheck 
-import (Plotly) from 'plotly.js-dist';
 
-import { kmeans } from 'ml-kmeans';
-
-
+import Plotly from 'plotly.js-dist'; 
+import { Observable } from 'rxjs';   
 
 import { centroids_array, makeData } from './data_gen.js'
 
@@ -26,26 +24,53 @@ const flattenedData = boxMullerData.flat();
  
 //console.log("Flattened Data:", flattenedData);
 
-
-
-
 let k_range = Array.from({ length: 10 }, (a, i) => i + 1 );
 
+function manualKMeans(data: number[][], k: number) {
+    let centroids = data.slice(0, k); 
+    let wcss = 0;
 
+    for (let iter = 0; iter < 10; iter++) {
+        wcss = 0;
+        const clusters = Array.from({ length: k }, () => []);
+
+        data.forEach((point) => {
+            let minDist = Infinity;
+            let closestIdx = 0;
+
+            centroids.forEach((c, cIdx) => {
+                const dist = Math.sqrt(point.reduce((acc, val, i) => acc + Math.pow(val - c[i], 2), 0));
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestIdx = cIdx;
+                }
+            });
+
+            clusters[closestIdx].push(point);
+            wcss += Math.pow(minDist, 2);
+        });
+
+        centroids = clusters.map((points, i) => {
+            if (points.length === 0) return centroids[i];
+            const avg = new Array(points[0].length).fill(0);
+            points.forEach(p => p.forEach((val, dim) => avg[dim] += val));
+            return avg.map(val => val / points.length);
+        });
+    }
+    return { error: wcss };
+}
 
 function testForK(data: number[][], kValues: number[]) {
-
     const WCSS: number[] = [];
     const distortions: number [] = [];
 
     kValues.forEach(k => {
-        const result = kmeans(data, k, { initialization: 'kmeans++' }) as any;
+        // Bruger nu manualKMeans i stedet for pakken
+        const result = manualKMeans(data, k);
         
-        const error = result.iterations[result.iterations.length - 1].error;
-        //error rate of the clustering
+        const error = result.error;
         WCSS.push(error);
-        //avg range between dp and centroids
-        distortions.push(error /data.length)
+        distortions.push(error / data.length)
         console.log(`k: ${k} -> Inertia: ${error.toFixed(2)}`);
     });
 

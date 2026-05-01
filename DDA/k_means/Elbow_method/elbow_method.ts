@@ -1,8 +1,8 @@
 // @ts-nocheck 
-declare var Plotly: any;
-declare var kmeans: any;
+import (Plotly) from 'plotly.js-dist';
 
-const { kMeansResult, iteration, initialization } = kmeans;
+import { kmeans } from 'ml-kmeans';
+
 
 
 import { centroids_array, makeData } from './data_gen.js'

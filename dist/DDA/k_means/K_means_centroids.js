@@ -1,6 +1,6 @@
 const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
-import { centroids_array, makeData } from './Elbow_method/data_gen';
+import { centroids_array, makeData } from './Elbow_method/data_gen.js';
 //window.onload = () => {
 //plotly div
 const TESTER = document.getElementById('tester');
@@ -45,56 +45,6 @@ function PPI_stream(array, period) {
         console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
     });
 }
-/*
-function PPI_stream(array: number[][], period: number) {
-    // Vi streamer række for række fra dit 2D array (3 kolonner)
-    interval(period).pipe(
-        take(array.length),
-        map(index => array[index]), // Her kommer f.eks. [1.2, 0.5, 2.1]
-        
-        // startWith skal være en "tom" række eller den første række,
-        // så pairwise har noget at parre den første rigtige række med.
-        startWith(array[0]),
-
-        pairwise(), // Resulterer i [[x1,y1,z1], [x2,y2,z2]]
-        
-        tap(pair => {
-            // Her er pair[0] din previousVector og pair[1] din latestVector
-            console.log("Pairwise modtog to rækker:", pair);
-        }),
-
-        map(([prev, curr]: [number[], number[]]) => {
-            // Beregn forskel på hver af de 3 kolonner (x, y, z)
-            const diffs = curr.map((value, i) => {
-                const pV = prev[i] ?? 0; // Fallback hvis kolonnen mangler
-                return (Math.abs(value - pV)).toFixed(3);
-            });
-
-            return {
-                diffs,
-                latestVector: curr,
-                previousVector: prev
-            };
-        })
-    ).subscribe({
-        next: ({ diffs, latestVector }) => {
-            const kMeansResult = euclideanDistance(latestVector);
-            const assignColor = centroidColors[kMeansResult.newDifficultyIndex];
-
-            // Plotly forventer et array for hver akse (x, y, z)
-            Plotly.extendTraces('tester', {
-                x: [[latestVector[0]]],
-                y: [[latestVector[1]]],
-                z: [[latestVector[2]]],
-                'marker.color': [[assignColor]]
-            }, [3]);
-
-            console.log(`Vektor [${latestVector}] -> Cluster ${kMeansResult.newDifficultyIndex}`);
-        },
-        error: err => console.error("Stream fejl:", err)
-    });
-}
-*/
 let lastDifficultyIndex = 1; //starter i FLOW
 //Afstand fra alle centroids til latestVector
 function euclideanDistance(newVector) {
@@ -143,11 +93,6 @@ function createTrace(data, name, color) {
         marker: { size: 6, color: color, opacity: 0.5 }
     };
 }
-/*
-const easyTrace = createTrace(easyCentroid, 'Easy', 'red');
-const flowTrace = createTrace(flowCentroid, 'Flow', 'blue');
-const hardTrace = createTrace(HardCentroid, 'Hard', 'green');
-*/
 //const PPI_trace = createTrace(PPI_array, 'random', 'gray')
 const centroidColors = ['red', 'blue', 'green'];
 //3 manual centroids

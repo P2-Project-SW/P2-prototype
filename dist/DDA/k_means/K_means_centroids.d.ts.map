@@ -1,1 +1,1 @@
-{"version":3,"file":"K_means_centroids.d.ts","sourceRoot":"","sources":["../../../DDA/k_means/K_means_centroids.ts"],"names":[],"mappings":"AAOA,OAAO,EAAC,QAAQ,EAAE,eAAe,EAAC,CAAC;AAQ/B,QAAA,MAAM,eAAe,EAAE,MAAM,EAAE,EAK9B,CAAA;AAGD,iBAAS,QAAQ,CAAC,OAAO,EAAE,MAAM,EAAE,QAAQ,EAAE,GAAG,EAAG,EAAE,MAAM,EAAE,MAAM,cAgClE"}
+{"version":3,"file":"K_means_centroids.d.ts","sourceRoot":"","sources":["../../../DDA/k_means/K_means_centroids.ts"],"names":[],"mappings":""}

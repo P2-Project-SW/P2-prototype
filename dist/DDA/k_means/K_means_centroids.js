@@ -1,43 +1,9 @@
 const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
-export { makeData, centroids_array };
+import { centroids_array, makeData } from './Elbow_method/data_gen';
 //window.onload = () => {
 //plotly div
 const TESTER = document.getElementById('tester');
-//Manual centroids array
-const centroids_array = [
-    //[x: normal time, y: normal keys, z: normal step ratio]
-    [0.75, 1, 0.75], // EASY (Index 0)
-    [0.5, 0.5, 0.35], // FLOW (Index 1)
-    [0.25, 0.25, 0.15] // HARD (Index 2)
-];
-//Data generation (not needed in final iteration)
-function makeData(samples, centroid, stdDev) {
-    let dataPoints = [];
-    if (!centroid)
-        return dataPoints;
-    for (let i = 0; i < samples; i++) {
-        // Box-Muller for 3D (x, y, z)
-        let u1 = Math.random(), u2 = Math.random();
-        let u3 = Math.random(), u4 = Math.random();
-        let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        let z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
-        let z2 = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
-        let rawX = (centroid[0] + z0 * stdDev).toFixed(2);
-        let rawY = (centroid[1] + z1 * stdDev).toFixed(2);
-        let rawZ = (centroid[2] + z2 * stdDev).toFixed(2);
-        const clamp = (value) => {
-            let positive = Math.abs(value); //inverts (no negative)
-            return Math.min(1, Math.max(0, positive)); // bettween 0 and 1
-        };
-        dataPoints.push([
-            Number(clamp(rawX).toFixed(2)),
-            Number(clamp(rawY).toFixed(2)),
-            Number(clamp(rawZ).toFixed(2))
-        ]);
-    }
-    return dataPoints;
-}
 const PPI_array = makeData(10, centroids_array[1], 0.10);
 //EUCLIDIAN DISTANCE
 /*                                        NOTES
@@ -79,6 +45,56 @@ function PPI_stream(array, period) {
         console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
     });
 }
+/*
+function PPI_stream(array: number[][], period: number) {
+    // Vi streamer række for række fra dit 2D array (3 kolonner)
+    interval(period).pipe(
+        take(array.length),
+        map(index => array[index]), // Her kommer f.eks. [1.2, 0.5, 2.1]
+        
+        // startWith skal være en "tom" række eller den første række,
+        // så pairwise har noget at parre den første rigtige række med.
+        startWith(array[0]),
+
+        pairwise(), // Resulterer i [[x1,y1,z1], [x2,y2,z2]]
+        
+        tap(pair => {
+            // Her er pair[0] din previousVector og pair[1] din latestVector
+            console.log("Pairwise modtog to rækker:", pair);
+        }),
+
+        map(([prev, curr]: [number[], number[]]) => {
+            // Beregn forskel på hver af de 3 kolonner (x, y, z)
+            const diffs = curr.map((value, i) => {
+                const pV = prev[i] ?? 0; // Fallback hvis kolonnen mangler
+                return (Math.abs(value - pV)).toFixed(3);
+            });
+
+            return {
+                diffs,
+                latestVector: curr,
+                previousVector: prev
+            };
+        })
+    ).subscribe({
+        next: ({ diffs, latestVector }) => {
+            const kMeansResult = euclideanDistance(latestVector);
+            const assignColor = centroidColors[kMeansResult.newDifficultyIndex];
+
+            // Plotly forventer et array for hver akse (x, y, z)
+            Plotly.extendTraces('tester', {
+                x: [[latestVector[0]]],
+                y: [[latestVector[1]]],
+                z: [[latestVector[2]]],
+                'marker.color': [[assignColor]]
+            }, [3]);
+
+            console.log(`Vektor [${latestVector}] -> Cluster ${kMeansResult.newDifficultyIndex}`);
+        },
+        error: err => console.error("Stream fejl:", err)
+    });
+}
+*/
 let lastDifficultyIndex = 1; //starter i FLOW
 //Afstand fra alle centroids til latestVector
 function euclideanDistance(newVector) {

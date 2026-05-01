@@ -5,6 +5,7 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "ml-kmeans": "^7.0.0",
     "plotly.js-dist": "^3.5.0",
     "rxjs": "^7.8.2"
   },

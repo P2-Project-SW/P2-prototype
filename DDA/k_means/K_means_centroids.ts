@@ -5,7 +5,7 @@ declare var rxjs: any;
 const { interval } = rxjs;
 const { startWith, map, pairwise, tap, take } = rxjs.operators;
 
- import {centroids_array, makeData} from './Elbow_method/data_gen'
+ import {centroids_array, makeData} from './Elbow_method/data_gen.js'
 
 
 //window.onload = () => {

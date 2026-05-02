@@ -264247,33 +264247,40 @@ var import_plotly = __toESM(require_plotly(), 1);
 // DDA/k_means/Elbow_method/data_gen.ts
 var centroids_array = [
   //[x: normal time, y: normal keys, z: normal step ratio]
-  [0.75, 1, 0.75],
+  [0.75, 0.75, 0.75],
   // EASY (Index 0)
-  [0.5, 0.5, 0.35],
+  [0.5, 0.5, 0.5],
   // FLOW (Index 1)
-  [0.25, 0.25, 0.15]
+  [0.25, 0.25, 0.25]
   // HARD (Index 2)
 ];
 function makeData(samples, centroid, stdDev) {
   let dataPoints = [];
   if (!centroid) return dataPoints;
+  function genGaussVariable(variable) {
+    let truncatedVariable = Math.trunc(variable * 100) / 100;
+    return truncatedVariable;
+  }
   for (let i = 0; i < samples; i++) {
-    let u1 = Math.random(), u2 = Math.random();
-    let u3 = Math.random(), u4 = Math.random();
+    let u1 = Math.random(), u2 = Math.random() || 1e-4;
+    let u3 = Math.random(), u4 = Math.random() || 1e-4;
+    console.log("u1 and u2", u1, u2);
     let z0 = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
     let z1 = Math.sqrt(-2 * Math.log(u1)) * Math.sin(2 * Math.PI * u2);
     let z2 = Math.sqrt(-2 * Math.log(u3)) * Math.cos(2 * Math.PI * u4);
-    let rawX = (centroid[0] + z0 * stdDev).toFixed(2);
-    let rawY = (centroid[1] + z1 * stdDev).toFixed(2);
-    let rawZ = (centroid[2] + z2 * stdDev).toFixed(2);
-    const clamp = (value) => {
-      let positive = Math.abs(value);
-      return Math.min(1, Math.max(0, positive));
-    };
+    console.log("z0", z0);
+    let x = centroid[0] + z0 * stdDev;
+    let y = centroid[1] + z1 * stdDev;
+    let z = centroid[2] + z2 * stdDev;
+    let finalx = genGaussVariable(x);
+    let finaly = genGaussVariable(y);
+    let finalz = genGaussVariable(z);
+    console.log("x,y,z", x, y, z);
+    console.log("final x,y,z", finalx, finaly, finalz);
     dataPoints.push([
-      Number(clamp(rawX).toFixed(2)),
-      Number(clamp(rawY).toFixed(2)),
-      Number(clamp(rawZ).toFixed(2))
+      finalx,
+      finaly,
+      finalz
     ]);
   }
   return dataPoints;
@@ -264283,12 +264290,12 @@ function makeData(samples, centroid, stdDev) {
 var elbowGraph = document.getElementById("elbowGraph");
 var dataGraph = document.getElementById("dataGraph");
 var boxMullerData = [
-  makeData(10, centroids_array[0], 0.1),
-  makeData(10, centroids_array[1], 0.1),
-  makeData(10, centroids_array[2], 0.1)
+  makeData(100, centroids_array[0], 0.05),
+  makeData(100, centroids_array[1], 0.05),
+  makeData(100, centroids_array[2], 0.05)
 ];
 var flattenedData = boxMullerData.flat();
-var k_range = Array.from({ length: 10 }, (a, i) => i + 1);
+var k_range = Array.from({ length: 9 }, (a, i) => i + 1);
 function manualKMeans(data, k) {
   let centroids = data.slice(0, k);
   let wcss = 0;
@@ -264322,14 +264329,38 @@ function testForK(data, kValues) {
   const distortions = [];
   kValues.forEach((k) => {
     const result = manualKMeans(data, k);
-    const error = result.error;
-    WCSS.push(error);
-    distortions.push(error / data.length);
-    console.log(`k: ${k} -> Inertia: ${error.toFixed(2)}`);
+    const inertia = result.error;
+    WCSS.push(inertia);
+    const distortion = inertia / data.length;
+    distortions.push(distortion);
+    console.log(`k: ${k} | Inertia (WCSS): ${inertia.toFixed(2)} | Distortion: ${distortion.toFixed(2)}`);
   });
   return { kValues, WCSS, distortions };
 }
 var elbowResult = testForK(flattenedData, k_range);
+function findElbowManually(K, inertias) {
+  const p1 = { x: K[0], y: inertias[0] };
+  const p2 = { x: K[K.length - 1], y: inertias[K.length - 1] };
+  let maxDistance = -1;
+  let elbowK = K[0];
+  for (let i = 0; i < K.length; i++) {
+    const p0 = { x: K[i], y: inertias[i] };
+    const numerator = Math.abs(
+      (p2.y - p1.y) * p0.x - (p2.x - p1.x) * p0.y + p2.x * p1.y - p2.y * p1.x
+    );
+    const denominator = Math.sqrt(
+      Math.pow(p2.y - p1.y, 2) + Math.pow(p2.x - p1.x, 2)
+    );
+    const distance = numerator / denominator;
+    if (distance > maxDistance) {
+      maxDistance = distance;
+      elbowK = K[i];
+    }
+  }
+  return elbowK;
+}
+var optimalK = findElbowManually(elbowResult.kValues, elbowResult.WCSS);
+console.log(`%c Albuen findes manuelt ved K = ${optimalK}/${elbowResult.kValues}`, "color: yellow; font-weight: bold; background: black;");
 var elbow_trace = {
   x: elbowResult.kValues,
   y: elbowResult.WCSS,
@@ -264338,19 +264369,16 @@ var elbow_trace = {
   name: "Inertia (WCSS)"
 };
 var layout2D = {
-  title: "elbow method (inertia)",
-  scene: {
-    xaxis: {
-      title: "centroids (k)",
-      autorange: true
-      // no zoom
-    },
-    yaxis: {
-      title: "WCSS",
-      autorange: true
-    }
+  title: `Elbow Method (Optimal K = ${optimalK})`,
+  xaxis: {
+    title: "centroids (k)",
+    autorange: true
   },
-  margin: { l: 0, r: 0, b: 0, t: 40 }
+  yaxis: {
+    title: "WCSS",
+    autorange: true
+  },
+  margin: { l: 50, r: 20, b: 50, t: 60 }
 };
 function createTrace(data, name2, color) {
   return {

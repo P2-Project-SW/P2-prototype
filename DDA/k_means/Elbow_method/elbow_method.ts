@@ -1,7 +1,7 @@
 // @ts-nocheck 
 
 import Plotly from 'plotly.js-dist'; 
-import { Observable } from 'rxjs';   
+import { Observable, range } from 'rxjs';   
 
 import { centroids_array, makeData } from './data_gen.js'
 
@@ -9,14 +9,14 @@ import { centroids_array, makeData } from './data_gen.js'
 const elbowGraph = document.getElementById("elbowGraph")
 const dataGraph = document.getElementById("dataGraph")
 
-
 //elbow data
 const boxMullerData = [
-    makeData(10, centroids_array[0]!, 0.10),
-    makeData(10, centroids_array[1]!, 0.10),
-    makeData(10, centroids_array[2]!, 0.10),
+    makeData(100, centroids_array[0]!, 0.10),
+    makeData(100, centroids_array[1]!, 0.10),
+    makeData(100, centroids_array[2]!, 0.10),
 ]
 
+//makeData(10, centroids_array[0], 0.10)
 
 //console.log("raw data ",boxMullerData);
 
@@ -24,7 +24,7 @@ const flattenedData = boxMullerData.flat();
  
 //console.log("Flattened Data:", flattenedData);
 
-let k_range = Array.from({ length: 10 }, (a, i) => i + 1 );
+let k_range = Array.from({ length: 9 }, (a, i) => i + 1 );
 
 function manualKMeans(data: number[][], k: number) {
     let centroids = data.slice(0, k); 
@@ -61,47 +61,85 @@ function manualKMeans(data: number[][], k: number) {
 }
 
 function testForK(data: number[][], kValues: number[]) {
-    const WCSS: number[] = [];
-    const distortions: number [] = [];
+    const WCSS: number[] = []; // Dette er din Inertia
+    const distortions: number[] = []; // Dette er din Distortion
 
     kValues.forEach(k => {
-        // Bruger nu manualKMeans i stedet for pakken
         const result = manualKMeans(data, k);
         
-        const error = result.error;
-        WCSS.push(error);
-        distortions.push(error / data.length)
-        console.log(`k: ${k} -> Inertia: ${error.toFixed(2)}`);
+        // 1. Inertia (WCSS): Summen af de kvadrerede afstande
+        const inertia = result.error;
+        WCSS.push(inertia);
+        
+        // 2. Distortion: Gennemsnitlig kvadreret afstand (Inertia / n)
+        const distortion = inertia / data.length;
+        distortions.push(distortion);
+        
+        console.log(`k: ${k} | Inertia (WCSS): ${inertia.toFixed(2)} | Distortion: ${distortion.toFixed(2)}`);
     });
 
-    return {kValues, WCSS, distortions};
+    return { kValues, WCSS, distortions };
 }
 
 const elbowResult = testForK(flattenedData, k_range);
+
+function findElbowManually(K: number[], inertias: number[]): number {
+    // Start- og slutpunkter for den rette linje (p1 til p2)
+    const p1 = { x: K[0], y: inertias[0] };
+    const p2 = { x: K[K.length - 1], y: inertias[K.length - 1] };
+    
+    let maxDistance = -1;
+    let elbowK = K[0];
+    
+    for (let i = 0; i < K.length; i++) {
+        const p0 = { x: K[i], y: inertias[i] };
+        
+        // Formel for afstand fra et punkt (p0) til en linje (p1-p2)
+        const numerator = Math.abs(
+            (p2.y - p1.y) * p0.x - 
+            (p2.x - p1.x) * p0.y + 
+            p2.x * p1.y - 
+            p2.y * p1.x
+        );
+        const denominator = Math.sqrt(
+            Math.pow(p2.y - p1.y, 2) + 
+            Math.pow(p2.x - p1.x, 2)
+        );
+        const distance = numerator / denominator;
+        
+        if (distance > maxDistance) {
+            maxDistance = distance;
+            elbowK = K[i];
+        }
+    }
+    
+    return elbowK;
+}
+
+// Brug den efter din testForK funktion:
+const optimalK = findElbowManually(elbowResult.kValues, elbowResult.WCSS);
+console.log(`%c Albuen findes manuelt ved K = ${optimalK}/${elbowResult.kValues}`, "color: yellow; font-weight: bold; background: black;");
+
 
 const elbow_trace = {
     x: elbowResult.kValues,
     y: elbowResult.WCSS,
     type: 'scatter',
     mode: 'lines+markers',
-    name: 'Inertia (WCSS)'
+    name: 'Inertia (WCSS)',
 } as any;
 
-
 const layout2D = {
-    title: 'elbow method (inertia)',
-    scene: {
-        xaxis: {
-            title: 'centroids (k)',
-            autorange: true // no zoom
-        },
-        yaxis: {
-            title: 'WCSS',
-            autorange: true
-        },
-
+    title: `Elbow Method (Optimal K = ${optimalK})`,
+    xaxis: {
+        title: 'centroids (k)', 
+        autorange: true
     },
-    margin: { l: 0, r: 0, b: 0, t: 40 }
+    yaxis: {
+        title: 'WCSS',
+        autorange: true
+    },
+    margin: { l: 50, r: 20, b: 50, t: 60 }
 };
 
 function createTrace(data: number[][], name: string, color: string) {
@@ -163,7 +201,7 @@ if (elbowGraph) {
 //PLOTLY data
 if (dataGraph) {
     if (data2 && data2.length > 0) {
-        Plotly.newPlot(dataGraph, data2 as any, layout3D as any);
+        Plotly.newPlot(dataGraph, data2, layout3D as any);
     }
 } else {
     console.error("Kunne ikke finde 'dataGraph' elementet");

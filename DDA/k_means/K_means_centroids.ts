@@ -195,17 +195,17 @@ EuclideanDistance:
         title: 'k-means centroids',
         scene: {
             xaxis: {
-                text: 'AVG time',
+                Text: 'AVG time',
                 range: [0, 1.5],
                 autorange: false // no zoom
             },
             yaxis: {
-                text: 'Keys',
+                Text: 'Keys',
                 range: [0, 1.5],
                 autorange: false
             },
             zaxis: {
-                text: 'Step ratio',
+                Text: 'Step ratio',
                 range: [0, 1.5],
                 autorange: false
             }

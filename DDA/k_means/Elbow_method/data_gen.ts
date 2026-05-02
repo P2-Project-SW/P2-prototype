@@ -4,42 +4,50 @@ export {centroids_array, makeData};
 //Manual centroids array
 const centroids_array: number[][] = [
     //[x: normal time, y: normal keys, z: normal step ratio]
-    [0.75, 1, 0.75], // EASY (Index 0)
-    [0.5, 0.5, 0.35], // FLOW (Index 1)
-    [0.25, 0.25, 0.15] // HARD (Index 2)
+    [0.75, 0.75, 0.75], // EASY (Index 0)
+    [0.5, 0.5, 0.5], // FLOW (Index 1)
+    [0.25, 0.25, 0.25] // HARD (Index 2)
 ]
 
-//Data generation (not needed in final iteration)
 function makeData(samples: number, centroid: any[], stdDev: number) {
     let dataPoints: number[][] = [];
-
     if (!centroid) return dataPoints;
 
-    for (let i = 0; i < samples; i++) {
+   
+ function genGaussVariable (variable: number) {
+        let truncatedVariable = Math.trunc(variable * 100) / 100
+        return truncatedVariable;
+    }
 
-        // Box-Muller for 3D (x, y, z)
-        let u1 = Math.random(), u2 = Math.random();
-        let u3 = Math.random(), u4 = Math.random();
+    for (let i = 0; i < samples; i++) {
+        let u1 = Math.random(), u2 = Math.random() || 0.0001; // må ikke ramme nul pga lg(0)=0
+        let u3 = Math.random(), u4 = Math.random() || 0.0001;
+
+        console.log("u1 and u2",u1, u2);
 
         let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
         let z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
         let z2 = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
 
-        let rawX = (centroid[0] + z0 * stdDev).toFixed(2)
-        let rawY = (centroid[1] + z1 * stdDev).toFixed(2)
-        let rawZ = (centroid[2] + z2 * stdDev).toFixed(2)
+        console.log("z0",z0);
 
-        const clamp = (value: number) => {
-            let positive = Math.abs(value); //inverts (no negative)
-            return Math.min(1, Math.max(0, positive)) // bettween 0 and 1
-        }
+        let x = centroid[0] + z0 * stdDev;
+        let y = centroid[1] + z1 * stdDev;
+        let z = centroid[2] + z2 * stdDev;
 
+        //console.log("x", x);
+        let finalx = genGaussVariable(x)
+        let finaly = genGaussVariable(y)
+        let finalz = genGaussVariable(z)
 
-        dataPoints.push([
-            Number(clamp(rawX).toFixed(2)),
-            Number(clamp(rawY).toFixed(2)),
-            Number(clamp(rawZ).toFixed(2))
-        ]);
+        console.log("x,y,z", x,y,z);
+        console.log("final x,y,z", finalx, finaly, finalz);
+
+       dataPoints.push([
+        finalx,
+        finaly,
+        finalz
+       ])
     }
     return dataPoints;
 }

@@ -1,4 +1,5 @@
 import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer };
 const WALL = 0;
 const END = 3;
@@ -104,6 +105,7 @@ function movePlayerPosition(map, y, x) {
     div.style.position = "absolute";
     //add the div to the mapContainer
     mapContainer.appendChild(div);
+    keyPosition(map, y, x);
 }
 window.movePlayer = movePlayer;
 //# sourceMappingURL=PlayerMovement.js.map

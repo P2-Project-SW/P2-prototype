@@ -118,4 +118,5 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     mapContainer.appendChild(div);
 }
 
+
 (window as any).movePlayer = movePlayer;

@@ -3,11 +3,12 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "build:browser": "esbuild DDA/k_means/Elbow_method/elbow_method.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "build:browser": "esbuild DDA/k_means/k_means.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
     "dev": "npm run build:browser"
   },
   "dependencies": {
     "plotly.js-dist": "^3.5.0",
+    "plotly.js-dist-min": "^3.5.1",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

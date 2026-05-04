@@ -7,14 +7,15 @@ const elbowGraph = document.getElementById("elbowGraph");
 const dataGraph = document.getElementById("dataGraph");
 //elbow data
 const boxMullerData = [
-    makeData(100, centroids_array[0], 0.05),
-    makeData(100, centroids_array[1], 0.05),
-    makeData(100, centroids_array[2], 0.05),
+    makeData(100, centroids_array[0], 0.10),
+    makeData(100, centroids_array[1], 0.10),
+    makeData(100, centroids_array[2], 0.10),
 ];
+//makeData(10, centroids_array[0], 0.10)
 //console.log("raw data ",boxMullerData);
 const flattenedData = boxMullerData.flat();
 //console.log("Flattened Data:", flattenedData);
-let k_range = Array.from({ length: 7 }, (a, i) => i + 1);
+let k_range = Array.from({ length: 9 }, (a, i) => i + 1);
 function manualKMeans(data, k) {
     let centroids = data.slice(0, k);
     let wcss = 0;

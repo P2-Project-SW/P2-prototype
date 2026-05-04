@@ -1,20 +1,26 @@
 // @ts-nocheck 
-declare var Plotly: any;
-declare var rxjs: any;
+import Plotly from 'plotly.js-dist-min';
+import { interval } from 'rxjs';
+import { startWith, map, pairwise, tap, take } from 'rxjs/operators';
 
-const { interval } = rxjs;
-const { startWith, map, pairwise, tap, take } = rxjs.operators;
+import { centroids_array, makeData } from './Elbow_method/data_gen.js'
 
- import {centroids_array, makeData} from './Elbow_method/data_gen.js'
 
+ //TODO: lave updater funktion og assign k = elbow method
 
 //window.onload = () => {
 
-    //plotly div
-    const TESTER = document.getElementById('tester');
+//plotly div
+const TESTER = document.getElementById('tester');
 
 
-    const PPI_array = makeData(10, centroids_array[1]!, 0.10);
+const PPI_arrays = [
+    makeData(100, centroids_array[0]!, 0.10),
+    makeData(100, centroids_array[1]!, 0.10),
+    makeData(100, centroids_array[2]!, 0.10),
+]
+
+const PPI_array = PPI_arrays.flat();
 
 
 //EUCLIDIAN DISTANCE
@@ -130,12 +136,12 @@ EuclideanDistance:
             mode: 'markers',
             type: 'scatter3d',
             name: name,
-            marker: { size: 6, color: color, opacity: 0.5 }
+            marker: { size: 6, color: color, opacity: 0.3 }
         }
 
     }
     
-    //const PPI_trace = createTrace(PPI_array, 'random', 'gray')
+    const PPI_static = createTrace(PPI_array, 'Data points', 'gray')
 
     const centroidColors = ['red', 'blue', 'green']
 
@@ -146,12 +152,12 @@ EuclideanDistance:
         HARD: [0.25, 0.25, 0.15]
     }
 
-    const PPI_trace = {
+    const PPI_dynamic = {
         x: [], y: [], z: [],
         mode: 'markers',
         type: 'scatter3d',
-        name: 'Player Data',
-        marker: { size: 4, color: [], opacity: 0.7 }
+        name: 'Data points',
+        marker: { size: 5, color: [], opacity: 0.5 }
     }
 
     var centroid1 = {
@@ -188,39 +194,39 @@ EuclideanDistance:
     }
 
 //DATA OF PLOTLY
-    var data = [centroid1, centroid2, centroid3, PPI_trace];
+    var data = [centroid1, centroid2, centroid3, PPI_dynamic, PPI_static ];
 
     //layout of plot
-    const layout = {
-        title: 'k-means centroids',
-        scene: {
-            xaxis: {
-                Text: 'AVG time',
-                range: [0, 1.5],
-                autorange: false // no zoom
-            },
-            yaxis: {
-                Text: 'Keys',
-                range: [0, 1.5],
-                autorange: false
-            },
-            zaxis: {
-                Text: 'Step ratio',
-                range: [0, 1.5],
-                autorange: false
-            }
-            //dragmode: 'turntable',
-            //hovermode: false
+const layout = {
+    title: 'k-means elbow method',
+    scene: {
+        xaxis: {
+            title: 'Time',
+            range: [0, 1.2],
+            autorange: false // no zoom
         },
-        margin: { l: 0, r: 0, b: 0, t: 40 }
-    };
+        yaxis: {
+            title: 'Keys',
+            range: [0, 1.2],
+            autorange: false
+        },
+        zaxis: {
+            title: 'Step ratio',
+            range: [0, 1.2],
+            autorange: false
+        },
+        dragmode: 'turntable',
+        //hovermode: false
+    },
+    margin: { l: 0, r: 0, b: 0, t: 40 }
+};
 
     //PLOTLY
     if (TESTER) {
         if (data && data.length > 0) {
             setTimeout(() => {
                 Plotly.newPlot(TESTER, data, layout);
-                PPI_stream(PPI_array, 3000);
+                PPI_stream(PPI_array, 1000);
             }, 100)
         }
     } else {

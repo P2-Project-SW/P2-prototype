@@ -4,6 +4,7 @@ import { interval } from 'rxjs';
 import { startWith, map, pairwise, tap, take } from 'rxjs/operators';
 
 import { centroids_array, makeData } from './Elbow_method/data_gen.js'
+import { optimalK } from './Elbow_method/elbow_method.js';
 
 
  //TODO: lave updater funktion og assign k = elbow method
@@ -15,12 +16,11 @@ const TESTER = document.getElementById('tester');
 
 
 const PPI_arrays = [
-    makeData(100, centroids_array[0]!, 0.10),
-    makeData(100, centroids_array[1]!, 0.10),
-    makeData(100, centroids_array[2]!, 0.10),
+    makeData(12, centroids_array[0]!, 0.10),
+    makeData(12, centroids_array[1]!, 0.10),
+    makeData(12, centroids_array[2]!, 0.10),
 ]
 
-const PPI_array = PPI_arrays.flat();
 
 
 //EUCLIDIAN DISTANCE
@@ -74,17 +74,20 @@ EuclideanDistance:
             }, [3]);  // PPI_trace er trace 3
 
             //TODO: Last step i k-means: sæt funktionen ind der modtager den mindste distance og cluster til decision tree
-            console.log(`Ny vektor tilhører ${kMeansResult.newDifficultyIndex}`);
-            console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
+            //console.log(`Ny vektor tilhører ${kMeansResult.newDifficultyIndex}`);
+            //console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
 
         })   
     }
+
 
     
     let lastDifficultyIndex = 1; //starter i FLOW
 
     //Afstand fra alle centroids til latestVector
-    function euclideanDistance (newVector: number[]) {
+    export function euclideanDistance (newVector: number[]) {
+
+
         //regner alle distancer mellem centroids og nyeste datapunkt
         const distances = centroids_array.map((centroid) => {
             return Math.hypot(...centroid.map((value, i) => value - newVector[i]!));
@@ -93,6 +96,7 @@ EuclideanDistance:
         //Finder den mindste distance og assigner index
         const minDistance = Math.min(...distances);
         const newDifficultyIndex = distances.indexOf(minDistance);
+
 
         //Sætter nuværende sværhedsgrad til at være centroid med den mindste distance
         const lastDist = distances[lastDifficultyIndex]!;
@@ -116,6 +120,13 @@ EuclideanDistance:
         }
     }
 
+/*
+    function updateCentroids (array: number [][]) {
+
+        if (array = )
+        console.log("length of flat array:", PPI_array.length); 
+    }
+*/
 
     let testEucArray: number[][] = [
         [0.70, 0.90, 0.70], // 1. Bliver EASY
@@ -194,7 +205,7 @@ EuclideanDistance:
     }
 
 //DATA OF PLOTLY
-    var data = [centroid1, centroid2, centroid3, PPI_dynamic, PPI_static ];
+    var data = [centroid1, centroid2, centroid3, PPI_dynamic ];
 
     //layout of plot
 const layout = {

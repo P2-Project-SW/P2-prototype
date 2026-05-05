@@ -23,13 +23,13 @@ function makeData(samples: number, centroid: any[], stdDev: number) {
         let u1 = Math.random(), u2 = Math.random() || 0.0001; // må ikke ramme nul pga lg(0)=0
         let u3 = Math.random(), u4 = Math.random() || 0.0001;
 
-        console.log("u1 and u2",u1, u2);
+        //console.log("u1 and u2",u1, u2);
 
         let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
         let z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
         let z2 = Math.sqrt(-2.0 * Math.log(u3)) * Math.cos(2.0 * Math.PI * u4);
 
-        console.log("z0",z0);
+        //console.log("z0",z0);
 
         let x = centroid[0] + z0 * stdDev;
         let y = centroid[1] + z1 * stdDev;
@@ -40,8 +40,8 @@ function makeData(samples: number, centroid: any[], stdDev: number) {
         let finaly = genGaussVariable(y)
         let finalz = genGaussVariable(z)
 
-        console.log("x,y,z", x,y,z);
-        console.log("final x,y,z", finalx, finaly, finalz);
+        //console.log("x,y,z", x,y,z);
+        //console.log("final x,y,z", finalx, finaly, finalz);
 
        dataPoints.push([
         finalx,

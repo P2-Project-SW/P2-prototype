@@ -4,7 +4,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "build:browser": "esbuild DDA/k_means/k_means.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
-    "dev": "npm run build:browser && python3 -m http.server 8000"
+    "dev": "npm run build:browser"
   },
   "dependencies": {
     "plotly.js-dist": "^3.5.0",
@@ -18,3 +18,5 @@
     "typescript": "^5.0.0"
   }
 }
+
+

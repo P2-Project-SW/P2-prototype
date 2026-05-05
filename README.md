@@ -2,11 +2,13 @@
 This is the git repository for the P2 project prototype.
 
 
-//npm run build -> node.js
-npm run build: browser -> for browser build
+npm run build -> node.js
+npm run dev: browser -> for browser build
 
-gammelt script:  
- "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch"
-  },
+
+svg
+sætte elbow ind i k -> kmeans
+decision tree
+unit testing af k_means og decision tree
+
+Skrive!

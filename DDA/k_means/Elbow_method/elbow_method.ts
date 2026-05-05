@@ -4,6 +4,7 @@ import Plotly from 'plotly.js-dist';
 import { Observable, range } from 'rxjs';   
 
 import { centroids_array, makeData } from './data_gen.js'
+//export type {optimalK};
 
 //plotly divs
 const elbowGraph = document.getElementById("elbowGraph")
@@ -11,9 +12,9 @@ const dataGraph = document.getElementById("dataGraph")
 
 //elbow data
 const boxMullerData = [
-    makeData(100, centroids_array[0]!, 0.10),
-    makeData(100, centroids_array[1]!, 0.10),
-    makeData(100, centroids_array[2]!, 0.10),
+    makeData(12, centroids_array[0]!, 0.10),
+    makeData(12, centroids_array[1]!, 0.10),
+    makeData(12, centroids_array[2]!, 0.10),
 ]
 
 //makeData(10, centroids_array[0], 0.10)

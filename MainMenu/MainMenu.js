@@ -85,6 +85,15 @@ window.addEventListener("click",onMouseClick);
 generatedFireflies();
 animate();
 
-document.querySelector(".play-button").addEventListener("click", function() {
-  window.location.href = "????"; // Tilføj siden vi bruger til at lave selve spillet
-});
+document.addEventListener("DOMContentLoaded", function() {
+     document.querySelector(".play-button").addEventListener("click", function() {
+       window.location.href = "Playpage.html";
+     });
+   });
+
+document.addEventListener("DOMContentLoaded", function() {
+     document.querySelector(".Home").addEventListener("click", function() {
+       window.location.href = "index.html";
+     });
+   });
+

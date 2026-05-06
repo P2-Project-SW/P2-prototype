@@ -36,7 +36,7 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     for (let y = 1; y < mapHeight - 1; y ++) {
         for (let x = 1; x < mapWidth - 1; x ++) {
             if(map.grid[y]![x] !== WALL) {
-                validPositions.push({ y : y, x : x});
+                validPositions.push({ y : y, x : x });
             }
         }
     }

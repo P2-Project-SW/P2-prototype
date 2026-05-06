@@ -1,4 +1,5 @@
 export type Point = { x: number; y: number };
+export { aStar };
 
 function key(p: Point): string {
     return `${p.x},${p.y}`;
@@ -55,7 +56,7 @@ function reconstructPath(
     return path.reverse();
 }
 
-export function aStar(
+ function aStar(
     grid: number[][],
     start: Point,
     goal: Point

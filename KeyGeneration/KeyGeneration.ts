@@ -4,39 +4,23 @@ export { keyPosition }
 //move this to another file
 //import { keyPosition } from "../KeyGeneration/KeyGeneration.js"
 
-function keyPosition() {
+function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : number) {
     //create new div
-    const svg = document.createElement("svg");
-    svg.classList.add("key");
-    svg.id = ("keyId");
+    const div = document.createElement("div");
+    div.classList.add("svgKey");
+    div.id = ("svgContainer");
 
+    //assign svgData to variable
     const svgCode = `<svg width="10" height="10" id="keyCircle"><circle cx="5" cy="5" r="4" fill="yellow" />
     </svg>`
 
+    //add svgData to the created div
     const svgContainer = document.getElementById('svgContainer');
     if(svgContainer === null) return;
     svgContainer.innerHTML = svgCode;
-    
-    
-
-        //remove div
-    /*if(x > 0 && y > 0) {
-        const currentDiv = document.getElementById("key");
-        currentDiv!.remove();
-    }*/
-
-    /*
-    //create new div
-    const svg = document.createElement("svg");
-    svg.classList.add("key");
-    svg.id = ("keyId");
-    */
 
     const mapContainer = document.getElementById("map"); //gets map from id
     if(mapContainer === null) return;
-
-    /*
-    svg.innerHTML = ""; //make div empthy
 
     let validY : number[] = [];
     let validX : number[] = [];
@@ -51,6 +35,7 @@ function keyPosition() {
     for (let x = 1; x < mapWidth - 1; x += 2) {
         validX.push(x);
     }
+
     //find random position in map array
     let indexSy : number = Math.floor((Math.random() * validY.length));
     let indexSx : number = Math.floor((Math.random() * validX.length));
@@ -65,22 +50,28 @@ function keyPosition() {
     const TILE_SIZE = getTileSize(map);
 
     //ad svg style in HTML
-    svg.style.width = `${TILE_SIZE}px`;
-    svg.style.height = `${TILE_SIZE}px`;
-    svg.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
-    svg.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
-    svg.style.backgroundColor = "d4b500"; 
-    svg.style.borderRadius = "3px";
-    svg.style.position = "absolute";
+    div.style.width = `${TILE_SIZE}px`;
+    div.style.height = `${TILE_SIZE}px`;
+    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
+    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
+    div.style.backgroundColor = "d4b500"; 
+    div.style.borderRadius = "3px";
+    div.style.position = "absolute";
 
     //add the svg to the mapContainer
-    mapContainer.appendChild(svg);
-    */
+    mapContainer.appendChild(div);
+    
 }
-keyPosition();
+
+function callKeyPosition() {
+    const map = getActiveMap();
+    if (map === null) return;
+
+    keyPosition(map, );
+}
+
 
 /*
-map: (typeof maps) [keyof typeof maps], y : number, x : number
     <svg width="10" height="10" id="keyCircle">
         <circle cx="5" cy="5" r="4" fill="yellow" />
     </svg>

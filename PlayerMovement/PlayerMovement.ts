@@ -1,5 +1,4 @@
 import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js"
-import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer }
 
 const WALL = 0;
@@ -19,6 +18,10 @@ enum directions {
 }
 
 function movePlayer(direction : number) {
+    //get the current map from function : getActiveMap
+    const map = getActiveMap();
+    if (map === null) return;
+
     //moves the coordinates of the game piece
     if(direction === directions.UP) {
         nx = x;
@@ -36,10 +39,6 @@ function movePlayer(direction : number) {
         nx = x;
         ny = y;
     }
-
-    //get the current map from function : getActiveMap
-    const map = getActiveMap();
-    if (map === null) return;
 
     //if player hits a wall, then coordinates does not change
     if(map.grid[ny]![nx] === WALL) {
@@ -114,9 +113,9 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     div.style.backgroundColor = "aqua"; 
     div.style.borderRadius = "3px";
     div.style.position = "absolute";
-
     //add the div to the mapContainer
     mapContainer.appendChild(div);
 }
+
 
 (window as any).movePlayer = movePlayer;

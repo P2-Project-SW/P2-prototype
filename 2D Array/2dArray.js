@@ -1,5 +1,6 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js";
+import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { maps, getTileSize, getActiveMap };
 /*
 // 2D Array Creator
@@ -88,6 +89,7 @@ function renderMap(map) {
             container.appendChild(div);
         });
     });
+    keyPosition(map, 0, 0);
     movePlayerPosition(map, 0, 0);
 }
 // DDA logic?? Not done

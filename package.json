@@ -1,3 +1,19 @@
 {
-  "type": "module"
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "build:browser": "esbuild DDA/k_means/k_means.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
+  },
+  "dependencies": {
+    "plotly.js-dist": "^3.5.0",
+    "plotly.js-dist-min": "^3.5.1",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/plotly.js": "^3.0.10",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.0.0"
+  }
 }

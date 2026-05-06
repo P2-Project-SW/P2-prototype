@@ -16,15 +16,6 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     div.classList.add("svgKey");
     div.id = ("svgContainer");
 
-    //assign svgData to variable
-    //const svgCode = `<svg width="10" height="10" id="keyCircle"><circle cx="5" cy="5" r="4" fill="yellow" />
-    //</svg>`
-
-    //add svgData to the created div
-    //const svgContainer = document.getElementById('svgContainer');
-    //if(svgContainer === null) return;
-    //svgContainer.innerHTML = svgCode;
-
     const mapContainer = document.getElementById("map"); //gets map from id
     if(mapContainer === null) return;
 
@@ -61,7 +52,6 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     //add the svg to the mapContainer
     mapContainer.appendChild(div);
 }
-
 
 //in case we need to call it in another function
 (window as any).keyPosition = keyPosition;

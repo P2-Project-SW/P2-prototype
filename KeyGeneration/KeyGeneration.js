@@ -12,20 +12,12 @@ function keyPosition(map, y, x) {
     const div = document.createElement("div");
     div.classList.add("svgKey");
     div.id = ("svgContainer");
-    //assign svgData to variable
-    //const svgCode = `<svg width="10" height="10" id="keyCircle"><circle cx="5" cy="5" r="4" fill="yellow" />
-    //</svg>`
-    //add svgData to the created div
-    //const svgContainer = document.getElementById('svgContainer');
-    //if(svgContainer === null) return;
-    //svgContainer.innerHTML = svgCode;
     const mapContainer = document.getElementById("map"); //gets map from id
     if (mapContainer === null)
         return;
     const mapHeight = map.grid.length;
     const mapWidth = map.grid[0].length;
     let validPositions = [];
-    //only odd coordinates are used as actual maze cells
     for (let y = 1; y < mapHeight - 1; y++) {
         for (let x = 1; x < mapWidth - 1; x++) {
             if (map.grid[y][x] !== WALL) {

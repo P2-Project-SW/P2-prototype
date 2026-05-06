@@ -62,7 +62,7 @@ function movePlayer(direction) {
             y = 1;
             const currentDiv = document.getElementById("playerId");
             currentDiv.remove();
-            movePlayerPosition(map, y, x);
+            movePlayerPosition(map, 7, 3);
         }, 200);
     }
 }
@@ -105,7 +105,6 @@ function movePlayerPosition(map, y, x) {
     div.style.position = "absolute";
     //add the div to the mapContainer
     mapContainer.appendChild(div);
-    keyPosition(map, y, x);
 }
 window.movePlayer = movePlayer;
 //# sourceMappingURL=PlayerMovement.js.map

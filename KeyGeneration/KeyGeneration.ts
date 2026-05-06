@@ -4,23 +4,39 @@ export { keyPosition }
 //move this to another file
 //import { keyPosition } from "../KeyGeneration/KeyGeneration.js"
 
-function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : number) {
-    //remove div
+function keyPosition() {
+    //create new div
+    const svg = document.createElement("svg");
+    svg.classList.add("key");
+    svg.id = ("keyId");
+
+    const svgCode = `<svg width="10" height="10" id="keyCircle"><circle cx="5" cy="5" r="4" fill="yellow" />
+    </svg>`
+
+    const svgContainer = document.getElementById('svgContainer');
+    if(svgContainer === null) return;
+    svgContainer.innerHTML = svgCode;
+    
+    
+
+        //remove div
     /*if(x > 0 && y > 0) {
         const currentDiv = document.getElementById("key");
         currentDiv!.remove();
     }*/
 
+    /*
     //create new div
-    const div = document.createElement("div");
-    div.classList.add("key");
-    div.id = ("keyId");
+    const svg = document.createElement("svg");
+    svg.classList.add("key");
+    svg.id = ("keyId");
+    */
 
     const mapContainer = document.getElementById("map"); //gets map from id
-    //console.log("container:", container);
     if(mapContainer === null) return;
 
-    div.innerHTML = ""; //make div empthy
+    /*
+    svg.innerHTML = ""; //make div empthy
 
     let validY : number[] = [];
     let validX : number[] = [];
@@ -48,17 +64,25 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     const mapStylePadding = 10; //edge around the map
     const TILE_SIZE = getTileSize(map);
 
-    //ad div style in HTML
-    div.style.width = `${TILE_SIZE}px`;
-    div.style.height = `${TILE_SIZE}px`;
-    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
-    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
-    div.style.backgroundColor = "d4b500"; 
-    div.style.borderRadius = "3px";
-    div.style.position = "absolute";
+    //ad svg style in HTML
+    svg.style.width = `${TILE_SIZE}px`;
+    svg.style.height = `${TILE_SIZE}px`;
+    svg.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
+    svg.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
+    svg.style.backgroundColor = "d4b500"; 
+    svg.style.borderRadius = "3px";
+    svg.style.position = "absolute";
 
-    //add the div to the mapContainer
-    mapContainer.appendChild(div);
+    //add the svg to the mapContainer
+    mapContainer.appendChild(svg);
+    */
 }
+keyPosition();
 
+/*
+map: (typeof maps) [keyof typeof maps], y : number, x : number
+    <svg width="10" height="10" id="keyCircle">
+        <circle cx="5" cy="5" r="4" fill="yellow" />
+    </svg>
+*/
 (window as any).keyPosition = keyPosition;

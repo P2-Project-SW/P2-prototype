@@ -1,4 +1,5 @@
 import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js"
+import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer }
 
 const WALL = 0;
@@ -65,7 +66,7 @@ function movePlayer(direction : number) {
 
             const currentDiv = document.getElementById("playerId");
             currentDiv!.remove();
-            movePlayerPosition(map, y, x);
+            movePlayerPosition(map, 7, 3);
         }, 200)
 
     }
@@ -117,6 +118,5 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     //add the div to the mapContainer
     mapContainer.appendChild(div);
 }
-
 
 (window as any).movePlayer = movePlayer;

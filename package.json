@@ -9,7 +9,8 @@
   "dependencies": {
     "plotly.js-dist": "^3.5.0",
     "plotly.js-dist-min": "^3.5.1",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

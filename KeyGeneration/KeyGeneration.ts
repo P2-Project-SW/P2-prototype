@@ -1,3 +1,4 @@
+/*
 import { getActiveMap, getTileSize, maps } from "../2D Array/2dArray.js";
 export { keyPosition }
 
@@ -75,5 +76,6 @@ function callKeyPosition() {
     <svg width="10" height="10" id="keyCircle">
         <circle cx="5" cy="5" r="4" fill="yellow" />
     </svg>
-*/
+
 (window as any).keyPosition = keyPosition;
+*/

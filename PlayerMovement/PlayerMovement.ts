@@ -1,5 +1,5 @@
 import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js"
-import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
+//import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer }
 
 const WALL = 0;

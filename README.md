@@ -6,6 +6,8 @@ npm run build -> node.js
 npm run dev: browser -> for browser build
 
 
+
+
 svg
 sætte elbow ind i k -> kmeans
 decision tree

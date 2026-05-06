@@ -1,8 +1,6 @@
 {
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
     "build:browser": "esbuild DDA/k_means/k_means.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
     "dev": "npm run build:browser"
   },

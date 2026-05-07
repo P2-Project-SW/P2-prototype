@@ -3,13 +3,13 @@ import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
 
-export { movePlayerPosition, movePlayer, resetPlayerState };
+export { movePlayerPosition, movePlayer };
 
 const WALL = 0;
 const END = 3;
 const START = 2;
 
-let y = 1; 
+let y = 1; //player begins 1 tile down from the edge
 let x = 0;
 let nx = 0;
 let ny = 0;
@@ -34,6 +34,10 @@ function computePath(grid: number[][], x: number, y: number): Point[] {
 }
 
 function movePlayer(direction: number) {
+    //get the current map from function : getActiveMap
+    const map = getActiveMap();
+    if (map === null) return;
+
     if (direction === directions.UP) {
         nx = x;
         ny = y - 1;
@@ -51,19 +55,16 @@ function movePlayer(direction: number) {
         ny = y;
     }
 
-    const map = getActiveMap();
-    if (map === null) return;
-
-    if (map.grid[ny]![nx] === WALL) {
-        nx = x;
-        ny = y;
-    } else if (map.grid[ny]![nx] === START) {
+    //check bounds
+    const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0]!.length;
+    
+    if(!inBounds || map.grid[ny]![nx] === WALL || map.grid[ny]![nx] === START) {
         nx = x;
         ny = y;
     }
-
-    movePlayerPosition(map, ny, nx);
-
+ 
+    movePlayerPosition(map, ny, nx)
+    //update x and y
     x = nx;
     y = ny;
 
@@ -74,23 +75,22 @@ function movePlayer(direction: number) {
     if (map.grid[ny]![nx] === END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
-
             x = 0;
             y = 1;
 
             const currentDiv = document.getElementById("playerId");
             currentDiv!.remove();
-            movePlayerPosition(map, y, x);
-        }, 200);
+            movePlayerPosition(map, 1, 0);
+        }, 200)
+
     }
 }
 
-function movePlayerPosition(map: (typeof maps)[keyof typeof maps], y: number, x: number) {
-        
-        const currentDiv = document.getElementById("playerId");
-        currentDiv?.remove();
+function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, x : number) {
+    const currentDiv = document.getElementById("playerId");
+    currentDiv?.remove();
     
-
+    //create new div
     const div = document.createElement("div");
     div.classList.add("player");
     div.id = "playerId";
@@ -98,7 +98,19 @@ function movePlayerPosition(map: (typeof maps)[keyof typeof maps], y: number, x:
     const mapContainer = document.getElementById("map");
     if (mapContainer === null) return;
 
-    div.innerHTML = "";
+    div.innerHTML = ""; //make div empthy
+
+    //find start position in map array (value = 2)
+    if(x === 0 && y === 0) {
+        for(let i = 0; i < map.grid.length; i++) {
+            for(let j = 0; j < map.grid[0]!.length; j++) {
+                if(map.grid[i]![j] === START) {
+                    y = i;
+                    x = j;
+                }
+            }
+        }
+    }
 
     const mapStyleGap = 2;
     const mapStylePadding = 10;
@@ -111,9 +123,11 @@ function movePlayerPosition(map: (typeof maps)[keyof typeof maps], y: number, x:
     div.style.backgroundColor = "aqua";
     div.style.borderRadius = "3px";
     div.style.position = "absolute";
-
+    
+    //add the div to the mapContainer
     mapContainer.appendChild(div);
 }
+
 
 (window as any).movePlayer = movePlayer;
 

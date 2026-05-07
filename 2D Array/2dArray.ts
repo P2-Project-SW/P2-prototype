@@ -1,5 +1,6 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
-import { movePlayerPosition, resetPlayerState } from "../PlayerMovement/PlayerMovement.js"
+import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
+import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { maps, getTileSize, getActiveMap };
 
 /*
@@ -106,8 +107,8 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    resetPlayerState();
-    movePlayerPosition(map, 1, 0);
+    keyPosition(map);
+    movePlayerPosition(map, 0, 0);
 }
 
 // DDA logic?? Not done
@@ -115,7 +116,6 @@ function ChooseMapByADD() : MapName {
 
     return 'large';
 }
-
 
 // Example
 const chosen = ChooseMapByADD();

@@ -1,3 +1,2 @@
-export { recursiveBacktracker };
-declare function recursiveBacktracker(sizeOfMap: number): number[][];
+export {};
 //# sourceMappingURL=RecursiveBacktracking.d.ts.map

@@ -1,5 +1,4 @@
 import { getTileSize, maps, getActiveMap } from "../2D_Array/2dArray.js"
-//import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer }
 
 const WALL = 0;
@@ -19,6 +18,10 @@ enum directions {
 }
 
 function movePlayer(direction : number) {
+    //get the current map from function : getActiveMap
+    const map = getActiveMap();
+    if (map === null) return;
+
     //moves the coordinates of the game piece
     if(direction === directions.UP) {
         nx = x;
@@ -37,21 +40,15 @@ function movePlayer(direction : number) {
         ny = y;
     }
 
-    //get the current map from function : getActiveMap
-    const map = getActiveMap();
-    if (map === null) return;
-
-    //if player hits a wall, then coordinates does not change
-    if(map.grid[ny]![nx] === WALL) {
-        nx = x;
-        ny = y;
-    } else if(map.grid[ny]![nx] === START) {
+    //check bounds
+    const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0]!.length;
+    
+    if(!inBounds || map.grid[ny]![nx] === WALL || map.grid[ny]![nx] === START) {
         nx = x;
         ny = y;
     }
-
-    movePlayerPosition(map, ny, nx);
-
+ 
+    movePlayerPosition(map, ny, nx)
     //update x and y
     x = nx;
     y = ny;
@@ -60,25 +57,21 @@ function movePlayer(direction : number) {
     if(map.grid[ny]![nx] === END) {
         setTimeout(()=>{
             alert("You have won!\nThat's amazing!");
-
             x = 0;
             y = 1;
 
             const currentDiv = document.getElementById("playerId");
             currentDiv!.remove();
-            movePlayerPosition(map, 7, 3);
+            movePlayerPosition(map, 1, 0);
         }, 200)
 
     }
 }
 
 function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, x : number) {
-    //if player is not at beginning, then remove earlier div
-    if(x > 0 && y > 0) {
-        const currentDiv = document.getElementById("playerId");
-        currentDiv!.remove();
-    }
-
+    const currentDiv = document.getElementById("playerId");
+    currentDiv?.remove();
+    
     //create new div
     const div = document.createElement("div");
     div.classList.add("player");
@@ -94,7 +87,7 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     if(x === 0 && y === 0) {
         for(let i = 0; i < map.grid.length; i++) {
             for(let j = 0; j < map.grid[0]!.length; j++) {
-                if(map.grid[i]![j] === 2) {
+                if(map.grid[i]![j] === START) {
                     y = i;
                     x = j;
                 }
@@ -114,9 +107,10 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     div.style.backgroundColor = "aqua"; 
     div.style.borderRadius = "3px";
     div.style.position = "absolute";
-
+    
     //add the div to the mapContainer
     mapContainer.appendChild(div);
 }
+
 
 (window as any).movePlayer = movePlayer;

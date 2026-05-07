@@ -116,13 +116,21 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     const mapStylePadding = 10;
     const TILE_SIZE = getTileSize(map);
 
+    //style of div
     div.style.width = `${TILE_SIZE}px`;
     div.style.height = `${TILE_SIZE}px`;
     div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`;
     div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`;
-    div.style.backgroundColor = "aqua";
-    div.style.borderRadius = "3px";
+    //div.style.backgroundColor = "aqua";
+    //div.style.borderRadius = "3px";
     div.style.position = "absolute";
+
+    //style of game piece
+    div.style.fontSize = `${TILE_SIZE * 0.8}px`;
+    div.style.display = "flex";
+    div.style.alignItems = "center";
+    div.style.justifyContent = "center";
+    div.innerHTML = `🧝`;
     
     //add the div to the mapContainer
     mapContainer.appendChild(div);

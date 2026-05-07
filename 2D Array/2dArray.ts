@@ -26,8 +26,9 @@ const maps = {
 };
 
 type MapName = keyof typeof maps;
+console.log("Gitignore test");
 
-
+// Test if gitignore worked
 //Bounds validation from maps
 function isInBounds(map : (typeof maps)[keyof typeof maps], row : number, col : number) : boolean {
     const rows = map.grid.length;

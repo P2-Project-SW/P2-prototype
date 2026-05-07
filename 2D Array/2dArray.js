@@ -89,7 +89,7 @@ function renderMap(map) {
             container.appendChild(div);
         });
     });
-    keyPosition(map, 0, 0);
+    keyPosition(map);
     movePlayerPosition(map, 0, 0);
 }
 // DDA logic?? Not done

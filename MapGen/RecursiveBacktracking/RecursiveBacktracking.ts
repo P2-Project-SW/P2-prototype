@@ -1,4 +1,4 @@
-import {create2D} from "../../2D Array/create2D.js"     //creates a 2D-array
+import {create2D} from "../../2D_Array/create2D.js"     //creates a 2D-array
 export {recursiveBacktracker}
 
 enum direction {

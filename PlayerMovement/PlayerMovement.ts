@@ -1,4 +1,4 @@
-import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js"
+import { getTileSize, maps, getActiveMap } from "../2D_Array/2dArray.js"
 //import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { movePlayerPosition, movePlayer }
 

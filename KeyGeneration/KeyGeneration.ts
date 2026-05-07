@@ -1,9 +1,9 @@
 import { getTileSize, maps } from "../2D Array/2dArray.js";
 export { keyPosition }
 
-const WALL = 2;
+const WALL = 0;
 
-function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : number) {
+function keyPosition(map: (typeof maps) [keyof typeof maps]) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");
     if (currentDiv) currentDiv!.remove();
@@ -19,19 +19,17 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     const mapHeight : number = map.grid.length;
     const mapWidth : number = map.grid[0]!.length;
 
-    let validPositions: { y : number, x : number}[] = [];
+    const validPositions: { y : number, x : number}[] = [];
 
-    for (let y = 1; y < mapHeight - 1; y ++) {
-        for (let x = 1; x < mapWidth - 1; x ++) {
+    for (let y = 1; y < mapHeight - 1; y++) {
+        for (let x = 1; x < mapWidth - 1; x++) {
             if(map.grid[y]![x] !== WALL) {
                 validPositions.push({ y : y, x : x });
             }
         }
     }
 
-    const pick = validPositions[Math.floor(Math.random() * validPositions.length)];
-    y = pick!.y;
-    x = pick!.x;
+    const pick = validPositions[Math.floor(Math.random() * validPositions.length)]!;
 
     const mapStyleGap = 2; //gap between cells
     const mapStylePadding = 10; //edge around the map
@@ -40,11 +38,14 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], y : number, x : num
     //ad svg style in HTML
     div.style.width = `${TILE_SIZE}px`;
     div.style.height = `${TILE_SIZE}px`;
-    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
-    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
-    div.style.backgroundColor = "yellow"; 
-    div.style.borderRadius = "20px";
+    div.style.top = `${TILE_SIZE * pick.y + pick.y * mapStyleGap + mapStylePadding}px`; //calculates the position : y
+    div.style.left = `${TILE_SIZE * pick.x + pick.x * mapStyleGap + mapStylePadding}px`; //calculates the position : x
     div.style.position = "absolute";
+    div.style.fontSize = `${TILE_SIZE * 0.8}px`;
+    div.style.display = "flex";
+    div.style.alignItems = "center";
+    div.style.justifyContent = "center";
+    div.innerHTML = `🗝️`;
 
     //add the svg to the mapContainer
     mapContainer.appendChild(div);

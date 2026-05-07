@@ -40,12 +40,9 @@ function movePlayer(direction) {
         nx = x;
         ny = y;
     }
-    //if player hits a wall, then coordinates does not change
-    if (map.grid[ny][nx] === WALL) {
-        nx = x;
-        ny = y;
-    }
-    else if (map.grid[ny][nx] === START) {
+    //check bounds
+    const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0].length;
+    if (!inBounds || map.grid[ny][nx] === WALL || map.grid[ny][nx] === START) {
         nx = x;
         ny = y;
     }
@@ -61,16 +58,13 @@ function movePlayer(direction) {
             y = 1;
             const currentDiv = document.getElementById("playerId");
             currentDiv.remove();
-            movePlayerPosition(map, 7, 3);
+            movePlayerPosition(map, 1, 0);
         }, 200);
     }
 }
 function movePlayerPosition(map, y, x) {
-    //if player is not at beginning, then remove earlier div
-    if (x > 0 && y > 0) {
-        const currentDiv = document.getElementById("playerId");
-        currentDiv.remove();
-    }
+    const currentDiv = document.getElementById("playerId");
+    currentDiv?.remove();
     //create new div
     const div = document.createElement("div");
     div.classList.add("player");
@@ -84,7 +78,7 @@ function movePlayerPosition(map, y, x) {
     if (x === 0 && y === 0) {
         for (let i = 0; i < map.grid.length; i++) {
             for (let j = 0; j < map.grid[0].length; j++) {
-                if (map.grid[i][j] === 2) {
+                if (map.grid[i][j] === START) {
                     y = i;
                     x = j;
                 }

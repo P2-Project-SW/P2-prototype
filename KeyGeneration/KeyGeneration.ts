@@ -3,7 +3,7 @@ export { keyPosition }
 
 const WALL = 0;
 
-function keyPosition(map: (typeof maps) [keyof typeof maps]) {
+function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");
     if (currentDiv) currentDiv!.remove();
@@ -20,6 +20,23 @@ function keyPosition(map: (typeof maps) [keyof typeof maps]) {
     const mapWidth : number = map.grid[0]!.length;
 
     const validPositions: { y : number, x : number}[] = [];
+
+    let easyRange = 8;
+    let right = playerX + easyRange;
+    let left = playerX - easyRange;
+    let up = playerY - easyRange;
+    let down = playerY + easyRange;
+
+    let startPosition = map.grid[playerY]![playerX];
+
+    for(let i = 0; i < easyRange; i++) {
+        if(map.grid[up]![playerX] !== WALL) {
+                validPositions.push({ y : up, x : playerX });
+        }
+        up += 1;
+    }
+
+    if(map.grid[left]![playerY])
 
     for (let y = 1; y < mapHeight - 1; y++) {
         for (let x = 1; x < mapWidth - 1; x++) {

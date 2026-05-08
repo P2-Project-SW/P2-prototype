@@ -107,7 +107,7 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    keyPosition(map);
+    keyPosition(map, 0, 1);
     movePlayerPosition(map, 0, 0);
 }
 

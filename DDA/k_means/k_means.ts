@@ -1,7 +1,7 @@
 // @ts-nocheck 
 import Plotly from 'plotly.js-dist-min';
-import { interval } from 'rxjs';
-import { startWith, map, pairwise, tap, take } from 'rxjs/operators';
+import { interval, lastValueFrom, Observable } from 'rxjs';
+import { startWith, map, pairwise, tap, take, } from 'rxjs/operators';
 
 import { centroids_array, makeData } from './Elbow_method/data_gen.js'
 import { optimalK } from './Elbow_method/elbow_method.js'; //giver bundle problemer
@@ -43,7 +43,58 @@ EuclideanDistance:
 
 */
 
+    function PPI_stream (array: number[][], period: number) {
+
+        const Stream = interval(period).pipe(
+            take(array.length),
+            map((index: number) => array[index]),
+            startWith([array[0]]), //springer ikke første vector over
+
+            pairwise(),
+            tap((pair: number) => console.log(`O/P of pairwise: ${JSON.stringify(pair)}`)),
+
+            map(([prev, curr]: [number[], number[]]) => {
+            // Beregn forskel (Math.abs inverts to avoid negative numbers)
+                const diffs: number[] = curr.map((value, i) => (Math.abs(value - prev[i]!)).toFixed(3));
+
+                const kMeansResult = euclideanDistance(curr, PPI_array); //skal sendes til euclidian distance funktion
+                const assignColor = centroidColors[kMeansResult.newDifficultyIndex]
+
+                return {
+                    diffs,
+                    latestVector: curr,
+                    previousVector: prev,
+                    assignColor,
+                    difficultyIndex: kMeansResult.newDifficultyIndex
+                };
+
+            })
+        ) 
+        return Stream;
+    }
+
+    let dataStream = PPI_stream(PPI_array, 1000)
+
+    dataStream.subscribe( data => {
+           // console.log(`differens (x, y, z): ${diffs}`);
+
+            //tilføjer data til plotly løbende
+            Plotly.extendTraces('tester', {
+                x: [[data.latestVector[0]]],
+                y: [[data.latestVector[1]]],
+                z: [[data.latestVector[2]]],
+                'marker.color': [[data.assignColor]]
+            }, [3]); //data index 3
+
+            //TODO: Last step i k-means: sæt funktionen ind der modtager den mindste distance og cluster til decision tree
+            console.log(`Ny vektor tilhører ${data.difficultyIndex}`);
+            //console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
+        }) 
+
+/*
     function PPI_stream(array: number[][], period: number) {
+
+        const getVector: number [];
 
         interval(period).pipe(
             take(array.length),
@@ -55,16 +106,16 @@ EuclideanDistance:
 
             map(([prev, curr]: [number[], number[]]) => {
             // Beregn forskel (Math.abs inverts to avoid negative numbers)
-            const diffs = curr.map((value, i) => (Math.abs(value - prev[i]!)).toFixed(3));
+                const diffs = curr.map((value, i) => (Math.abs(value - prev[i]!)).toFixed(3));
 
-             return { diffs, latestVector: curr, previousVector: prev};
+                return { diffs, latestVector: curr, previousVector: prev};
             })
-        ).subscribe(({diffs, latestVector}: {diffs: number[]; latestVector: number[]}) => {
+        ).subscribe(({diffs, latestVector, previousVector}: {diffs: number[]; latestVector: number[], previousVector: number[]}) => {
            // console.log(`differens (x, y, z): ${diffs}`);
 
             const kMeansResult = euclideanDistance(latestVector, PPI_array); //skal sendes til euclidian distance funktion
             const assignColor = centroidColors[kMeansResult.newDifficultyIndex]
-
+            
             //tilføjer data til plotly løbende
             Plotly.extendTraces('tester', {
                 x: [[latestVector[0]]],
@@ -76,13 +127,11 @@ EuclideanDistance:
             //TODO: Last step i k-means: sæt funktionen ind der modtager den mindste distance og cluster til decision tree
             console.log(`Ny vektor tilhører ${kMeansResult.newDifficultyIndex}`);
             //console.log(`Afstand til centroid: ${kMeansResult.distance.toFixed(3)}`);
-
         })   
     }
+        */
 
     let lastDifficultyIndex = 1; //starter i FLOW
-    let centroidsCount: number [] = [0,0,0];
-    let counter: number = 0, arrayCount: number;
 
     //Afstand fra alle centroids til latestVector
     export function euclideanDistance (newVector: number[], array: number [][]) {
@@ -92,32 +141,10 @@ EuclideanDistance:
             return Math.hypot(...centroid.map((value, i) => value - newVector[i]!));
         });
 
-        //Finder den mindste distance og assigner index
+        //Finder den mindste distance og assigner index for sværhedsgrad
         const minDistance = Math.min(...distances);
         const newDifficultyIndex = distances.indexOf(minDistance);
 
-        //Sums up difficulty indexes and checks if it matches with array.length
-        if (newDifficultyIndex !== undefined) {
-            centroidsCount[newDifficultyIndex]++
-            let index = newDifficultyIndex
-            console.log(`Sum of centroid ${index + 1}: is ${centroidsCount[index]}`)
-
-            counter++
-            arrayCount = array.length;
-            //console.log(`counter is ${counter} and array length is ${arrayCount}`);
-
-            if (counter == arrayCount) {
-                //console.log(centroidsCount);
-                return centroidsCount
-            } else if (counter !== arrayCount) {
-                console.log(`Error on centroidsCount: counter is ${counter} and array length is ${arrayCount}`)
-            }
-            
-        } else {
-            console.log("Error, No index assigned");
-        }
-
-        //Sætter nuværende sværhedsgrad til at være centroid med den mindste distance
         const lastDist = distances[lastDifficultyIndex]!;
         const improvementThreshold = 0.05; //buffer
         
@@ -137,6 +164,37 @@ EuclideanDistance:
             distance: minDistance
         }
     }
+
+    let centroidsCount: number [] = [0,0,0]; // easy, flow, hard
+    let counter: number = 0, arrayCount: number;
+
+    function dataSum (newVector: object, array: number [][]) {
+        
+        newVector.latestVector  
+
+        //Sums up data points in each cluster
+        if (DifficultyIndex !== undefined) {
+            centroidsCount[newDifficultyIndex]++
+            let index = newDifficultyIndex
+            console.log(`Sum of centroid ${index + 1}: is ${centroidsCount[index]}`)
+
+            counter++
+            arrayCount = array.length;
+            //console.log(`counter is ${counter} and array length is ${arrayCount}`);
+
+            if (counter == arrayCount) {
+                //console.log(centroidsCount);
+                return centroidsCount
+            } else if (counter !== arrayCount) {
+                console.log(`Error on centroidsCount: counter is ${counter} and array length is ${arrayCount}`)
+            }
+        } else {
+            console.log("Error, No index assigned");
+        }
+
+    }
+
+    dataSum(dataStream)
 
     //tjek at det samlet antal af cluster medlemmer er lig med array.length
     function updateCentroids (array: number [][] ) {

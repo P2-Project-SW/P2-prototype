@@ -3,21 +3,6 @@ import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export { maps, getTileSize, getActiveMap };
 
-/*
-// 2D Array Creator
-function create2D(rows : number, cols : number, value : number = 0) : number[][] {
-    const arr : number[][] = [];
-    for (let r = 0; r < rows; r++) {
-        const row : number[] = []
-        for (let c = 0; c < cols; c++) {
-            row[c] = value;
-        }
-        arr[r] = row;
-    }
-    return arr;
-}
-*/
-
 // Map sizes
 const maps = {
     small:  { grid: recursiveBacktracker(15), active: false },
@@ -107,8 +92,8 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    keyPosition(map, 0, 1);
-    movePlayerPosition(map, 0, 0);
+    keyPosition(map, 1, 0);
+    movePlayerPosition(map, 1, 0);
 }
 
 // DDA logic?? Not done

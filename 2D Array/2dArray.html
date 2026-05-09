@@ -26,6 +26,16 @@
             position: relative;
         }
 
+        .keyScore {
+            background: rgb(1, 15, 43);
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-left: 65px;
+            float: left;
+            position: absolute;
+            font-size:large;
+        }
+
         .cell {
             width: 100%;
             height: 100%;
@@ -40,6 +50,11 @@
 </head>
 
 <body>
+        <div class="keyScore">
+            <p> Keys collected: <br> 
+                <span id="keyScore"> 0 </span> 
+            </p>
+        </div>
 
     <h1>A-Maze-Ing</h1>
 
@@ -52,6 +67,7 @@
 
     <div id="map"></div>
 
+    <!--arrow buttons-->
     <div>
         <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button> <!--UP-->
     </div>
@@ -65,6 +81,16 @@
         <button type="button" class="btn_arrow_controls" onclick="movePlayer(1)"> &darr; </button> <!--DOWN-->
     </div>
 
+    <!--arrow keys-->
+    <script>
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowUp") movePlayer(0);
+        if (event.key === "ArrowDown") movePlayer(1);
+        if (event.key === "ArrowRight") movePlayer(2);
+        if (event.key === "ArrowLeft") movePlayer(3);
+
+    })
+    </script>
     <script>var exports = {};</script>
     <script type="module" src="../dist/2D Array/2dArray.js"></script>
 

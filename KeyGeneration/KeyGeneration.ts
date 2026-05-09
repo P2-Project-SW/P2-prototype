@@ -1,7 +1,9 @@
 import { getTileSize, maps } from "../2D Array/2dArray.js";
 export { keyPosition }
+export let currentKeyPosition = { y : 0, x : 0}
 
 const WALL = 0;
+
 
 function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
@@ -22,31 +24,22 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
     const validPositions: { y : number, x : number}[] = [];
 
     let easyRange = 8;
-    let right = playerX + easyRange;
-    let left = playerX - easyRange;
-    let up = playerY - easyRange;
-    let down = playerY + easyRange;
+    let easyRangeStartY = playerY - easyRange;
+    let easyRangeEndY = playerY + easyRange;
+    let easyRangeStartX = playerX - easyRange;
+    let easyRangeEndX = playerX + easyRange;
 
-    let startPosition = map.grid[playerY]![playerX];
 
-    for(let i = 0; i < easyRange; i++) {
-        if(map.grid[up]![playerX] !== WALL) {
-                validPositions.push({ y : up, x : playerX });
-        }
-        up += 1;
-    }
-
-    if(map.grid[left]![playerY])
-
-    for (let y = 1; y < mapHeight - 1; y++) {
-        for (let x = 1; x < mapWidth - 1; x++) {
-            if(map.grid[y]![x] !== WALL) {
-                validPositions.push({ y : y, x : x });
+    for (let y = easyRangeStartY; y < easyRangeEndY; y++) { //start from - range from the player up to + range from the player (on y axis)
+        for (let x = easyRangeStartX; x < easyRangeEndX; x++) { //start from - range from the player up to + range from the player (on x axis)
+            if(y > 0 && y < mapHeight - 1 && x > 0 && x < mapWidth - 1 && map.grid[y]![x] !== WALL) { //if y and x is inside map and the cell is not a wall
+                validPositions.push({ y : y, x : x }); //push cell position into array
             }
         }
     }
 
-    const pick = validPositions[Math.floor(Math.random() * validPositions.length)]!;
+    if(validPositions.length === 0) return;
+    const pick = validPositions[Math.floor(Math.random() * validPositions.length)]!; //choose random position in array
 
     const mapStyleGap = 2; //gap between cells
     const mapStylePadding = 10; //edge around the map
@@ -66,6 +59,8 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
 
     //add the svg to the mapContainer
     mapContainer.appendChild(div);
+
+    currentKeyPosition = pick;
 }
 
 //in case we need to call it in another function

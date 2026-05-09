@@ -3,18 +3,15 @@ import { keyPosition, currentKeyPosition } from "../KeyGeneration/KeyGeneration.
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-
+import { STARTPOSITION } from "../2D Array/2dArray.js";
 export { movePlayerPosition, movePlayer };
 
 const WALL = 0;
 const END = 3;
 const START = 2;
 
-let keyAmountEasy = 2; //hardcoded easy level
-
-
-let y = 1; //player begins 1 tile down from the edge
-let x = 0;
+let y = STARTPOSITION.y; //player begins 1 tile down from the edge
+let x = STARTPOSITION.x;
 let nx = 0;
 let ny = 0;
 
@@ -138,14 +135,14 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
     let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
     //if all keys are not collected, the player can not win
-    if (currentScoreNumber != keyAmountEasy) return;
+    if (currentScoreNumber != map.keys) return;
 
     //if player wins, reset
     if (map.grid[ny]![nx] === END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
-            x = 0;
-            y = 1;
+            y = STARTPOSITION.y;
+            x = STARTPOSITION.x;
 
             const currentDiv = document.getElementById("playerId");
             currentDiv!.remove();
@@ -160,8 +157,8 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
 }
 
 function resetPlayerState() {
-    x = 0;
-    y = 1;
+    x = STARTPOSITION.x;
+    y = STARTPOSITION.y;
     nx = 0;
     ny = 1;
 }
@@ -175,7 +172,7 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
-        if (currentScoreNumber < keyAmountEasy - 1) {
+        if (currentScoreNumber < map.keys - 1) {
             keyPosition(map, playerY, playerX); //spawn new key
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         } else {

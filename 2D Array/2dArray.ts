@@ -1,14 +1,15 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
+export const STARTPOSITION = { y : 1, x : 0}
 export { maps, getTileSize, getActiveMap };
 
 // Map sizes
 const maps = {
-    small:  { grid: recursiveBacktracker(15), active: false },
-    medium: { grid: recursiveBacktracker(25), active: false },
-    large:  { grid: recursiveBacktracker(35), active: false },
-    xl:     { grid: recursiveBacktracker(51), active: false }  //no initial 10x10 map?
+    small:  { grid: recursiveBacktracker(15), active: false, range: 8, keys: 2},
+    medium: { grid: recursiveBacktracker(25), active: false, range: 10, keys: 3},
+    large:  { grid: recursiveBacktracker(35), active: false, range: 12, keys: 3},
+    xl:     { grid: recursiveBacktracker(51), active: false, range: 14, keys: 4}  //no initial 10x10 map?
 };
 
 type MapName = keyof typeof maps;
@@ -23,7 +24,6 @@ function isInBounds(map : (typeof maps)[keyof typeof maps], row : number, col : 
     return row >= 0 && row < rows && col >= 0 && col < cols; 
 }
 
-
 //Change tile sizes based on map size
 function getTileSize(map : (typeof maps)[keyof typeof maps]) {
     const cols = map.grid[0]!.length;
@@ -33,8 +33,6 @@ function getTileSize(map : (typeof maps)[keyof typeof maps]) {
     if (cols <= 35) return 22;   // large map → smaller tiles
     return 14;                   // XL map → compact tiles
 }
-
-
 
 // Function that picks a map and sets it to "active"
 function pickMap(name: MapName) {
@@ -56,13 +54,11 @@ function getActiveMap() : (typeof maps)[keyof typeof maps] | null {
     return null;
 }
 
-
 //Function to render the chosen map
 function renderActiveMap() {
     const active = getActiveMap();
     if (active) renderMap(active);
 }
-
 
 //Function to render the map grid in the HTML file
 function renderMap(map : (typeof maps)[keyof typeof maps]) {
@@ -92,8 +88,8 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    keyPosition(map, 1, 0);
-    movePlayerPosition(map, 1, 0);
+    keyPosition(map, STARTPOSITION.y, STARTPOSITION.x);
+    movePlayerPosition(map, STARTPOSITION.y, STARTPOSITION.x);
 }
 
 // DDA logic?? Not done

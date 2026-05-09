@@ -4,7 +4,6 @@ export let currentKeyPosition = { y : 0, x : 0}
 
 const WALL = 0;
 
-
 function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");
@@ -23,11 +22,10 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
 
     const validPositions: { y : number, x : number}[] = [];
 
-    let easyRange = 8;
-    let easyRangeStartY = playerY - easyRange;
-    let easyRangeEndY = playerY + easyRange;
-    let easyRangeStartX = playerX - easyRange;
-    let easyRangeEndX = playerX + easyRange;
+    let easyRangeStartY = playerY - map.range;
+    let easyRangeEndY = playerY + map.range;
+    let easyRangeStartX = playerX - map.range;
+    let easyRangeEndX = playerX + map.range;
 
 
     for (let y = easyRangeStartY; y < easyRangeEndY; y++) { //start from - range from the player up to + range from the player (on y axis)

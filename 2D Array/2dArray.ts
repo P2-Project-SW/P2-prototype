@@ -2,7 +2,9 @@ import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveB
 import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 export const STARTPOSITION = { y : 1, x : 0}
-export { maps, getTileSize, getActiveMap };
+export { maps, getTileSize, getActiveMap, TILE };
+ 
+const TILE = { WALL: 0, PATH: 1, START: 2, END: 3 }
 
 // Map sizes
 const maps = {
@@ -80,10 +82,10 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             const div = document.createElement("div");
             div.classList.add("cell");
 
-            if (cell === 0) div.classList.add("wall");
-            if (cell === 1) div.classList.add("path");
-            if (cell === 2) div.classList.add("start");
-            if (cell === 3) div.classList.add("end");
+            if (cell === TILE.WALL) div.classList.add("wall");
+            if (cell === TILE.PATH) div.classList.add("path");
+            if (cell === TILE.START) div.classList.add("start");
+            if (cell === TILE.END) div.classList.add("end");
 
             container.appendChild(div);
         });

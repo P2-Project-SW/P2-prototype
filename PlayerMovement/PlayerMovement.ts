@@ -1,14 +1,10 @@
-import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+import { getTileSize, maps, getActiveMap, STARTPOSITION, TILE } from "../2D Array/2dArray.js";
 import { keyPosition, currentKeyPosition } from "../KeyGeneration/KeyGeneration.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-import { STARTPOSITION } from "../2D Array/2dArray.js";
 export { movePlayerPosition, movePlayer };
 
-const WALL = 0;
-const END = 3;
-const START = 2;
 
 let y = STARTPOSITION.y; //player begins 1 tile down from the edge
 let x = STARTPOSITION.x;
@@ -59,7 +55,7 @@ function movePlayer(direction: number) {
     //check bounds
     const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0]!.length;
     
-    if(!inBounds || map.grid[ny]![nx] === WALL || map.grid[ny]![nx] === START) {
+    if(!inBounds || map.grid[ny]![nx] === TILE.WALL || map.grid[ny]![nx] === TILE.START) {
         nx = x;
         ny = y;
     }
@@ -95,7 +91,7 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     if(x === 0 && y === 0) {
         for(let i = 0; i < map.grid.length; i++) {
             for(let j = 0; j < map.grid[0]!.length; j++) {
-                if(map.grid[i]![j] === START) {
+                if(map.grid[i]![j] === TILE.START) {
                     y = i;
                     x = j;
                 }
@@ -138,7 +134,7 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
     if (currentScoreNumber != map.keys) return;
 
     //if player wins, reset
-    if (map.grid[ny]![nx] === END) {
+    if (map.grid[ny]![nx] === TILE.END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
             y = STARTPOSITION.y;
@@ -148,7 +144,7 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
             currentDiv!.remove();
             keyPosition(map, y, x);
 
-            score.textContent = (0).toString(); //increment key score
+            score.textContent = "0";
 
             movePlayerPosition(map, y, x);
         }, 200)
@@ -159,8 +155,8 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
 function resetPlayerState() {
     x = STARTPOSITION.x;
     y = STARTPOSITION.y;
-    nx = 0;
-    ny = 1;
+    nx = STARTPOSITION.x;
+    ny = STARTPOSITION.y;
 }
 
 function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY : number, playerX: number, keyY: number, keyX: number) {

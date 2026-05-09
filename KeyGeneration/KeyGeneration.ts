@@ -1,8 +1,6 @@
-import { getTileSize, maps } from "../2D Array/2dArray.js";
+import { getTileSize, maps, TILE } from "../2D Array/2dArray.js";
 export { keyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
-
-const WALL = 0;
 
 function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
@@ -30,7 +28,7 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
 
     for (let y = easyRangeStartY; y < easyRangeEndY; y++) { //start from - range from the player up to + range from the player (on y axis)
         for (let x = easyRangeStartX; x < easyRangeEndX; x++) { //start from - range from the player up to + range from the player (on x axis)
-            if(y > 0 && y < mapHeight - 1 && x > 0 && x < mapWidth - 1 && map.grid[y]![x] !== WALL) { //if y and x is inside map and the cell is not a wall
+            if(y > 0 && y < mapHeight - 1 && x > 0 && x < mapWidth - 1 && map.grid[y]![x] !== TILE.WALL) { //if y and x is inside map and the cell is not a wall
                 validPositions.push({ y : y, x : x }); //push cell position into array
             }
         }

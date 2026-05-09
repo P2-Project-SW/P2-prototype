@@ -1,12 +1,11 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
-import { movePlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
-export const STARTPOSITION = { y : 1, x : 0}
-export { maps, getTileSize, getActiveMap, TILE };
+import { STARTPOSITION, TILE } from "../Constants/constants.js";
+export { maps, getTileSize, getActiveMap, pickMap };
+export type { MapName };
  
-const TILE = { WALL: 0, PATH: 1, START: 2, END: 3 }
 
-// Map sizes
+// Map sizes, key spawn ranges and key amount
 const maps = {
     small:  { grid: recursiveBacktracker(15), active: false, range: 8, keys: 2},
     medium: { grid: recursiveBacktracker(25), active: false, range: 10, keys: 3},
@@ -91,7 +90,6 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
         });
     });
     keyPosition(map, STARTPOSITION.y, STARTPOSITION.x);
-    movePlayerPosition(map, STARTPOSITION.y, STARTPOSITION.x);
 }
 
 // DDA logic?? Not done
@@ -99,9 +97,5 @@ function ChooseMapByADD() : MapName {
 
     return 'large';
 }
-
-// Example
-const chosen = ChooseMapByADD();
-pickMap(chosen);
 
 (window as any).pickMap = pickMap; // We expose the function so the html file can see it. We do this, since this script is being loaded as a module

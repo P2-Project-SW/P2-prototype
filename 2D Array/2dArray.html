@@ -59,10 +59,10 @@
     <h1>A-Maze-Ing</h1>
 
         <div class="controls">
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('small')">Small (15x15)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('medium')">Medium (25x25)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('large')">Large (35x35)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('xl')">XL (51x51)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('small')">Small (15x15)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('medium')">Medium (25x25)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('large')">Large (35x35)</button>
+            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('xl')">XL (51x51)</button>
         </div>
 
     <div id="map"></div>
@@ -91,6 +91,7 @@
     })
     </script>
     <script>var exports = {};</script>
+    <script type="module" src="../dist/SystemController/game.js"></script>
     <script type="module" src="../dist/2D Array/2dArray.js"></script>
 </body>
 </html>

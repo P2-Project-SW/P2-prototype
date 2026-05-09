@@ -1,15 +1,16 @@
-import { getTileSize, maps, getActiveMap, STARTPOSITION, TILE } from "../2D Array/2dArray.js";
-import { keyPosition, currentKeyPosition } from "../KeyGeneration/KeyGeneration.js";
+import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
+import { STARTPOSITION, TILE } from "../Constants/constants.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-export { movePlayerPosition, movePlayer };
+export { movePlayerPosition, movePlayer, resetPlayerState };
 
 
 let y = STARTPOSITION.y; //player begins 1 tile down from the edge
 let x = STARTPOSITION.x;
-let nx = 0;
-let ny = 0;
+let ny = STARTPOSITION.y; 
+let nx = STARTPOSITION.x;
 
 enum directions {
     UP,
@@ -31,6 +32,7 @@ function computePath(grid: number[][], x: number, y: number): Point[] {
 }
 
 function movePlayer(direction: number) {
+    console.log(x, y, nx, ny);
     //get the current map from function : getActiveMap
     const map = getActiveMap();
     if (map === null) return;
@@ -55,20 +57,24 @@ function movePlayer(direction: number) {
     //check bounds
     const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0]!.length;
     
-    if(!inBounds || map.grid[ny]![nx] === TILE.WALL || map.grid[ny]![nx] === TILE.START) {
+    if(!inBounds || map.grid[ny]![nx] === TILE.WALL) {
         nx = x;
         ny = y;
     }
+
+    console.log("cell value:", map.grid[ny]![nx]);
     
-    movePlayerPosition(map, ny, nx)
-    keyCollisionDetection(map, ny, nx, currentKeyPosition.y, currentKeyPosition.x);
+    movePlayerPosition(map, ny, nx);
     //update x and y
     x = nx;
     y = ny;
+    console.log("UPDATED POSITION:", x, y);
+    keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
+
 
     // Run A* after each move
-    const path = computePath(map.grid, x, y);
-    console.log("Optimal path from current position:", path);
+    //const path = computePath(map.grid, x, y);
+    //console.log("Optimal path from current position:", path);
 
     playerWin(map);
 }
@@ -86,18 +92,6 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     if (mapContainer === null) return;
 
     div.innerHTML = ""; //make div empthy
-
-    //find start position in map array (value = 2)
-    if(x === 0 && y === 0) {
-        for(let i = 0; i < map.grid.length; i++) {
-            for(let j = 0; j < map.grid[0]!.length; j++) {
-                if(map.grid[i]![j] === TILE.START) {
-                    y = i;
-                    x = j;
-                }
-            }
-        }
-    }
 
     const mapStyleGap = 2;
     const mapStylePadding = 10;
@@ -137,11 +131,12 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
     if (map.grid[ny]![nx] === TILE.END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
-            y = STARTPOSITION.y;
-            x = STARTPOSITION.x;
+
+            resetPlayerState();
 
             const currentDiv = document.getElementById("playerId");
-            currentDiv!.remove();
+            currentDiv?.remove();
+
             keyPosition(map, y, x);
 
             score.textContent = "0";
@@ -174,11 +169,17 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         } else {
             //remove key
             const currentDiv = document.getElementById("svgContainer");
-            currentDiv!.remove();
+
+            if(currentDiv) {
+                currentDiv.remove();
+            };
+
+            clearKeyPosition();
 
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         }
     }
 }
+
 
 (window as any).movePlayer = movePlayer;

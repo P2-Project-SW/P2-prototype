@@ -1,11 +1,12 @@
-import { getTileSize, maps, TILE } from "../2D Array/2dArray.js";
-export { keyPosition }
+import { getTileSize, maps } from "../2D Array/2dArray.js";
+import { TILE } from "../Constants/constants.js";
+export { keyPosition, clearKeyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
 
 function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");
-    if (currentDiv) currentDiv!.remove();
+    if (currentDiv) currentDiv.remove();
 
     //create new div
     const div = document.createElement("div");
@@ -57,6 +58,10 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
     mapContainer.appendChild(div);
 
     currentKeyPosition = pick;
+}
+
+function clearKeyPosition() {
+    currentKeyPosition = { y: -1, x: -1};
 }
 
 //in case we need to call it in another function

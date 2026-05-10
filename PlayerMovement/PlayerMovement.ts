@@ -4,6 +4,7 @@ import { STARTPOSITION, TILE } from "../Constants/constants.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
+import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
 export { movePlayerPosition, movePlayer, resetPlayerState };
 
 
@@ -11,6 +12,10 @@ let y = STARTPOSITION.y; //player begins 1 tile down from the edge
 let x = STARTPOSITION.x;
 let ny = STARTPOSITION.y; 
 let nx = STARTPOSITION.x;
+
+let steps = 0; //amount of steps the player takes
+let keySpawnTime = Date.now(); //how long time the player takes to collect a key and/or reach end
+let optimalPathLength = 0; //ready to save A* path
 
 enum directions {
     UP,
@@ -65,6 +70,12 @@ function movePlayer(direction: number) {
     console.log("cell value:", map.grid[ny]![nx]);
     
     movePlayerPosition(map, ny, nx);
+
+    //count if player took a step
+    if(nx != x || ny != y) {
+        steps++;
+    }
+
     //update x and y
     x = nx;
     y = ny;
@@ -72,9 +83,9 @@ function movePlayer(direction: number) {
     keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
 
-    // Run A* after each move
-    //const path = computePath(map.grid, x, y);
-    //console.log("Optimal path from current position:", path);
+    //Run A* after each move
+    const path = computePath(map.grid, x, y);
+    console.log("Optimal path from current position:", path);
 
     playerWin(map);
 }
@@ -163,8 +174,15 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
+        let time = Date.now() - keySpawnTime;
+        const normalizedTime = Math.min(time / 60000, 1); //normalizes time between 0 and 1
+
+        //call A* and get the optimal path length (length of array, which A* returns)
+        optimalPathLength = aStar(map.grid, {x: playerX, y: playerY}, {x: currentKeyPosition.x, y: currentKeyPosition.y}).length;
+        
         if (currentScoreNumber < map.keys - 1) {
             keyPosition(map, playerY, playerX); //spawn new key
+            keySpawnTime = Date.now();
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         } else {
             //remove key
@@ -178,6 +196,18 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
 
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         }
+ 
+        /* This I am confused about
+        const vector = [normalizedTime, currentScoreNumber / map.keys, steps / optimalPathLength];
+        const result = euclideanDistance(vector, PPI_array);
+
+        const difficulty = !Array.isArray(result) ? result.difficulty : undefined;
+        if(difficulty === "EASY") map.range = 5;
+        if(difficulty === "FLOW") map.range = 10;
+        if(difficulty === "HARD") map.range = 15;
+        */
+
+        steps = 0;
     }
 }
 

@@ -56,7 +56,7 @@ function reconstructPath(
     return path.reverse();
 }
 
- function aStar(
+function aStar(
     grid: number[][],
     start: Point,
     goal: Point

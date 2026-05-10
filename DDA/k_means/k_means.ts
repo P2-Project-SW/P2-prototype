@@ -6,6 +6,7 @@ import { startWith, map, pairwise, tap, take } from 'rxjs/operators';
 import { centroids_array, makeData } from './Elbow_method/data_gen.js'
 import { optimalK } from './Elbow_method/elbow_method.js'; //giver bundle problemer
 
+export { PPI_array }
 
  //TODO: lave updater funktion og assign k = elbow method
 

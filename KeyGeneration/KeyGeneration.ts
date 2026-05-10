@@ -1,5 +1,6 @@
-import { getTileSize, maps } from "../2D Array/2dArray.js";
+import { getActiveMap, getTileSize, maps } from "../2D Array/2dArray.js";
 import { TILE } from "../Constants/constants.js";
+import { euclideanDistance } from "../DDA/k_means/k_means.js";
 export { keyPosition, clearKeyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
 

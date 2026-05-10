@@ -4,7 +4,6 @@ import { STARTPOSITION, TILE } from "../Constants/constants.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
 export { movePlayerPosition, movePlayer, resetPlayerState };
 
 
@@ -82,10 +81,9 @@ function movePlayer(direction: number) {
     console.log("UPDATED POSITION:", x, y);
     keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
-
     //Run A* after each move
-    const path = computePath(map.grid, x, y);
-    console.log("Optimal path from current position:", path);
+    //const path = computePath(map.grid, x, y);
+    //console.log("Optimal path from current position:", path);
 
     playerWin(map);
 }

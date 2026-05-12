@@ -88,7 +88,25 @@ function movePlayer(direction: number) {
     if(nx != x || ny != y) {
         //steps++;
         if(startTime === null) {
-            startTimer();
+            const score = document.getElementById("keyScore"); 
+            if (score === null) return;
+            startTimer(()=>{        
+            setTimeout(() => {
+            alert("You lost:(\nTry again.");
+
+            resetPlayerPosition();
+
+            const currentDiv = document.getElementById("playerId");
+            currentDiv?.remove();
+
+            keyPosition(map, y, x);
+
+            score.textContent = "0";
+
+            movePlayerPosition(map, y, x);
+
+            resetTimer();
+        }, 200)});
         }
     }
 

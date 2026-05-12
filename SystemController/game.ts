@@ -2,6 +2,7 @@ import { pickMap, getActiveMap } from "../2D Array/2dArray.js";
 import type { MapName } from "../2D Array/2dArray.js";
 import { movePlayerPosition, resetPlayerPosition } from "../PlayerMovement/PlayerMovement.js";
 import { STARTPOSITION } from "../Constants/constants.js";
+import { resetTimer } from "./timer.js";
 
 function startMap(name : MapName) {
     pickMap(name);
@@ -10,6 +11,7 @@ function startMap(name : MapName) {
     if(map === null) return;
 
     resetPlayerPosition();
+    resetTimer();
     movePlayerPosition(map, STARTPOSITION.y, STARTPOSITION.x);
 }
 

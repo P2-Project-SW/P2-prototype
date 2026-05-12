@@ -57,11 +57,23 @@ function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, p
     mapContainer.appendChild(div);
 
     currentKeyPosition = pick;
+    map.grid[pick.y]![pick.x] = TILE.KEY;
 }
 
 function clearKeyPosition() {
-    currentKeyPosition = { y: -1, x: -1};
+    const map = getActiveMap();
+    if (map === null) {
+        currentKeyPosition = { y: -1, x: -1 };
+        return;
+    }
+
+    if (currentKeyPosition.y !== -1 && currentKeyPosition.x !== -1) {
+        map.grid[currentKeyPosition.y]![currentKeyPosition.x] = TILE.PATH; // 1
+    }
+
+    currentKeyPosition = { y: -1, x: -1 };
 }
+
 
 //in case we need to call it in another function
 (window as any).keyPosition = keyPosition;

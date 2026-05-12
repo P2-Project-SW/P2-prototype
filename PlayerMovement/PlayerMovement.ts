@@ -30,13 +30,19 @@ enum directions {
     LEFT
 }
 
-function computePath(grid: number[][], x: number, y: number): Point[] {
+function computePath(map: any, grid: number[][], x: number, y: number): Point[] {
     const start: Point = { x, y };
-    const goal = findGoal(grid);
+    let goal: Point;
 
-    if (!goal) {
-        console.error("Goal not found in grid");
-        return [];
+    if (playerState.collectedKeys < map.keys) {
+        goal = { x: currentKeyPosition.x, y: currentKeyPosition.y };
+    } else {
+        const exit = findGoal(grid);
+        if(!exit){
+            console.error("Exit not found in grid");
+            return [];
+        }
+        goal = exit;
     }
 
     return aStar(grid, start, goal);
@@ -50,7 +56,7 @@ function movePlayer(direction: number) {
     if (map === null) return;
 
       // Run A* after each move
-    const path = computePath(map.grid, x, y);
+    const path = computePath(map, map.grid, x, y);
     console.log("Optimal path from current position:", path);
 
     const optimalNext = path[1];

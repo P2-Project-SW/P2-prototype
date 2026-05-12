@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "build:browser": "esbuild DDA/k_means/k_means.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "build:browser": "esbuild main/main.ts --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
     "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
   },
   "dependencies": {

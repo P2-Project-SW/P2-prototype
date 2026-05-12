@@ -17,9 +17,11 @@ let x = STARTPOSITION.x;
 let ny = STARTPOSITION.y; 
 let nx = STARTPOSITION.x;
 
+/*
 let steps = 0; //amount of steps the player takes
 let keySpawnTime = Date.now(); //how long time the player takes to collect a key and/or reach end
 let optimalPathLength = 0; //ready to save A* path
+*/
 
 enum directions {
     UP,
@@ -42,7 +44,7 @@ function computePath(grid: number[][], x: number, y: number): Point[] {
 
 function movePlayer(direction: number) {
 
-     console.log("movePlayer CALLED");
+    console.log("movePlayer CALLED");
 
     const map = getActiveMap();
     if (map === null) return;
@@ -84,7 +86,7 @@ function movePlayer(direction: number) {
 
     //count if player took a step
     if(nx != x || ny != y) {
-        steps++;
+        //steps++;
         if(startTime === null) {
             startTimer();
         }
@@ -96,13 +98,12 @@ function movePlayer(direction: number) {
     console.log("UPDATED POSITION:", x, y);
     keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
-   
+
     if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
         playerState.rightSteps++;
     } else {
         playerState.wrongSteps++;
     }
-
 
     if (map.grid[ny]![nx] === 4) {
         playerState.collectedKeys++;
@@ -114,7 +115,6 @@ function movePlayer(direction: number) {
         wrong: playerState.wrongSteps,
         keys: playerState.collectedKeys
     });
-
 
     playerWin(map);
 }
@@ -205,15 +205,17 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
+        /*
         let time = Date.now() - keySpawnTime;
         const normalizedTime = Math.min(time / 60000, 1); //normalizes time between 0 and 1
-
+        */
+        
         //call A* and get the optimal path length (length of array, which A* returns)
-        optimalPathLength = aStar(map.grid, {x: playerX, y: playerY}, {x: currentKeyPosition.x, y: currentKeyPosition.y}).length;
+        //optimalPathLength = aStar(map.grid, {x: playerX, y: playerY}, {x: currentKeyPosition.x, y: currentKeyPosition.y}).length;
         
         if (currentScoreNumber < map.keys - 1) {
             keyPosition(map, playerY, playerX); //spawn new key
-            keySpawnTime = Date.now();
+            //keySpawnTime = Date.now();
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         } else {
             //remove key
@@ -228,6 +230,7 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         }
  
+        /*
         const vector = [normalizedTime, currentScoreNumber / map.keys, steps / optimalPathLength];
         const result = euclideanDistance(vector, PPI_array);
 
@@ -237,6 +240,7 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         if(difficulty === "HARD") map.range = 15;
 
         steps = 0;
+        */
     }
 }
 

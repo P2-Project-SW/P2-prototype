@@ -5,8 +5,8 @@
     "test:run": "vitest run",
     "build": "tsc",
     "watch": "tsc --watch",
-    "build:browser": "esbuild 2D_array/2dArray.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
-    "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
+    "build:browser": "esbuild 2D_Array/2dArray.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "dev": "npm run build:browser && python3 -m http.server || python -m http.server "
   },
   "repository": {
     "type": "git",

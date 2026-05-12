@@ -3,9 +3,12 @@ import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
 import { STARTPOSITION, TILE } from "../Constants/constants.js";
 export { maps, getTileSize, getActiveMap, pickMap };
 export type { MapName };
+import { movePlayerPosition, resetPlayerPosition } from "../PlayerMovement/PlayerMovement.js"
+import { resetPlayerState, setMinMaxForMap, startPlayerTimer} from "../PlayerState/PlayerState.js";
  
 
 // Map sizes, key spawn ranges and key amount
+
 const maps = {
     small:  { grid: recursiveBacktracker(15), active: false, range: 8, keys: 2},
     medium: { grid: recursiveBacktracker(25), active: false, range: 10, keys: 3},
@@ -90,6 +93,12 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
         });
     });
     keyPosition(map, STARTPOSITION.y, STARTPOSITION.x);
+    resetPlayerPosition();
+    movePlayerPosition(map, 1, 0);
+    resetPlayerState();
+    const size = map.grid.length;
+    setMinMaxForMap(size);
+    startPlayerTimer();
 }
 
 // DDA logic?? Not done

@@ -7,7 +7,9 @@ import { startTimer, startTime, resetTimer } from "../SystemController/timer.js"
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-export { movePlayerPosition, movePlayer, resetPlayerState };
+import { playerState} from "../PlayerState/PlayerState.js";
+
+export { movePlayerPosition, movePlayer, resetPlayerPosition };
 
 
 let y = STARTPOSITION.y; //player begins 1 tile down from the edge
@@ -39,10 +41,17 @@ function computePath(grid: number[][], x: number, y: number): Point[] {
 }
 
 function movePlayer(direction: number) {
-    console.log(x, y, nx, ny);
-    //get the current map from function : getActiveMap
+
+     console.log("movePlayer CALLED");
+
     const map = getActiveMap();
     if (map === null) return;
+
+      // Run A* after each move
+    const path = computePath(map.grid, x, y);
+    console.log("Optimal path from current position:", path);
+
+    const optimalNext = path[1];
 
     if (direction === directions.UP) {
         nx = x;
@@ -87,9 +96,25 @@ function movePlayer(direction: number) {
     console.log("UPDATED POSITION:", x, y);
     keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
-    //Run A* after each move
-    //const path = computePath(map.grid, x, y);
-    //console.log("Optimal path from current position:", path);
+   
+    if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
+        playerState.rightSteps++;
+    } else {
+        playerState.wrongSteps++;
+    }
+
+
+    if (map.grid[ny]![nx] === 4) {
+        playerState.collectedKeys++;
+    }   
+
+   console.log("STATE:", {
+        time: playerState.currentTime,
+        right: playerState.rightSteps,
+        wrong: playerState.wrongSteps,
+        keys: playerState.collectedKeys
+    });
+
 
     playerWin(map);
 }
@@ -147,7 +172,7 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
 
-            resetPlayerState();
+            resetPlayerPosition();
 
             const currentDiv = document.getElementById("playerId");
             currentDiv?.remove();
@@ -164,7 +189,7 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
     }
 }
 
-function resetPlayerState() {
+function resetPlayerPosition() {
     x = STARTPOSITION.x;
     y = STARTPOSITION.y;
     nx = STARTPOSITION.x;

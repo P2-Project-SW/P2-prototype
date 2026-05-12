@@ -1,13 +1,13 @@
-export type { PlayerState, MinMax, Weights }
+
+export type { PlayerState, MinMax, Weights };
 
 interface PlayerState {
     currentTime: number;
     collectedKeys: number;
 
-    rightSteps: number;   
-    wrongSteps: number;   
+    rightSteps: number;
+    wrongSteps: number;
 }
-
 
 type MinMax = {
     time: [number, number];
@@ -15,8 +15,10 @@ type MinMax = {
     keys: [number, number];
 };
 
-interface Weights  {
+interface Weights {
     Time: number;
     Path: number;
     Keys: number;
 }
+
+

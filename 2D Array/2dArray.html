@@ -14,7 +14,6 @@
             padding-top: 30px;
         }
 
-
         #map {
             margin: 20px auto;
             background: #222;
@@ -34,6 +33,19 @@
             float: left;
             position: absolute;
             font-size:large;
+            padding: 5px 13px;
+        }
+
+        .timer {
+            background: rgb(1, 15, 43);
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-right: 65px;
+            float: right;
+            position: absolute;
+            right: 0;
+            font-size:large;
+            padding: 5px 45px;
         }
 
         .cell {
@@ -51,9 +63,13 @@
 
 <body>
         <div class="keyScore">
-            <p> Keys collected: <br> 
-                <span id="keyScore"> 0 </span> 
-            </p>
+            <p> Keys collected: </p>
+            <span id="keyScore"> 0 </span> 
+        </div>
+
+        <div class="timer"> 
+            <p> Timer: </p>
+            <span id="Timer"> 00:00</span>
         </div>
 
     <h1>A-Maze-Ing</h1>
@@ -91,7 +107,6 @@
     })
     </script>
     <script>var exports = {};</script>
-    <script type="module" src="../dist/SystemController/game.js"></script>
-    <script type="module" src="../dist/2D Array/2dArray.js"></script>
+<script type="module" src="../dist/bundle.js"></script>
 </body>
 </html>

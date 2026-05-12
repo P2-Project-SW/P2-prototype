@@ -2,6 +2,7 @@ import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
 import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
 import { STARTPOSITION, TILE } from "../Constants/constants.js";
 import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
+//import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
@@ -203,7 +204,6 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         if(difficulty === "EASY") map.range = 5;
         if(difficulty === "FLOW") map.range = 10;
         if(difficulty === "HARD") map.range = 15;
-
 
         steps = 0;
     }

@@ -1,6 +1,7 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
-import { movePlayerPosition, resetPlayerState } from "../PlayerMovement/PlayerMovement.js"
+import { movePlayerPosition, resetPlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 export { maps, getTileSize, getActiveMap };
+import { resetPlayerState, setMinMaxForMap, startPlayerTimer} from "../PlayerState/PlayerState.js";
 
 /*
 // 2D Array Creator
@@ -106,8 +107,12 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
             container.appendChild(div);
         });
     });
-    resetPlayerState();
+    resetPlayerPosition();
     movePlayerPosition(map, 1, 0);
+    resetPlayerState();
+    const size = map.grid.length;
+    setMinMaxForMap(size);
+    startPlayerTimer();
 }
 
 // DDA logic?? Not done

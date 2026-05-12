@@ -2,8 +2,9 @@ import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
+import { playerState} from "../PlayerState/PlayerState.js";
 
-export { movePlayerPosition, movePlayer, resetPlayerState };
+export { movePlayerPosition, movePlayer, resetPlayerPosition };
 
 const WALL = 0;
 const END = 3;
@@ -34,6 +35,18 @@ function computePath(grid: number[][], x: number, y: number): Point[] {
 }
 
 function movePlayer(direction: number) {
+
+     console.log("movePlayer CALLED");
+
+    const map = getActiveMap();
+    if (map === null) return;
+
+      // Run A* after each move
+    const path = computePath(map.grid, x, y);
+    console.log("Optimal path from current position:", path);
+
+    const optimalNext = path[1];
+
     if (direction === directions.UP) {
         nx = x;
         ny = y - 1;
@@ -51,13 +64,9 @@ function movePlayer(direction: number) {
         ny = y;
     }
 
-    const map = getActiveMap();
-    if (map === null) return;
 
-    if (map.grid[ny]![nx] === WALL) {
-        nx = x;
-        ny = y;
-    } else if (map.grid[ny]![nx] === START) {
+
+    if (map.grid[ny]![nx] === WALL || map.grid[ny]![nx] === START) {
         nx = x;
         ny = y;
     }
@@ -67,9 +76,28 @@ function movePlayer(direction: number) {
     x = nx;
     y = ny;
 
-    // Run A* after each move
-    const path = computePath(map.grid, x, y);
-    console.log("Optimal path from current position:", path);
+
+
+   
+    if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
+        playerState.rightSteps++;
+    } else {
+        playerState.wrongSteps++;
+    }
+
+
+    if (map.grid[ny]![nx] === 4) {
+        playerState.collectedKeys++;
+    }   
+
+   console.log("STATE:", {
+        time: playerState.currentTime,
+        right: playerState.rightSteps,
+        wrong: playerState.wrongSteps,
+        keys: playerState.collectedKeys
+    });
+
+
 
     if (map.grid[ny]![nx] === END) {
         setTimeout(() => {
@@ -83,6 +111,10 @@ function movePlayer(direction: number) {
             movePlayerPosition(map, y, x);
         }, 200);
     }
+
+
+    
+
 }
 
 function movePlayerPosition(map: (typeof maps)[keyof typeof maps], y: number, x: number) {
@@ -117,7 +149,7 @@ function movePlayerPosition(map: (typeof maps)[keyof typeof maps], y: number, x:
 
 (window as any).movePlayer = movePlayer;
 
-function resetPlayerState() {
+function resetPlayerPosition() {
     x = 0;
     y = 1;
     nx = 0;

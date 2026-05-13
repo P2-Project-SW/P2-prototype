@@ -1,7 +1,6 @@
 import { getTileSize, maps, getActiveMap } from "../2D_Array/2dArray.js";
 import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
 import { STARTPOSITION, TILE } from "../2D_Array/2dArray.js";
-import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
 import { startTimer, startTime, resetTimer } from "../SystemController/timer.js";
 //import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";
 import { aStar } from "../AStar/AStar.js";
@@ -30,6 +29,7 @@ enum directions {
     LEFT
 }
 
+//TODO: opdater med finalkey fra DDA.action.ts
 function computePath(map: any, grid: number[][], x: number, y: number): Point[] {
     const start: Point = { x, y };
     let goal: Point;
@@ -64,13 +64,13 @@ function movePlayer(direction: number) {
     if (direction === directions.UP) {
         nx = x;
         ny = y - 1;
-    } else if (direction === directions.DOWN) {
+    } else if(direction === directions.DOWN) {
         nx = x;
         ny = y + 1;
-    } else if (direction === directions.RIGHT) {
+    } else if(direction === directions.RIGHT) {
         nx = x + 1;
         ny = y;
-    } else if (direction === directions.LEFT) {
+    } else if(direction === directions.LEFT) {
         nx = x - 1;
         ny = y;
     } else {
@@ -90,6 +90,7 @@ function movePlayer(direction: number) {
     
     movePlayerPosition(map, ny, nx);
 
+    //heini jeg kommer til at indsætte noget her mvh Luna
     //count if player took a step
     if(nx != x || ny != y) {
         //steps++;
@@ -150,10 +151,11 @@ function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, 
     //create new div
     const div = document.createElement("div");
     div.classList.add("player");
-    div.id = "playerId";
+    div.id = ("playerId");
 
-    const mapContainer = document.getElementById("map");
-    if (mapContainer === null) return;
+    const mapContainer = document.getElementById("map"); //gets map from id
+    //console.log("container:", container);
+    if(mapContainer === null) return;
 
     div.innerHTML = ""; //make div empthy
 

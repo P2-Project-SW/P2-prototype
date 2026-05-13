@@ -80,10 +80,14 @@ function renderMap(map : (typeof maps)[keyof typeof maps]) {
     container.style.gridTemplateColumns = `repeat(${cols}, ${TILE_SIZE}px)`;
     container.style.gridAutoRows = `${TILE_SIZE}px`;
 
-    map.grid.forEach(row => {
-        row.forEach(cell => {
+    map.grid.forEach((row, y) => {
+        row.forEach((cell, x) => {
             const div = document.createElement("div");
             div.classList.add("cell");
+
+            //generates keys
+            div.setAttribute("key-x", x.toString());
+            div.setAttribute("key-y", x.toString());
 
             if (cell === TILE.WALL) div.classList.add("wall");
             if (cell === TILE.PATH) div.classList.add("path");

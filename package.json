@@ -5,7 +5,7 @@
     "test:run": "vitest run",
     "build": "tsc",
     "watch": "tsc --watch",
-    "build:browser": "esbuild kmeans/Logic/DDA.observable.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "build:browser": "esbuild main.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
     "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
   },
   "repository": {

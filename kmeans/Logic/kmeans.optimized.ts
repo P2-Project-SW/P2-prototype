@@ -7,6 +7,8 @@ import { centroids_array, makeData, PPI_array } from '../Elbow_method/data_gen.j
 import { errorContext } from 'rxjs/internal/util/errorContext';
 
 // CONSTANTS
+
+//TODO: lav en cluster average
 export type ClusterInfo = {
     index: number;
     label: string;
@@ -61,7 +63,7 @@ startNewGame(PPI_array)
 //TODO: kald startNewGame i playermovement når spillet starter 
 export function startNewGame (playerData: number[][] ) { 
     // Start new stream
-    const dataStream = PPI_stream(playerData, 1000);
+    const dataStream = PPI_stream(playerData, 5000);
     subscribeToStream(dataStream);
 }
 

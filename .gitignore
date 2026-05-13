@@ -1,4 +1,4 @@
-/dist
+dist/*
 dist/2dArray.d.ts
 dist/2dArray.d.ts.map
 dist/2dArray.js

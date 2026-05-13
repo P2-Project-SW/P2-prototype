@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <script src="../dist/bundle.js"></script>
     <title>Map Output</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.rtl.min.css" integrity="sha384-CfCrinSRH2IR6a4e6fy2q6ioOX7O6Mtm1L9vRvFZ1trBncWmMePhzvafv7oIcWiW" crossorigin="anonymous">
 
@@ -14,6 +15,7 @@
             padding-top: 30px;
         }
 
+
         #map {
             margin: 20px auto;
             background: #222;
@@ -23,29 +25,6 @@
             display: grid;
             gap: 2px;
             position: relative;
-        }
-
-        .keyScore {
-            background: rgb(1, 15, 43);
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-left: 65px;
-            float: left;
-            position: absolute;
-            font-size:large;
-            padding: 5px 13px;
-        }
-
-        .timer {
-            background: rgb(1, 15, 43);
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-right: 65px;
-            float: right;
-            position: absolute;
-            right: 0;
-            font-size:large;
-            padding: 5px 45px;
         }
 
         .cell {
@@ -58,32 +37,30 @@
         .path { background: #1a1a2e; }
         .start { background: #4caf50; }
         .end { background: #e91e63; }
+        /* Gør dit dynamiske DDA-nøglespawn synligt på kortet */
+        .key { background: #ffeb3b !important; } 
+
     </style>
 </head>
 
 <body>
-        <div class="keyScore">
-            <p> Keys collected: </p>
-            <span id="keyScore"> 0 </span> 
-        </div>
-
-        <div class="timer"> 
-            <p> Timer: </p>
-            <span id="Timer">00:00</span>
-        </div>
 
     <h1>A-Maze-Ing</h1>
 
-        <div class="controls">
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('small')">Small (15x15)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('medium')">Medium (25x25)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('large')">Large (35x35)</button>
-            <button type="button" class="btn btn-outline-secondary mb-3" onclick="startMap('xl')">XL (51x51)</button>
-        </div>
+    <div class="controls">
+        <!-- Knapperne simulerer nu de clusters, din AD funktion forventer -->
+        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD(null)">Initial Start (15x15)</button>
+        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'EASY'})">Force Easy
+            (15x15)</button>
+        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'FLOW'})">Force Flow
+            (25x25)</button>
+        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'HARD'})">Force Hard
+            (35x35)</button>
+    </div>
 
     <div id="map"></div>
+    <div id="keyScore">0</div>
 
-    <!--arrow buttons-->
     <div>
         <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button> <!--UP-->
     </div>
@@ -97,16 +74,5 @@
         <button type="button" class="btn_arrow_controls" onclick="movePlayer(1)"> &darr; </button> <!--DOWN-->
     </div>
 
-    <!--arrow keys-->
-    <script>
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowUp") movePlayer(0);
-        if (event.key === "ArrowDown") movePlayer(1);
-        if (event.key === "ArrowRight") movePlayer(2);
-        if (event.key === "ArrowLeft") movePlayer(3);
-    })
-    </script>
-    <script>var exports = {};</script>
-<script type="module" src="../dist/bundle.js"></script>
 </body>
 </html>

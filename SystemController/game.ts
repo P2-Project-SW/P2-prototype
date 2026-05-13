@@ -1,3 +1,5 @@
+
+/*
 import { pickMap, getActiveMap } from "../2D_Array/2dArray.js";
 import type { MapName } from "../2D_Array/2dArray.js";
 import { movePlayerPosition, resetPlayerPosition } from "../PlayerMovement/PlayerMovement.js";
@@ -18,3 +20,4 @@ function startMap(name : MapName) {
 startMap('large');
 
 (window as any).startMap = startMap;
+*/

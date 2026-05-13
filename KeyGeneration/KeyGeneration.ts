@@ -1,9 +1,9 @@
-import { getActiveMap, getTileSize, maps } from "../2D_Array/2dArray.js";
+import { getActiveMap, getTileSize } from "../2D_Array/2dArray.js";
 import { TILE } from "../2D_Array/2dArray.js";
 export { keyPosition, clearKeyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
 
-function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
+function keyPosition(map: any, playerY : number, playerX : number) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");
     if (currentDiv) currentDiv.remove();

@@ -1,6 +1,5 @@
-import { getTileSize, maps, getActiveMap } from "../2D_Array/2dArray.js";
+import { getTileSize, getActiveMap, generateDynamicMap , TILE, STARTPOSITION} from "../2D_Array/2dArray.js";
 import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
-import { STARTPOSITION, TILE } from "../2D_Array/2dArray.js";
 import { startTimer, startTime, resetTimer } from "../SystemController/timer.js";
 //import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";
 import { aStar } from "../AStar/AStar.js";
@@ -8,7 +7,13 @@ import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
 import { playerState} from "../PlayerState/PlayerState.js";
 
-export { movePlayerPosition, movePlayer, resetPlayerPosition };
+import { playerPosition$, optimalPath$ } from "./../kmeans/Logic/DDA.observable.js"; 
+import { AD } from "../kmeans/Logic/DDA.action.js";
+import { DDA_updater } from "../kmeans/Logic/kmeans.optimized.js";
+
+
+import { movePlayerPosition, resetPlayerDiv } from "./PlayerView.js";
+export { movePlayerPosition, movePlayer, resetPlayerDiv as resetPlayerPosition };
 
 
 let y = STARTPOSITION.y; //player begins 1 tile down from the edge
@@ -50,7 +55,7 @@ function computePath(map: any, grid: number[][], x: number, y: number): Point[] 
 
 function movePlayer(direction: number) {
 
-    console.log("movePlayer CALLED");
+    console.log("movePlayer() called, direction:", direction);
 
     const map = getActiveMap();
     if (map === null) return;
@@ -90,7 +95,6 @@ function movePlayer(direction: number) {
     
     movePlayerPosition(map, ny, nx);
 
-    //heini jeg kommer til at indsætte noget her mvh Luna
     //count if player took a step
     if(nx != x || ny != y) {
         //steps++;
@@ -98,31 +102,38 @@ function movePlayer(direction: number) {
             const score = document.getElementById("keyScore"); 
             if (score === null) return;
             startTimer(()=>{        
-            setTimeout(() => {
-            alert("You lost:(\nTry again.");
+                setTimeout(() => {
+                    alert("You lost:(\nTry again.");
+                    resetPlayerDiv();
 
-            resetPlayerPosition();
+                    //resets position
+                    x = STARTPOSITION.x;
+                    y = STARTPOSITION.y;
 
-            const currentDiv = document.getElementById("playerId");
-            currentDiv?.remove();
+                    const currentDiv = document.getElementById("playerId");
+                    currentDiv?.remove();
 
-            keyPosition(map, y, x);
-
-            score.textContent = "0";
-
-            movePlayerPosition(map, y, x);
-
-            resetTimer();
+                    keyPosition(map, y, x);
+                    score.textContent = "0";
+                    movePlayerPosition(map, y, x);
+                    resetTimer();
         }, 200)});
         }
     }
+
 
     //update x and y
     x = nx;
     y = ny;
     console.log("UPDATED POSITION:", x, y);
-    keyCollisionDetection(map, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
+    const activeMap = getActiveMap();
+    keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
+
+    //sender path og position til rxjs observable:
+    playerPosition$.next({x: x, y: y });
+    const observePath = computePath(map, map.grid, x, y)
+    optimalPath$.next(observePath)
 
     if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
         playerState.rightSteps++;
@@ -144,131 +155,99 @@ function movePlayer(direction: number) {
     playerWin(map);
 }
 
-function movePlayerPosition(map : (typeof maps)[keyof typeof maps], y : number, x : number) {
-    const currentDiv = document.getElementById("playerId");
-    currentDiv?.remove();
-    
-    //create new div
-    const div = document.createElement("div");
-    div.classList.add("player");
-    div.id = ("playerId");
 
-    const mapContainer = document.getElementById("map"); //gets map from id
-    //console.log("container:", container);
-    if(mapContainer === null) return;
-
-    div.innerHTML = ""; //make div empthy
-
-    const mapStyleGap = 2;
-    const mapStylePadding = 10;
-    const TILE_SIZE = getTileSize(map);
-
-    //style of div
-    div.style.width = `${TILE_SIZE}px`;
-    div.style.height = `${TILE_SIZE}px`;
-    div.style.top = `${TILE_SIZE * y + y * mapStyleGap + mapStylePadding}px`;
-    div.style.left = `${TILE_SIZE * x + x * mapStyleGap + mapStylePadding}px`;
-    //div.style.backgroundColor = "aqua";
-    //div.style.borderRadius = "3px";
-    div.style.position = "absolute";
-
-    //style of game piece
-    div.style.fontSize = `${TILE_SIZE * 0.8}px`;
-    div.style.display = "flex";
-    div.style.alignItems = "center";
-    div.style.justifyContent = "center";
-    div.innerHTML = `🧝`;
-    
-    //add the div to the mapContainer
-    mapContainer.appendChild(div);
-}
-
-function playerWin(map: (typeof maps) [keyof typeof maps]) {
+function playerWin(map: any ) {
     const score = document.getElementById("keyScore"); 
     if (score === null) return;
     
     let currentScoreText = score.textContent;
     let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
-    //if all keys are not collected, the player can not win
-    if (currentScoreNumber != map.keys) return;
-
+    if (currentScoreNumber != map.keys) return;  //if all keys are not collected, the player can not win
+    
     //if player wins, reset
     if (map.grid[ny]![nx] === TILE.END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
+            resetPlayerDiv();
 
-            resetPlayerPosition();
+            //resets players position
+            x = STARTPOSITION.x;
+            y = STARTPOSITION.y;
 
-            const currentDiv = document.getElementById("playerId");
-            currentDiv?.remove();
-
-            keyPosition(map, y, x);
-
+            const clusterAverage = DDA_updater.getValue(); //henter nyeste cluster gennemsnit
             score.textContent = "0";
-
-            movePlayerPosition(map, y, x);
-
-            resetTimer();
+            //kalder næste map med spillerens "score" (AD)
+            AD(clusterAverage)
         }, 200)
 
     }
 }
 
-function resetPlayerPosition() {
-    x = STARTPOSITION.x;
-    y = STARTPOSITION.y;
-    nx = STARTPOSITION.x;
-    ny = STARTPOSITION.y;
-}
+function keyCollisionDetection(map: any, playerY : number, playerX: number, keyY: number, keyX: number) {
+    if (!map) return
 
-function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY : number, playerX: number, keyY: number, keyX: number) {
-    if(playerY === keyY && playerX === keyX) {
+    if (playerY === keyY && playerX === keyX) {
         const score = document.getElementById("keyScore"); 
         if (score === null) return;
 
-        //convert inner HTML to number
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
+        const newScore = currentScoreNumber + 1;
+        score.textContent = newScore.toString();
+        playerState.collectedKeys = newScore;
 
-        /*
-        let time = Date.now() - keySpawnTime;
-        const normalizedTime = Math.min(time / 60000, 1); //normalizes time between 0 and 1
-        */
-        
-        //call A* and get the optimal path length (length of array, which A* returns)
-        //optimalPathLength = aStar(map.grid, {x: playerX, y: playerY}, {x: currentKeyPosition.x, y: currentKeyPosition.y}).length;
-        
-        if (currentScoreNumber < map.keys - 1) {
-            keyPosition(map, playerY, playerX); //spawn new key
-            //keySpawnTime = Date.now();
-            score.textContent = (currentScoreNumber + 1).toString(); //increment key score
-        } else {
-            //remove key
-            const currentDiv = document.getElementById("svgContainer");
-
-            if(currentDiv) {
-                currentDiv.remove();
-            };
-
-            clearKeyPosition();
-
-            score.textContent = (currentScoreNumber + 1).toString(); //increment key score
+        const keyCell = document.querySelector(`[key-x="${keyX}"][key-y="${keyY}"]`);
+        if (keyCell) {
+            keyCell.classList.remove('key');
+            (keyCell as HTMLElement).innerHTML = '';
+            (keyCell as HTMLElement).style.removeProperty('display');
+            (keyCell as HTMLElement).style.removeProperty('alignItems');
+            (keyCell as HTMLElement).style.removeProperty('justifyContent');
         }
- 
-        /*
-        const vector = [normalizedTime, currentScoreNumber / map.keys, steps / optimalPathLength];
-        const result = euclideanDistance(vector, PPI_array);
 
-        const difficulty = !Array.isArray(result) ? result.difficulty : undefined;
-        if(difficulty === "EASY") map.range = 5;
-        if(difficulty === "FLOW") map.range = 10;
-        if(difficulty === "HARD") map.range = 15;
+        if (map.grid[keyY] && map.grid[keyY]![keyX] !== undefined) {
+            map.grid[keyY]![keyX] = TILE.PATH;
+        }
 
-        steps = 0;
-        */
+        if (map.activeKey) {
+            map.activeKey = null;
+        }
+
+        clearKeyPosition();
     }
 }
 
 
+
 (window as any).movePlayer = movePlayer;
+
+
+document.addEventListener('keydown', (event: KeyboardEvent) => {
+    // Forhindrer browser-scroll
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+        event.preventDefault();
+    }
+
+    switch (event.key) {
+        case "ArrowUp":
+        case "w":
+            movePlayer(directions.UP);
+            break;
+            
+        case "ArrowDown":
+        case "s":
+            movePlayer(directions.DOWN);
+            break;
+            
+        case "ArrowRight":
+        case "d":
+            movePlayer(directions.RIGHT);
+            break;
+            
+        case "ArrowLeft":
+        case "a":
+            movePlayer(directions.LEFT);
+            break;
+    }
+});

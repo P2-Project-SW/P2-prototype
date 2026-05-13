@@ -1,12 +1,13 @@
 import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveBacktracking.js";
 import { keyPosition } from "../KeyGeneration/KeyGeneration.js";
-import { STARTPOSITION, TILE } from "../Constants/constants.js";
 export { maps, getTileSize, getActiveMap, pickMap };
 export type { MapName };
 import { movePlayerPosition, resetPlayerPosition } from "../PlayerMovement/PlayerMovement.js"
 import { resetPlayerState, setMinMaxForMap, startPlayerTimer} from "../PlayerState/PlayerState.js";
  
 
+export const STARTPOSITION = { y: 1, x: 0 }
+export const TILE = { WALL: 0, PATH: 1, START: 2, END: 3, KEY: 4 }
 // Map sizes, key spawn ranges and key amount
 
 const maps = {
@@ -108,3 +109,4 @@ function ChooseMapByADD() : MapName {
 }
 
 (window as any).pickMap = pickMap; // We expose the function so the html file can see it. We do this, since this script is being loaded as a module
+

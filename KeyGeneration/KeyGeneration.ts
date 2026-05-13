@@ -1,5 +1,5 @@
 import { getActiveMap, getTileSize, maps } from "../2D Array/2dArray.js";
-import { TILE } from "../Constants/constants.js";
+import { TILE } from "../2D Array/2dArray.js";
 export { keyPosition, clearKeyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
 

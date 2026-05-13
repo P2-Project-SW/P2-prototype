@@ -3,7 +3,6 @@ import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGenerat
 import { STARTPOSITION, TILE } from "../Constants/constants.js";
 import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
 import { startTimer, startTime, resetTimer } from "../SystemController/timer.js";
-//import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";

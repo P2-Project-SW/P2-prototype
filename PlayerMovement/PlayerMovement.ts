@@ -1,33 +1,24 @@
 import { getTileSize, getActiveMap, generateDynamicMap , TILE, STARTPOSITION} from "../2D_Array/2dArray.js";
 import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
 import { startTimer, startTime, resetTimer } from "../SystemController/timer.js";
-//import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-import { playerState, resetPlayerState} from "../PlayerState/PlayerState.js"; 
-export { movePlayerPosition, movePlayer, resetPlayerPosition };
-import { playerState} from "../PlayerState/PlayerState.js";
+import { playerState, resetPlayerState } from "../PlayerState/PlayerState.js"; 
 
 import { playerPosition$, optimalPath$ } from "./../kmeans/Logic/DDA.observable.js"; 
 import { AD } from "../kmeans/Logic/DDA.action.js";
 import { DDA_updater } from "../kmeans/Logic/kmeans.optimized.js";
 
-
 import { movePlayerPosition, resetPlayerDiv } from "./PlayerView.js";
+
+// Eksportér de korrekte navne til resten af dit projekt
 export { movePlayerPosition, movePlayer, resetPlayerDiv as resetPlayerPosition };
 
-
-let y = STARTPOSITION.y; //player begins 1 tile down from the edge
+let y = STARTPOSITION.y; 
 let x = STARTPOSITION.x;
 let ny = STARTPOSITION.y; 
 let nx = STARTPOSITION.x;
-
-/*
-let steps = 0; //amount of steps the player takes
-let keySpawnTime = Date.now(); //how long time the player takes to collect a key and/or reach end
-let optimalPathLength = 0; //ready to save A* path
-*/
 
 enum directions {
     UP,
@@ -36,18 +27,18 @@ enum directions {
     LEFT
 }
 
-//TODO: opdater med finalkey fra DDA.action.ts
 function computePath(map: any, grid: number[][], x: number, y: number): Point[] {
     const start: Point = { x, y };
     let goal: Point;
 
-    if (playerState.collectedKeys < map.keys) {
+    // SIKRING: Hvis der ikke er en aktiv nøgle på kortet endnu, søger A* mod udgangen (EXIT) for at undgå Array(0) crash
+    if (playerState.collectedKeys < map.keys && map.activeKey) {
         goal = { x: currentKeyPosition.x, y: currentKeyPosition.y };
     } else {
         const exit = findGoal(grid);
         if(!exit){
             console.error("Exit not found in grid");
-            return [];
+            return [{ x, y }]; // Sikkerhedsfallback
         }
         goal = exit;
     }
@@ -56,17 +47,17 @@ function computePath(map: any, grid: number[][], x: number, y: number): Point[] 
 }
 
 function movePlayer(direction: number) {
-
     console.log("movePlayer() called, direction:", direction);
 
     const map = getActiveMap();
     if (map === null) return;
 
-      // Run A* after each move
+    // Kør A* efter hvert skridt
     const path = computePath(map, map.grid, x, y);
     console.log("Optimal path from current position:", path);
 
-    const optimalNext = path[1];
+    // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
+    const optimalNext = path && path.length > 1 ? path[1] : null;
 
     if (direction === directions.UP) {
         nx = x;
@@ -85,7 +76,7 @@ function movePlayer(direction: number) {
         ny = y;
     }
 
-    //check bounds
+    // Tjek banens grænser og vægge
     const inBounds = ny >= 0 && ny < map.grid.length && nx >= 0 && nx < map.grid[0]!.length;
     
     if(!inBounds || map.grid[ny]![nx] === TILE.WALL) {
@@ -97,39 +88,32 @@ function movePlayer(direction: number) {
     
     movePlayerPosition(map, ny, nx);
 
-    //count if player took a step
+    // Hvis spilleren rent faktisk flyttede sig
     if(nx != x || ny != y) {
-        //steps++;
         if(startTime === null) {
             const score = document.getElementById("keyScore"); 
             if (score === null) return;
-            startTimer(()=>{        
+            
+            startTimer(() => {        
                 setTimeout(() => {
                     alert("You lost:(\nTry again.");
+                    
+                    // RETTET: Ryddet op i de kaotiske dublerede kald ved tab
                     resetPlayerDiv();
-
-            resetPlayerPosition();
-            resetPlayerState(); 
-            
-            const currentDiv = document.getElementById("playerId");
-            currentDiv?.remove();
-                    //resets position
+                    resetPlayerState(); 
+                    
                     x = STARTPOSITION.x;
                     y = STARTPOSITION.y;
-
-                    const currentDiv = document.getElementById("playerId");
-                    currentDiv?.remove();
 
                     keyPosition(map, y, x);
                     score.textContent = "0";
                     movePlayerPosition(map, y, x);
                     resetTimer();
-        }, 200)});
+                }, 200);
+            });
         }
     }
 
-
-    //update x and y
     x = nx;
     y = ny;
     console.log("UPDATED POSITION:", x, y);
@@ -137,10 +121,10 @@ function movePlayer(direction: number) {
     const activeMap = getActiveMap();
     keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
-    //sender path og position til rxjs observable:
+    // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
-    const observePath = computePath(map, map.grid, x, y)
-    optimalPath$.next(observePath)
+    const observePath = computePath(map, map.grid, x, y);
+    optimalPath$.next(observePath);
 
     if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
         playerState.rightSteps++;
@@ -152,7 +136,7 @@ function movePlayer(direction: number) {
         playerState.collectedKeys++;
     }   
 
-   console.log("STATE:", {
+    console.log("STATE:", {
         time: playerState.currentTime,
         right: playerState.rightSteps,
         wrong: playerState.wrongSteps,
@@ -162,41 +146,35 @@ function movePlayer(direction: number) {
     playerWin(map);
 }
 
-
-function playerWin(map: any ) {
+function playerWin(map: any) {
     const score = document.getElementById("keyScore"); 
     if (score === null) return;
     
     let currentScoreText = score.textContent;
     let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
-    if (currentScoreNumber != map.keys) return;  //if all keys are not collected, the player can not win
+    if (currentScoreNumber != map.keys) return;  
     
-    //if player wins, reset
     if (map.grid[ny]![nx] === TILE.END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
 
-            resetPlayerPosition();
+            // RETTET: Renset for unødvendige gentagelser
+            resetPlayerDiv();
             resetPlayerState();
 
-            resetPlayerDiv();
-
-            //resets players position
             x = STARTPOSITION.x;
             y = STARTPOSITION.y;
 
-            const clusterAverage = DDA_updater.getValue(); //henter nyeste cluster gennemsnit
+            const clusterAverage = DDA_updater.getValue(); 
             score.textContent = "0";
-            //kalder næste map med spillerens "score" (AD)
-            AD(clusterAverage)
-        }, 200)
-
+            AD(clusterAverage);
+        }, 200);
     }
 }
 
 function keyCollisionDetection(map: any, playerY : number, playerX: number, keyY: number, keyX: number) {
-    if (!map) return
+    if (!map) return;
 
     if (playerY === keyY && playerX === keyX) {
         const score = document.getElementById("keyScore"); 
@@ -229,13 +207,9 @@ function keyCollisionDetection(map: any, playerY : number, playerX: number, keyY
     }
 }
 
-
-
 (window as any).movePlayer = movePlayer;
 
-
 document.addEventListener('keydown', (event: KeyboardEvent) => {
-    // Forhindrer browser-scroll
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
         event.preventDefault();
     }

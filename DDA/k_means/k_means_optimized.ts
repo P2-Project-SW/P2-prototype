@@ -1,10 +1,10 @@
 // @ts-nocheck 
 import Plotly from 'plotly.js-dist-min';
-import { interval, Observable, Subscription, timer } from 'rxjs';
+import { interval, Observable, Subscription, timer, BehaviorSubject } from 'rxjs';
 import { startWith, map, pairwise, tap, take, scan,  } from 'rxjs/operators';
 
-import { centroids_array, makeData } from './Elbow_method/data_gen.js'
-import { optimalK } from './Elbow_method/elbow_method.js'; //giver bundle problemer
+import { centroids_array, makeData, PPI_array } from './Elbow_method/data_gen.js'
+import { errorContext } from 'rxjs/internal/util/errorContext';
 
 // CONSTANTS
 type ClusterInfo = {
@@ -19,12 +19,11 @@ type LatestData = {
     cluster: ClusterInfo;
 };
 
-type StreamAcc = {
+export type StreamAcc = {
     lastIndex: number;
     sums: number[][];
     members: number[];
     centroids: Centroids;
-    isDone: boolean;
     latest: LatestData | null;
 };
 
@@ -33,7 +32,6 @@ const initialAcc: StreamAcc = {
     sums: [[0,0,0], [0,0,0], [0,0,0]],
     members: [0, 0, 0],
     centroids: initialCen,
-    isDone: false,
     latest: null
 };
 
@@ -52,33 +50,20 @@ let initialCen: Centroids = {
 
 const DIFFICULTY_LABELS = ["EASY", "FLOW", "HARD"]; // C1, C2, C3
 const CENTROID_COLORS = ['red', 'blue', 'green']; 
+export const DDA_updater = new BehaviorSubject<any>(null)
 
-
-let isGameDone: boolean = false; // reciever from playermovement og styrer om centroids bliver opdateret
-let hasUpdatedPlot: boolean = false; //tjekker om plots er updated
 let currentSubscription: Subscription | null = null; //initiliazes Subscription
 
 // FUNCTION CALLS
 
-setTimeout(endGame, 5000);
-
+startNewGame(PPI_array)
 
 //TODO: kald startNewGame i playermovement når spillet starter 
 export function startNewGame (playerData: number[][] ) { 
-    //resets variabler der styrer updatecentroids
-    isGameDone = false; 
-    hasUpdatedPlot = false;
-    
     // Start new stream
-    dataStream = PPI_stream(playerData, 0);
+    const dataStream = PPI_stream(playerData, 1000);
     subscribeToStream(dataStream);
 }
- 
-//TODO: kald endGame i playermovement når spillet slutter
-export function endGame () {
-    isGameDone = true
-}
-
 
 //calculates euclidean distance from datapoints to centroids
 export function euclideanDistance (centroids: Centroids, newVector: number[]) {
@@ -129,6 +114,7 @@ function createTrace(data: number[][], name: string, color: string) {
 
 // updatere centroids positioner -> summen af alle data/data medlemmer = [ny x, ny y, ny z]
 function updateCentroids(sums: number[][], members: number[]): Centroids {
+
     const updated: Centroids = {
         EASY: members[0] > 0 
             ? sums[0]!.map(sum => sum / members[0]) 
@@ -157,12 +143,6 @@ function updateCentroids(sums: number[][], members: number[]): Centroids {
 //DATA STREAM 
 
 //kunstig box-muller data -> blev brugt til testing af kmeans
-const PPI_array= [
-    makeData(10, centroids_array[0]!, 0.10),
-    makeData(10, centroids_array[1]!, 0.10),
-    makeData(10, centroids_array[2]!, 0.10),
-    ].flat();
-
 
 // Selve streamet som bruger pipe(). her sker der en del
 /*
@@ -179,7 +159,7 @@ function PPI_stream (playerData: number[][], dataInterval: number) {
 
     return interval(dataInterval).pipe(
         take(playerData.length),
-        map((index: number) => playerData[index]),
+        map((index: number) => playerData[index]!),
         startWith([playerData[0]]), //springer ikke første vector over
         pairwise(),
         tap((pair: [number[], number[]]) => console.log(`O/P of pairwise: ${JSON.stringify(pair)}`)),
@@ -198,19 +178,12 @@ function PPI_stream (playerData: number[][], dataInterval: number) {
             newMembers[cluster.index]++;
 
            let updatedCentroids = acc.centroids;
-           let gameIsDone = isGameDone;
-
-           if (gameIsDone && !acc.isDone) {  
-                updatedCentroids = updateCentroids(newSums, newMembers);
-                console.log('game is done! Centroids updated.');
-            }
 
             return {
                 lastIndex: cluster.index,
                 sums: newSums,
                 members: newMembers,
                 centroids: updatedCentroids,
-                isDone: gameIsDone,
                 latest: {
                     vector: curr,
                     cluster: cluster
@@ -221,9 +194,6 @@ function PPI_stream (playerData: number[][], dataInterval: number) {
 }
 
 
-let dataStream = PPI_stream(PPI_array, 100);
-subscribeToStream(dataStream); 
-
 
 // Subscribe or unsubscribes to stream
 function subscribeToStream(stream: Observable<StreamAcc>) {
@@ -232,29 +202,45 @@ function subscribeToStream(stream: Observable<StreamAcc>) {
         currentSubscription.unsubscribe()
         console.log("old stream unsubscribed");
     }
+
+    let lastState: StreamAcc; //gemmer data session
     
-    currentSubscription = stream.subscribe(data => {
-        Plotly.extendTraces('tester', {
-            x: [[data.latest.vector[0]]],
-            y: [[data.latest.vector[1]]],
-            z: [[data.latest.vector[2]]],
-            'marker.color': [[data.latest.cluster.color]]
-        }, [3]);
-        
-        if (data.isDone && !hasUpdatedPlot) {
-            Plotly.update('tester', {
-                x: [[data.centroids.EASY[0]], [data.centroids.FLOW[0]], [data.centroids.HARD[0]]],
-                y: [[data.centroids.EASY[1]], [data.centroids.FLOW[1]], [data.centroids.HARD[1]]],
-                z: [[data.centroids.EASY[2]], [data.centroids.FLOW[2]], [data.centroids.HARD[2]]]
-            }, {}, [0, 1, 2]);
+    currentSubscription = stream.subscribe({
+        next: (data) => {
+            lastState = data;
             
-            hasUpdatedPlot = true;
-            console.log(`plotly has updated centroids: C1: ${data.centroids.EASY}, C2: ${data.centroids.FLOW}, C3: ${data.centroids.HARD}`);
+            //Sender data til subscriber i DDA_trigger
+            const clusterResult = data.latest?.cluster
+            if (clusterResult) {
+                console.log("sender data til DDA_trigger:", clusterResult);
+                DDA_updater.next(clusterResult)
+            }
+
+                Plotly.extendTraces('tester', {
+                x: [[data.latest.vector[0]]],
+                y: [[data.latest.vector[1]]],
+                z: [[data.latest.vector[2]]],
+                'marker.color': [[data.latest.cluster.color]]
+            }, [3]);
+            
+        },
+        
+        complete: () => { //runs when stream is done
+
+            const finalCentroids = updateCentroids(lastState.sums, lastState.members)
+
+            if (lastState) {
+                Plotly.update('tester', {
+                    x: [[finalCentroids.EASY[0]], [finalCentroids.FLOW[0]], [finalCentroids.HARD[0]]],
+                    y: [[finalCentroids.EASY[1]], [finalCentroids.FLOW[1]], [finalCentroids.HARD[1]]],
+                    z: [[finalCentroids.EASY[2]], [finalCentroids.FLOW[2]], [finalCentroids.HARD[2]]]
+                }, {}, [0, 1, 2]);
+                
+            console.log(`plotly has updated centroids: C1: ${finalCentroids.EASY}, C2: ${finalCentroids.FLOW}, C3: ${finalCentroids.HARD}`);
         }
-
-        console.log(`Cluster: ${data.latest.cluster.label}, Distance: ${data.latest.cluster.currentDist}`);
-    });
-
+        //TODO: ADD error handler
+    }
+    })
     return currentSubscription;
 }
 

@@ -1,18 +1,9 @@
-import {euclideanDistance} from './k_means.js';
+import { DDA_updater } from './k_means_optimized.js';
 
 
-
-/*
-class P {
-    constructor(name) {
-        this._name = name;
-    }
-
-    get name() {
-        return this._name;
+DDA_updater.subscribe(cluster => {
+    if (cluster) {
+        console.log("subscriber har modtaget cluster data", cluster);
     }
 }
-
-const res = new P('Anjali');
-console.log(res.name);
-*/
+)

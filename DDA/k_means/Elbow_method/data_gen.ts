@@ -1,4 +1,4 @@
-export {centroids_array, makeData};
+export {centroids_array, makeData, PPI_array, boxMullerData};
 
 
 //Manual centroids array
@@ -51,3 +51,17 @@ function makeData(samples: number, centroid: any[], stdDev: number) {
     }
     return dataPoints;
 }
+
+//til k_means_optimized
+const PPI_array = [
+    makeData(3, centroids_array[0]!, 0.10),
+    makeData(3, centroids_array[1]!, 0.10),
+    makeData(3, centroids_array[2]!, 0.10),
+    ].flat();
+
+//til elbow_method
+const boxMullerData = [
+    makeData(12, centroids_array[0]!, 0.10),
+    makeData(12, centroids_array[1]!, 0.10),
+    makeData(12, centroids_array[2]!, 0.10),
+]

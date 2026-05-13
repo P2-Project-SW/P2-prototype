@@ -5,6 +5,8 @@ import { startTimer, startTime, resetTimer } from "../SystemController/timer.js"
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
+import { playerState, resetPlayerState} from "../PlayerState/PlayerState.js"; 
+export { movePlayerPosition, movePlayer, resetPlayerPosition };
 import { playerState} from "../PlayerState/PlayerState.js";
 
 import { playerPosition$, optimalPath$ } from "./../kmeans/Logic/DDA.observable.js"; 
@@ -106,6 +108,11 @@ function movePlayer(direction: number) {
                     alert("You lost:(\nTry again.");
                     resetPlayerDiv();
 
+            resetPlayerPosition();
+            resetPlayerState(); 
+            
+            const currentDiv = document.getElementById("playerId");
+            currentDiv?.remove();
                     //resets position
                     x = STARTPOSITION.x;
                     y = STARTPOSITION.y;
@@ -141,7 +148,7 @@ function movePlayer(direction: number) {
         playerState.wrongSteps++;
     }
 
-    if (map.grid[ny]![nx] === 4) {
+    if (map.grid[ny]![nx] === TILE.KEY) {
         playerState.collectedKeys++;
     }   
 
@@ -169,6 +176,10 @@ function playerWin(map: any ) {
     if (map.grid[ny]![nx] === TILE.END) {
         setTimeout(() => {
             alert("You have won!\nThat's amazing!");
+
+            resetPlayerPosition();
+            resetPlayerState();
+
             resetPlayerDiv();
 
             //resets players position

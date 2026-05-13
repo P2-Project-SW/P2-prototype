@@ -6,9 +6,10 @@ import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
 import { playerState, resetPlayerState } from "../PlayerState/PlayerState.js"; 
 
-import { playerPosition$, optimalPath$ } from "./../kmeans/Logic/DDA.observable.js"; 
+import { playerPosition$, optimalPath$, cancelActiveSpawnTimer } from "./../kmeans/Logic/DDA.observable.js"; 
 import { AD } from "../kmeans/Logic/DDA.action.js";
 import { DDA_updater } from "../kmeans/Logic/kmeans.optimized.js";
+import { keyStateChanged$ } from "./../kmeans/Logic/DDA.observable.js";
 
 import { movePlayerPosition, resetPlayerDiv } from "./PlayerView.js";
 
@@ -180,6 +181,8 @@ function keyCollisionDetection(map: any, playerY : number, playerX: number, keyY
         const score = document.getElementById("keyScore"); 
         if (score === null) return;
 
+        cancelActiveSpawnTimer();
+
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
         const newScore = currentScoreNumber + 1;
@@ -204,6 +207,7 @@ function keyCollisionDetection(map: any, playerY : number, playerX: number, keyY
         }
 
         clearKeyPosition();
+        keyStateChanged$.next(); 
     }
 }
 

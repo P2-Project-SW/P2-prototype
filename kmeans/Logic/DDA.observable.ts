@@ -1,14 +1,26 @@
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { DDA_updater } from './kmeans.optimized.js';
-import type { Point } from '../../AStar/AStar.js'
+import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { DDA_updater, startNewGame } from './kmeans.optimized.js';
 import { calculateNextKey } from './DDA.action.js';
-import { startNewGame } from './kmeans.optimized.js';
 import { PPI_array } from '../Elbow_method/data_gen.js';
 import { getActiveMap, TILE } from '../../2D_Array/2dArray.js';
 import { clearKeyPosition, currentKeyPosition } from '../../KeyGeneration/KeyGeneration.js';
 import { playerState } from '../../PlayerState/PlayerState.js';
+import type { Point } from '../../AStar/AStar.js';
 
-const DEFAULT_CLUSTER = { index: 1, label: 'FLOW', color: 'blue', currentDist: 0 };
+// Simple databeholdere – de må IKKE trigge combineLatest for hvert skridt
+export const playerPosition$ = new BehaviorSubject<Point | null>(null); 
+export const optimalPath$ = new BehaviorSubject<Point[]>([]);
+
+// Dette Subject modtager udelukkende besked ved opstart eller fysisk kollision
+export const keyStateChanged$ = new Subject<void>();
+
+// Strømmen lytter udelukkende på din K-means AI og dine diskrete spilhændelser
+export const gameStatus$ = combineLatest({
+    trigger: keyStateChanged$,
+    currCluster: DDA_updater
+});
+
+let spawnTimeout: any = null;
 
 function removeActiveKey(map: any) {
     const oldKeyCell = document.querySelector('.key');
@@ -16,107 +28,76 @@ function removeActiveKey(map: any) {
         oldKeyCell.classList.remove('key');
         oldKeyCell.innerHTML = '';
         (oldKeyCell as HTMLElement).style.removeProperty('display');
-        (oldKeyCell as HTMLElement).style.removeProperty('alignItems');
-        (oldKeyCell as HTMLElement).style.removeProperty('justifyContent');
     }
-
     clearKeyPosition();
-
     if (map && map.activeKey) {
         map.grid[map.activeKey.y]![map.activeKey.x] = TILE.PATH;
         map.activeKey = null;
     }
 }
 
-startNewGame(PPI_array);
-
-export const playerPosition$ = new BehaviorSubject<Point | null>(null); 
-export const optimalPath$ = new BehaviorSubject<Point[]>([]);
-
-export const gameStatus$ = combineLatest({
-    currPosition: playerPosition$,
-    currPath: optimalPath$,
-    currCluster: DDA_updater
-});
-
-let spawnTimeout: any = null;
-let currentTargetPosition: Point | null = null; // Holder styr på, hvor den næste nøgle ER på vej hen
-
-gameStatus$.subscribe(({ currPosition, currPath, currCluster }) => {
-    const map = getActiveMap();
-    if (!currPosition || !map) return;
-
-    const cluster = currCluster ?? DEFAULT_CLUSTER;
-
-    // Hvis alle nøgler til banen er samlet, skal vi ikke spawne flere
-    if (playerState.collectedKeys >= map.keys) {
-        if (map.activeKey) removeActiveKey(map);
-        if (spawnTimeout) {
-            clearTimeout(spawnTimeout);
-            spawnTimeout = null;
-        }
-        currentTargetPosition = null;
-        return;
-    }
-
-    // Hvis der REELT ligger en opsamlelig nøgle på kortet lige nu, skal vi afvente, at spilleren tager den
-    if (map.activeKey) {
-        return;
-    }
-
-    // Beregn næste logiske spawn-target baseret på DDA/Cluster adfærd
-    const keyTarget = calculateNextKey(currPosition, currPath, cluster);
-    if (keyTarget === null) {
-        removeActiveKey(map);
-        return;
-    }
-
-    // BEHAVIOUR FIX: Hvis vi allerede har startet en timer mod DET SAMME koordinat, 
-    // skal vi IKKE genstarte eller afbryde timeren. Lad den tælle færdig.
-    if (currentTargetPosition && 
-        currentTargetPosition.x === keyTarget.position.x && 
-        currentTargetPosition.y === keyTarget.position.y) {
-        return; 
-    }
-
-    // Hvis målet har ændret sig (f.eks. pga. nyt adfærdsmønster/cluster), nulstiller vi den gamle timer
+export function cancelActiveSpawnTimer() {
     if (spawnTimeout) {
         clearTimeout(spawnTimeout);
+        spawnTimeout = null;
+    }
+}
+
+function executeSpawnLogic(cluster: any) {
+    const map = getActiveMap();
+    if (!map) return;
+
+    // Dynamisk stop: Hvis alle nøgler til banen er samlet, stopper vi helt
+    if (playerState.collectedKeys >= map.keys) {
+        removeActiveKey(map);
+        cancelActiveSpawnTimer();
+        return;
     }
 
-    // Lås det nye mål, så næste skridt ikke afbryder nedtællingen
-    currentTargetPosition = keyTarget.position;
+    removeActiveKey(map);
 
+    // Hent dine data synkront ud af dine BehaviorSubjects i stedet for asynkront via streams
+    const currentPos = playerPosition$.getValue() ?? { x: 0, y: 1 };
+    const currentPath = optimalPath$.getValue();
+
+    // Beregn næste logiske spawn-target dynamisk ud fra K-means og A* stiens længde
+    const keyTarget = calculateNextKey(currentPos, currentPath, cluster);
+    if (keyTarget === null) return;
+
+    // Dynamisk forsinkelse: Første nøgle spawner øjeblikkeligt (0ms), efterfølgende bruger cluster-intervallet
     const spawnDelay = map.hasSpawnedKey ? keyTarget.interval : 0;
-    console.log(`[DDA] Mode: ${cluster.label} | Nøgle spawner om ${spawnDelay}ms på X: ${keyTarget.position.x}, Y: ${keyTarget.position.y}`);
+    console.log(`[DDA System] Cluster: ${cluster.label} | Spawn interval sat til: ${spawnDelay}ms.`);
 
+    // Placer nøglen fysisk i DOM og dit 2D-array
+    const newKeyCell = document.querySelector(`[key-x="${keyTarget.position.x}"][key-y="${keyTarget.position.y}"]`);
+    if (newKeyCell) {
+        newKeyCell.classList.add('key');
+        const htmlElement = newKeyCell as HTMLElement;
+        htmlElement.style.display = "flex";
+        htmlElement.style.alignItems = "center";
+        htmlElement.style.justifyContent = "center";
+        htmlElement.innerHTML = `🗝️`;
+
+        map.activeKey = { x: keyTarget.position.x, y: keyTarget.position.y };
+        map.hasSpawnedKey = true;
+        map.grid[keyTarget.position.y]![keyTarget.position.x] = TILE.KEY;
+        
+        currentKeyPosition.x = keyTarget.position.x;
+        currentKeyPosition.y = keyTarget.position.y;
+    }
+
+    if (spawnTimeout) clearTimeout(spawnTimeout);
+    
+    // Tidsbaseret rullering: Hvis intervallet udløber, kalder funktionen sig selv igen asynkront
     spawnTimeout = setTimeout(() => {
-        // Ryd op før placering
-        removeActiveKey(map);
+        console.log("[DDA System] Interval udløbet uden opsamling. Roterer nøglens position...");
+        const freshCluster = DDA_updater.getValue() ?? cluster;
+        executeSpawnLogic(freshCluster);
+    }, spawnDelay);
+}
 
-        const newKeyCell = document.querySelector(`[key-x="${keyTarget.position.x}"][key-y="${keyTarget.position.y}"]`);
-        if (newKeyCell) {
-            newKeyCell.classList.add('key');
-            const htmlElement = newKeyCell as HTMLElement;
-            htmlElement.style.display = "flex";
-            htmlElement.style.alignItems = "center";
-            htmlElement.style.justifyContent = "center";
-            htmlElement.innerHTML = `🗝️`;
-
-            // Opdater kort-datastrukturen
-            map.activeKey = { x: keyTarget.position.x, y: keyTarget.position.y };
-            map.hasSpawnedKey = true;
-            map.grid[keyTarget.position.y]![keyTarget.position.x] = TILE.KEY;
-            
-            // Opdater globale adresser, så kollisionsdetekteringen i PlayerMovement.ts virker
-            currentKeyPosition.x = keyTarget.position.x;
-            currentKeyPosition.y = keyTarget.position.y;
-        } else {
-            console.warn(`[DDA Error] Kunne ikke placere nøglen fysisk på HTML-felt X: ${keyTarget.position.x}, Y: ${keyTarget.position.y}`);
-        }
-
-        // Nulstil timeren i hukommelsen, da den nu er eksekveret
-        spawnTimeout = null;
-        currentTargetPosition = null; 
-    }, keyTarget.interval); // Bruger dynamisk ms her (1200ms, 2000ms eller 5000ms)
+gameStatus$.subscribe(({ currCluster }) => {
+    executeSpawnLogic(currCluster);
 });
+
+startNewGame(PPI_array);

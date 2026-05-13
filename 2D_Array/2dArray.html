@@ -47,16 +47,14 @@
 
     <h1>A-Maze-Ing</h1>
 
-    <div class="controls">
-        <!-- Knapperne simulerer nu de clusters, din AD funktion forventer -->
-        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD(null)">Initial Start (15x15)</button>
-        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'EASY'})">Force Easy
-            (15x15)</button>
-        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'FLOW'})">Force Flow
-            (25x25)</button>
-        <button type="button" class="btn btn-outline-secondary mb-3" onclick="AD({label: 'HARD'})">Force Hard
-            (35x35)</button>
-    </div>
+<div class="controls">
+    <!-- Knapperne kalder nu changeDifficulty i main.ts, som nulstiller og spawner synkront -->
+    <button type="button" class="btn btn-outline-secondary mb-3" onclick="changeDifficulty(null)">Initial Start (15x15)</button>
+    <button type="button" class="btn btn-outline-secondary mb-3" onclick="changeDifficulty('EASY')">Force Easy (15x15)</button>
+    <button type="button" class="btn btn-outline-secondary mb-3" onclick="changeDifficulty('FLOW')">Force Flow (25x25)</button>
+    <button type="button" class="btn btn-outline-secondary mb-3" onclick="changeDifficulty('HARD')">Force Hard (35x35)</button>
+</div>
+
 
     <div id="map"></div>
     <div id="keyScore">0</div>

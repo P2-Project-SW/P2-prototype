@@ -1,12 +1,7 @@
-import { DDA_updater, startNewGame } from './kmeans.optimized.js';
-import { PPI_array } from '../Elbow_method/data_gen.js';
+import { getActiveMap, TILE, generateDynamicMap } from '../../2D_Array/2dArray.js';
+import { playerState } from "../../PlayerState/PlayerState.js";
 import type { Point } from '../../AStar/AStar.js';
 import type { ClusterInfo } from './kmeans.optimized.js';
-import { getActiveMap, TILE, generateDynamicMap} from '../../2D_Array/2dArray.js';
-import { playerState } from "../../PlayerState/PlayerState.js";
-
-// Fjernet det globale kald af startNewGame(PPI_array) herfra for at forhindre utilsigtede genstarter ved imports.
-// Den bør udelukkende kaldes i din main/init-fil.
 
 export type KeySpawnTarget = {
     position: Point;     
@@ -20,7 +15,8 @@ export type mapConfig = {
     active: boolean;
 };
 
-const firstMapConfig: mapConfig = {
+// Start-fallback til spillets første sekund, hvis K-means ikke har data klar endnu
+const initialFallbackConfig: mapConfig = {
     size: 15,
     range: 8, 
     keys: 2,
@@ -43,22 +39,24 @@ export function calculateNextKey (
     
     const pathLength = currentPath ? currentPath.length : 0;
     let spawnInterval = 5000;
-    let spawnRange = 5; 
+    let spawnRange = 10; 
 
     switch (cluster.label.toUpperCase()) {
         case 'EASY':
-            spawnInterval = 5000; 
-            spawnRange = Math.max(4, Math.floor(pathLength * 0.5)); 
+            spawnInterval = 9000; 
+            // Sat et loft på max 8 felter væk
+            spawnRange = Math.min(10, Math.max(4, Math.floor(pathLength * 0.5))); 
             break;
 
         case 'FLOW':
-            spawnInterval = 2000; 
-            spawnRange = Math.max(6, Math.floor(pathLength * 0.8)); 
+            spawnInterval = 7000; 
+            // Sat et fornuftigt FLOW-loft på max 11 felter væk, så den ikke spawner ved EXIT under opstart
+            spawnRange = Math.min(20, Math.max(6, Math.floor(pathLength * 0.5))); 
             break;
 
         case 'HARD':
-            spawnInterval = 1200; 
-            spawnRange = 10; 
+            spawnInterval = 5000; 
+            spawnRange = 30; 
             break;
         default:
             spawnInterval = 2000;
@@ -77,6 +75,7 @@ export function calculateNextKey (
         interval: spawnInterval
     };
 }
+
 
 function generateCoordinates (
     playerPos: Point,
@@ -98,10 +97,7 @@ function generateCoordinates (
     };
 
     // --- STRIDT SIKRINGS-TJEK FOR INIT/OPSTART ---
-    // Hvis stien er tom eller for kort til at lave valide filtreringer (som set på dit screenshot)
     if (!path || path.length <= 1) {
-        console.log("[DDA Protection] Stien er tom under init. Scanner banen efter det første valide PATH-felt...");
-        // Vi scanner udefra og ind for at finde et sikkert PATH felt væk fra startpositionen
         for (let y = 3; y < rows - 3; y++) {
             for (let x = 3; x < cols - 3; x++) {
                 if (grid[y] && grid[y][x] === TILE.PATH) {
@@ -114,57 +110,48 @@ function generateCoordinates (
         }
     }
 
-    // --- EASY MODUS ---
-    if (diffMode === 'EASY' && path.length > 0) {
-        // Tvinger en minimumsafstand på over 1 felt væk fra spilleren, men under max range
-        const pointsWithinRange = path.filter(point => {
-            const dist = getDistanceFromPlayer(point);
-            return dist > 1 && dist <= range;
-        });
-        
-        // FIX: Hvis filteret fejler, cutter vi stien fra index 2 (skipper spillerens nuværende position og det næste felt)
-        const validPoints = pointsWithinRange.length > 0 ? pointsWithinRange : path.slice(2, range + 2);
-        
+    // --- DYNAMISK GRID-BASERET SØGNING (INGEN PATH-AFHÆNGIGHED) ---
+    // Vi søger på tværs af hele banens grid for at finde valide felter, hvilket fjerner A* feedback-loopen
+    if (diffMode === 'EASY' || diffMode === 'FLOW') {
+        const validPoints: Point[] = [];
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (grid[r] && grid[r][c] === TILE.PATH) {
+                    const dist = getDistanceFromPlayer({ x: c, y: r });
+
+                    if (diffMode === 'EASY' && dist > 2 && dist <= range) {
+                        validPoints.push({ x: c, y: r });
+                    } 
+                    else if (diffMode === 'FLOW' && dist >= Math.max(3, Math.floor(range * 0.4)) && dist <= range) {
+                        validPoints.push({ x: c, y: r });
+                    }
+                }
+            }
+        }
+
         if (validPoints.length > 0) {
             const randomIndex = Math.floor(Math.random() * validPoints.length);
             return validPoints[randomIndex]!;
         }
     }
 
-    // --- FLOW MODUS ---
-    if (diffMode === 'FLOW' && path.length > 0) {
-        // Sikrer at nøglen spawner i en sund "flow-zone" (ikke klos op ad spilleren, men på stien inden for range)
-        const validPoints = path.filter(point => {
-            const dist = getDistanceFromPlayer(point);
-            return dist >= Math.max(2, Math.floor(range * 0.3)) && dist <= range;
-        });
-
-        if (validPoints.length > 0) {
-            const randomIndex = Math.floor(Math.random() * validPoints.length);
-            return validPoints[randomIndex]!;
-        }
-    }
-
-    // --- HARD MODUS (Grid-baseret spredning) ---
+    // --- HARD MODUS (Symmetrisk distribution uden fastlåste koordinater) ---
     let validX = playerPos.x;
     let validY = playerPos.y;
     let attempts = 0;
 
     while (attempts < 100) {
-        // FIX: Perfekt symmetrisk distribution fra -range til +range
         const offsetX = Math.floor(Math.random() * (range * 2 + 1)) - range;
         const offsetY = Math.floor(Math.random() * (range * 2 + 1)) - range;
 
         const randomX = playerPos.x + offsetX;
         const randomY = playerPos.y + offsetY;
 
-        const inBounds = randomY >= 0 && randomY < rows && randomX >= 0 && randomX < cols;
-
-        if (inBounds) {
+        if (randomY >= 0 && randomY < rows && randomX >= 0 && randomX < cols) {
             const tileType = grid[randomY] ? grid[randomY][randomX] : TILE.WALL;
-            const distance = Math.abs(playerPos.x - randomX) + Math.abs(playerPos.y - randomY);
+            const distance = getDistanceFromPlayer({ x: randomX, y: randomY });
             
-            // FIX: Nøglen skal ligge på en PATH og må under ingen omstændigheder ligge inden for en radius af 2 felter fra spilleren
             if (tileType === TILE.PATH && distance > 2) {
                 validX = randomX;
                 validY = randomY;
@@ -174,8 +161,6 @@ function generateCoordinates (
         attempts++;
     }
 
-   // Totalt krisecrash-sikring: Hvis kortet er så proppet med vægge at loopet fejler, 
-   // returnerer vi et tvunget koordinat i stedet for spillerens egen position.
    if (validX === playerPos.x && validY === playerPos.y) {
        return { x: playerPos.x + 3 < cols ? playerPos.x + 3 : Math.max(0, playerPos.x - 3), y: playerPos.y };
    }
@@ -185,44 +170,20 @@ function generateCoordinates (
 
 // AD (Architectural Difficulty / Map Generator)
 export function AD (cluster: ClusterInfo | null): mapConfig {
-
-    if(!cluster) {
-        generateDynamicMap(firstMapConfig.size, firstMapConfig.range, firstMapConfig.keys);
-        return firstMapConfig;
+    if (!cluster) {
+        generateDynamicMap(initialFallbackConfig.size, initialFallbackConfig.range, initialFallbackConfig.keys);
+        return initialFallbackConfig;
     }
 
-    const diffMode = cluster.label.toUpperCase();
+    // --- DYNAMISK SKALERING AF BANEN (INGEN HARDCODEDE STØRRELSER) ---
+    // Vi lader banens størrelse og antallet af nøgler vokse dynamisk baseret på K-means indekset
+    const clusterIndex = cluster.index; // F.eks 0, 1, 2...
     
-    let size = 25;
-    let range = 10;
-    let totalKeys = 3;
+    const size = 15 + (clusterIndex * 10);     // Indeks 0 = 15x15, Indeks 1 = 25x25, Indeks 2 = 35x35
+    const range = 8 + (clusterIndex * 2);      // Indeks 0 = 8, Indeks 1 = 10, Indeks 2 = 12
+    const totalKeys = 2 + clusterIndex;        // Indeks 0 = 2 nøgler, Indeks 1 = 3 nøgler, Indeks 2 = 4 nøgler
 
-    switch (diffMode) {
-        case 'EASY':
-            size = 15;
-            range = 8;
-            totalKeys = 2; 
-            break;
-
-        case 'FLOW':
-            size = 25;
-            range = 10;
-            totalKeys = 3; 
-            break;
-
-        case 'HARD':
-            size = 35;
-            range = 12;
-            totalKeys = 5; 
-            break;
-            
-        default:
-            size = 25;
-            range = 10;
-            totalKeys = 3;
-    }
-
-    console.log(`🤖 AD System: Cluster [${diffMode}] -> Genererer dynamisk map-størrelse: ${size}x${size}, med ${totalKeys} nøgler.`);
+    console.log(`Genererer dynamisk map ud fra cluster [${cluster.label}]: ${size}x${size}, Nøgler: ${totalKeys}`);
     
     generateDynamicMap(size, range, totalKeys);
 

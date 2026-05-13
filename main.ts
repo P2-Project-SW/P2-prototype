@@ -3,7 +3,8 @@ import { AD } from './kmeans/Logic/DDA.action.js';
 import { playerPosition$, optimalPath$ } from './kmeans/Logic/DDA.observable.js';
 import { getActiveMap } from './2D_Array/2dArray.js';
 import { movePlayer } from './PlayerMovement/PlayerMovement.js';
-
+import { keyStateChanged$ } from './kmeans/Logic/DDA.observable.js';
+import { cancelActiveSpawnTimer } from './kmeans/Logic/DDA.observable.js';
 
 /**
  * Central initialisering af spillet
@@ -11,25 +12,59 @@ import { movePlayer } from './PlayerMovement/PlayerMovement.js';
 function initGame() {
     console.log("initgame bliver kaldt");
 
-    // 1. Kickstart det allerførste spil.
-    // Vi sender 'null' ind i din AD-funktion, hvilket udløser 'firstMapConfig' 
-    // og kalder generateDynamicMap(15, 8, 2) helt automatisk bag kulisserne.
-    const initialConfig = AD(null);
-    
-    // 2. Hent det netop skabte kort for at opsætte start-tilstanden i dine Observables
+    AD(null);
     const startingMap = getActiveMap();
     
     if (startingMap) {
-        // Vi sætter de første startværdier i dine BehaviorSubjects,
-        // så combineLatest har sit fulde fundament til at starte DDA-timeren med det samme.
-        playerPosition$.next({ x: 0, y: 1 }); // STARTPOSITION { y: 1, x: 0 }
+        // Sæt de korrekte startværdier i dine adresser
+        playerPosition$.next({ x: 0, y: 1 });
+        optimalPath$.next([{ x: 0, y: 1 }]);
         
-        // Lav en tom start-rute (eller lad dit spil beregne den første A* rute)
-        optimalPath$.next([]);
+        // --- SPAR DET ALLERFØRSTE SPAWN I GANG VED OPSTART ---
+        keyStateChanged$.next();
         
-        console.log("");
+        console.log("DDA systemet er succesfuldt startet.");
     } else {
         console.error("Fejl: Kunne ikke generere det initiale kort under opstart.");
+    }
+}
+
+
+function changeDifficulty(mode: string | null) {
+    console.log(`🎛️ Manuelt sværhedsgradsskift triggeret: ${mode}`);
+    
+    // 1. Stop alle igangværende timere fra det gamle map, så de ikke spawner spøgelsesnøgler
+    cancelActiveSpawnTimer();
+
+    if (mode === null) {
+        // Hvis der trykkes på "Initial Start"
+        AD(null);
+    } else {
+        // Vi bygger et komplet ClusterInfo-objekt for at undgå runtime-fejl i switchen
+        // Vi mapper EASY -> index 0, FLOW -> index 1, HARD -> index 2
+        let targetIndex = 1;
+        if (mode === 'EASY') targetIndex = 0;
+        if (mode === 'HARD') targetIndex = 2;
+
+        const mockCluster = {
+            index: targetIndex,
+            label: mode,
+            color: 'gray',
+            currentDist: 0
+        };
+
+        // Generer det nye map med den valgte størrelse
+        AD(mockCluster);
+    }
+
+    const newMap = getActiveMap();
+    if (newMap) {
+        // 2. Nulstil spillerens position og rute i RxJS til det nye map
+        playerPosition$.next({ x: 0, y: 1 });
+        optimalPath$.next([{ x: 0, y: 1 }]);
+
+        // 3. Tving en ny nøgle til at spawne på det nye kort med det samme!
+        keyStateChanged$.next();
     }
 }
 
@@ -40,4 +75,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Expose functions to window so HTML buttons can call them
 (window as any).AD = AD;
+(window as any).changeDifficulty = changeDifficulty;
 (window as any).movePlayer = movePlayer;

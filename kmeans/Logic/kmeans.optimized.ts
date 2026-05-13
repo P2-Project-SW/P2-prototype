@@ -58,7 +58,6 @@ let currentSubscription: Subscription | null = null; //initiliazes Subscription
 
 // FUNCTION CALLS
 
-startNewGame(PPI_array)
 
 //TODO: kald startNewGame i playermovement når spillet starter 
 export function startNewGame (playerData: number[][] ) { 

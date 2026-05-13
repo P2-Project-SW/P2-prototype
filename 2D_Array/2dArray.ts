@@ -131,7 +131,4 @@ function renderMap(map: any) {
     startPlayerTimer();
 }
 
-//skal bruges når spillet er done
-// // We expose the function so the html file can see it. We do this, since this script is being loaded as a module
 
-//testing false

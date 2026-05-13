@@ -7,7 +7,7 @@ import { startTimer, startTime, resetTimer } from "../SystemController/timer.js"
 import { aStar } from "../AStar/AStar.js";
 import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
-import { playerState} from "../PlayerState/PlayerState.js";
+import { playerState, resetPlayerState} from "../PlayerState/PlayerState.js";
 
 export { movePlayerPosition, movePlayer, resetPlayerPosition };
 
@@ -101,7 +101,8 @@ function movePlayer(direction: number) {
             alert("You lost:(\nTry again.");
 
             resetPlayerPosition();
-
+            resetPlayerState(); 
+            
             const currentDiv = document.getElementById("playerId");
             currentDiv?.remove();
 
@@ -197,6 +198,8 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
             alert("You have won!\nThat's amazing!");
 
             resetPlayerPosition();
+            resetPlayerState();
+
 
             const currentDiv = document.getElementById("playerId");
             currentDiv?.remove();

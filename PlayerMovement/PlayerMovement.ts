@@ -9,19 +9,14 @@ import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
 import { playerState} from "../PlayerState/PlayerState.js";
 
-export { movePlayerPosition, movePlayer, resetPlayerPosition };
+export { movePlayerPosition, movePlayer, resetPlayerPosition, resetKeyInterval };
 
+let timerInterval: ReturnType <typeof setInterval> | null = null;
 
 let y = STARTPOSITION.y; //player begins 1 tile down from the edge
 let x = STARTPOSITION.x;
 let ny = STARTPOSITION.y; 
 let nx = STARTPOSITION.x;
-
-/*
-let steps = 0; //amount of steps the player takes
-let keySpawnTime = Date.now(); //how long time the player takes to collect a key and/or reach end
-let optimalPathLength = 0; //ready to save A* path
-*/
 
 enum directions {
     UP,
@@ -106,7 +101,11 @@ function movePlayer(direction: number) {
             movePlayerPosition(map, y, x);
 
             resetTimer();
+            
+            resetKeyInterval();
         }, 200)});
+
+        timerInterval = setInterval(()=>keyPosition(map, y, x), 15000);
         }
     }
 
@@ -202,9 +201,15 @@ function playerWin(map: (typeof maps) [keyof typeof maps]) {
             movePlayerPosition(map, y, x);
 
             resetTimer();
+            clearInterval(timerInterval!);
         }, 200)
 
     }
+}
+
+function resetKeyInterval() {
+    clearInterval(timerInterval!);
+    timerInterval = null;
 }
 
 function resetPlayerPosition() {
@@ -223,14 +228,7 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
         let currentScoreText = score.textContent;
         let currentScoreNumber = parseInt(currentScoreText || '0') || 0;
 
-        /*
-        let time = Date.now() - keySpawnTime;
-        const normalizedTime = Math.min(time / 60000, 1); //normalizes time between 0 and 1
-        */
-        
-        //call A* and get the optimal path length (length of array, which A* returns)
-        //optimalPathLength = aStar(map.grid, {x: playerX, y: playerY}, {x: currentKeyPosition.x, y: currentKeyPosition.y}).length;
-        
+
         if (currentScoreNumber < map.keys - 1) {
             keyPosition(map, playerY, playerX); //spawn new key
             //keySpawnTime = Date.now();
@@ -247,18 +245,6 @@ function keyCollisionDetection(map: (typeof maps) [keyof typeof maps], playerY :
 
             score.textContent = (currentScoreNumber + 1).toString(); //increment key score
         }
- 
-        /*
-        const vector = [normalizedTime, currentScoreNumber / map.keys, steps / optimalPathLength];
-        const result = euclideanDistance(vector, PPI_array);
-
-        const difficulty = !Array.isArray(result) ? result.difficulty : undefined;
-        if(difficulty === "EASY") map.range = 5;
-        if(difficulty === "FLOW") map.range = 10;
-        if(difficulty === "HARD") map.range = 15;
-
-        steps = 0;
-        */
     }
 }
 

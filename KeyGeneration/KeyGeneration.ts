@@ -3,6 +3,7 @@ import { TILE } from "../Constants/constants.js";
 export { keyPosition, clearKeyPosition }
 export let currentKeyPosition = { y : 0, x : 0}
 
+
 function keyPosition(map: (typeof maps) [keyof typeof maps], playerY : number, playerX : number) {
     //remove existing key
     const currentDiv = document.getElementById("svgContainer");

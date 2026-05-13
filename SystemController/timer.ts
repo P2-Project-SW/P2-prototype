@@ -19,7 +19,7 @@ function updateTimer() {
 
     if (timeLeft <= 0) {
         resetTimer();
-        
+
         if(timeOut === null) return;
         timeOut();
         return;

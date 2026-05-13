@@ -1,6 +1,6 @@
-import { getTileSize, maps, getActiveMap } from "../2D Array/2dArray.js";
+import { getTileSize, maps, getActiveMap } from "../2D_Array/2dArray.js";
 import { keyPosition, currentKeyPosition, clearKeyPosition } from "../KeyGeneration/KeyGeneration.js";
-import { STARTPOSITION, TILE } from "../2D Array/2dArray.js";
+import { STARTPOSITION, TILE } from "../2D_Array/2dArray.js";
 import { euclideanDistance, PPI_array } from "../DDA/k_means/k_means.js";
 import { startTimer, startTime, resetTimer } from "../SystemController/timer.js";
 //import { buildPerformanceVector } from "../DDA/k_means/Logic/DDA.js";

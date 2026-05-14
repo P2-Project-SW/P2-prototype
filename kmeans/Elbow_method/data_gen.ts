@@ -53,9 +53,9 @@ function makeData(samples: number, centroid: any[], stdDev: number) {
 
 //til k_means_optimized
 const PPI_array = [
-    makeData(3, centroids_array[0]!, 0.10),
-    makeData(3, centroids_array[1]!, 0.10),
-    makeData(3, centroids_array[2]!, 0.10),
+    makeData(1, centroids_array[0]!, 0.10),
+    makeData(1, centroids_array[1]!, 0.10),
+    makeData(1, centroids_array[2]!, 0.10),
     ].flat();
 
 //til elbow_method

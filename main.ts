@@ -2,15 +2,22 @@
 import { AD } from './kmeans/Logic/DDA.action.js';
 import { playerPosition$, optimalPath$ } from './kmeans/Logic/DDA.observable.js';
 import { getActiveMap } from './2D_Array/2dArray.js';
-import { movePlayer } from './PlayerMovement/PlayerMovement.js';
+import { movePlayer, resetPlayerPosition } from './PlayerMovement/PlayerMovement.js';
 import { keyStateChanged$ } from './kmeans/Logic/DDA.observable.js';
 import { cancelActiveSpawnTimer } from './kmeans/Logic/DDA.observable.js';
+import { startSession } from './kmeans/Logic/DDA.observable.js';
+import { resetPlayerDiv } from './PlayerMovement/PlayerView.js';
 
 /**
  * Central initialisering af spillet
  */
 function initGame() {
-    console.log("initgame bliver kaldt");
+
+    startSession();
+     console.log("[main] spil starter");
+    keyStateChanged$.next();
+    console.log("[main] key state modtaget");
+   
 
     AD(null);
     const startingMap = getActiveMap();
@@ -20,9 +27,6 @@ function initGame() {
         playerPosition$.next({ x: 0, y: 1 });
         optimalPath$.next([{ x: 0, y: 1 }]);
         
-        // --- SPAR DET ALLERFØRSTE SPAWN I GANG VED OPSTART ---
-        keyStateChanged$.next();
-        
         console.log("DDA systemet er succesfuldt startet.");
     } else {
         console.error("Fejl: Kunne ikke generere det initiale kort under opstart.");
@@ -31,7 +35,9 @@ function initGame() {
 
 
 function changeDifficulty(mode: string | null) {
-    console.log(`🎛️ Manuelt sværhedsgradsskift triggeret: ${mode}`);
+    resetPlayerPosition();
+    resetPlayerDiv();
+    console.log(` Manuelt sværhedsgradsskift triggeret: ${mode}`);
     
     // 1. Stop alle igangværende timere fra det gamle map, så de ikke spawner spøgelsesnøgler
     cancelActiveSpawnTimer();
@@ -40,10 +46,10 @@ function changeDifficulty(mode: string | null) {
         // Hvis der trykkes på "Initial Start"
         AD(null);
     } else {
-        // Vi bygger et komplet ClusterInfo-objekt for at undgå runtime-fejl i switchen
         // Vi mapper EASY -> index 0, FLOW -> index 1, HARD -> index 2
-        let targetIndex = 1;
+        let targetIndex = 1; //starter ved FLOW
         if (mode === 'EASY') targetIndex = 0;
+        if (mode === 'FLOW') targetIndex = 1;
         if (mode === 'HARD') targetIndex = 2;
 
         const mockCluster = {

@@ -1,24 +1,54 @@
-import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
-import { DDA_updater, startNewGame } from './kmeans.optimized.js';
+import { BehaviorSubject, combineLatest, Subject, startWith, map ,interval, merge } from 'rxjs';
+import { DDA_updater, startNewGame, type ClusterInfo } from './kmeans.optimized.js';
 import { calculateNextKey } from './DDA.action.js';
 import { PPI_array } from '../Elbow_method/data_gen.js';
-import { getActiveMap, TILE } from '../../2D_Array/2dArray.js';
+import { getActiveMap, STARTPOSITION, TILE } from '../../2D_Array/2dArray.js';
 import { clearKeyPosition, currentKeyPosition } from '../../KeyGeneration/KeyGeneration.js';
 import { playerState } from '../../PlayerState/PlayerState.js';
 import type { Point } from '../../AStar/AStar.js';
+import type { KeySpawnTarget } from './DDA.action.js';
+
+const initialCluster: ClusterInfo = {
+    index: 1,
+    label: "FLOW",
+    color: "blue",
+    currentDist: 0,
+}
 
 // Simple databeholdere – de må IKKE trigge combineLatest for hvert skridt
 export const playerPosition$ = new BehaviorSubject<Point | null>(null); 
 export const optimalPath$ = new BehaviorSubject<Point[]>([]);
-
-// Dette Subject modtager udelukkende besked ved opstart eller fysisk kollision
 export const keyStateChanged$ = new Subject<void>();
+
+//første kørsel uden kmeans -> startSession()
+export const gameStarted$ = new Subject<void>();
+export const initialKeySpawn$ = gameStarted$.pipe(
+    map(() => {
+        console.log("[DDA system] spawner første key (pre-kmeans)");
+        return initialCluster
+    })
+);
+
 
 // Strømmen lytter udelukkende på din K-means AI og dine diskrete spilhændelser
 export const gameStatus$ = combineLatest({
     trigger: keyStateChanged$,
-    currCluster: DDA_updater
-});
+    currCluster: DDA_updater.pipe(startWith(initialCluster))
+}).pipe(
+    map(({currCluster}) => currCluster)
+)
+
+//merger subscriber 
+merge(initialKeySpawn$, gameStatus$).subscribe((cluster) => {
+    console.log(`[DDA system]: spawn trigger modtaget: ${cluster.label}`);
+    executeSpawnLogic(cluster);
+})
+
+
+export function startSession () {
+    console.log("startSession kaldt - spawner første key");
+    gameStarted$.next();
+}
 
 let spawnTimeout: any = null;
 
@@ -60,7 +90,7 @@ function executeSpawnLogic(cluster: any) {
     const currentPos = playerPosition$.getValue() ?? { x: 0, y: 1 };
     const currentPath = optimalPath$.getValue();
 
-    // Beregn næste logiske spawn-target dynamisk ud fra K-means og A* stiens længde
+    // Beregn næste logiske spawn-target ud fra K-means og A* stiens længde
     const keyTarget = calculateNextKey(currentPos, currentPath, cluster);
     if (keyTarget === null) return;
 
@@ -88,6 +118,7 @@ function executeSpawnLogic(cluster: any) {
 
     if (spawnTimeout) clearTimeout(spawnTimeout);
     
+    //TODO: første key bliver sat i et interval
     // Tidsbaseret rullering: Hvis intervallet udløber, kalder funktionen sig selv igen asynkront
     spawnTimeout = setTimeout(() => {
         console.log("[DDA System] Interval udløbet uden opsamling. Roterer nøglens position...");
@@ -95,9 +126,5 @@ function executeSpawnLogic(cluster: any) {
         executeSpawnLogic(freshCluster);
     }, spawnDelay);
 }
-
-gameStatus$.subscribe(({ currCluster }) => {
-    executeSpawnLogic(currCluster);
-});
 
 startNewGame(PPI_array);

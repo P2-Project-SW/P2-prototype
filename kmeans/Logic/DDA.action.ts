@@ -8,6 +8,7 @@ export type KeySpawnTarget = {
     interval: number;    
 };
 
+
 export type mapConfig = {
     size: number;
     range: number;
@@ -15,18 +16,19 @@ export type mapConfig = {
     active: boolean;
 };
 
-// Start-fallback til spillets første sekund, hvis K-means ikke har data klar endnu
-const initialFallbackConfig: mapConfig = {
+// Start-fallback til spillets første state, hvis K-means ikke har data klar endnu
+const initialMapConfig: mapConfig = {
     size: 15,
     range: 8, 
     keys: 2,
     active: true
 };
 
+//TODO: lave initial clusterinfo til første kald da A* og kmeans ikke er klar (første periode
 export function calculateNextKey (
     playerPosition: Point,
     currentPath: Point[], 
-    cluster: ClusterInfo
+    cluster: ClusterInfo | null
 ): KeySpawnTarget | null {
 
     const map = getActiveMap();
@@ -37,26 +39,34 @@ export function calculateNextKey (
         return null;
     }
     
-    const pathLength = currentPath ? currentPath.length : 0;
-    let spawnInterval = 5000;
+    const pathLength = currentPath.length ? currentPath.length : 0;
+    let spawnInterval = 7000;
     let spawnRange = 10; 
 
-    switch (cluster.label.toUpperCase()) {
-        case 'EASY':
+    console.log("[DDA action]: pathLength is currently", pathLength);
+
+    const clusterLabel = cluster?.label ?? "FLOW";
+
+    switch (clusterLabel) {
+        case  null:
+            spawnInterval
+            spawnRange
+            break;
+        case "EASY":
             spawnInterval = 9000; 
             // Sat et loft på max 8 felter væk
-            spawnRange = Math.min(10, Math.max(4, Math.floor(pathLength * 0.5))); 
+            spawnRange = Math.min(15, Math.max(5, Math.floor(pathLength * 0.5))); 
             break;
 
-        case 'FLOW':
+        case "FLOW":
             spawnInterval = 7000; 
             // Sat et fornuftigt FLOW-loft på max 11 felter væk, så den ikke spawner ved EXIT under opstart
-            spawnRange = Math.min(20, Math.max(6, Math.floor(pathLength * 0.5))); 
+            spawnRange = Math.min(20, Math.max(10, Math.floor(pathLength * 0.5))); 
             break;
 
-        case 'HARD':
+        case "HARD":
             spawnInterval = 5000; 
-            spawnRange = 30; 
+            spawnRange = 20; 
             break;
         default:
             spawnInterval = 2000;
@@ -66,7 +76,7 @@ export function calculateNextKey (
     const nextPosition = generateCoordinates(
         playerPosition, 
         currentPath, 
-        cluster.label.toUpperCase(), 
+        clusterLabel, 
         spawnRange
     );
 
@@ -110,7 +120,6 @@ function generateCoordinates (
         }
     }
 
-    // --- DYNAMISK GRID-BASERET SØGNING (INGEN PATH-AFHÆNGIGHED) ---
     // Vi søger på tværs af hele banens grid for at finde valide felter, hvilket fjerner A* feedback-loopen
     if (diffMode === 'EASY' || diffMode === 'FLOW') {
         const validPoints: Point[] = [];
@@ -168,16 +177,18 @@ function generateCoordinates (
    return { x: validX, y: validY };
 }
 
+//TODO: skal affect første periode i næste spil
 // AD (Architectural Difficulty / Map Generator)
 export function AD (cluster: ClusterInfo | null): mapConfig {
     if (!cluster) {
-        generateDynamicMap(initialFallbackConfig.size, initialFallbackConfig.range, initialFallbackConfig.keys);
-        return initialFallbackConfig;
+        generateDynamicMap(initialMapConfig.size, initialMapConfig.range, initialMapConfig.keys);
+        return initialMapConfig;
     }
 
-    // --- DYNAMISK SKALERING AF BANEN (INGEN HARDCODEDE STØRRELSER) ---
-    // Vi lader banens størrelse og antallet af nøgler vokse dynamisk baseret på K-means indekset
-    const clusterIndex = cluster.index; // F.eks 0, 1, 2...
+    // SKALERING AF BANEN
+    // banens størrelse og antallet af nøgler vokse dynamisk baseret på K-means indekset
+    const clusterIndex = cluster.index; // 0, 1, 2...
+
     
     const size = 15 + (clusterIndex * 10);     // Indeks 0 = 15x15, Indeks 1 = 25x25, Indeks 2 = 35x35
     const range = 8 + (clusterIndex * 2);      // Indeks 0 = 8, Indeks 1 = 10, Indeks 2 = 12

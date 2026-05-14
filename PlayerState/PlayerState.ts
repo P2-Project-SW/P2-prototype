@@ -1,5 +1,17 @@
 console.log("playerState.ts LOADED");
 
+export type PlayerState = {
+    currentTime: number;
+    collectedKeys: number;
+    rightSteps: number;
+    wrongSteps: number;
+};
+
+export type MinMax = {
+    time: [number, number];
+    path: [number, number];
+    keys: [number, number];
+};
 
 export const playerState = {
     currentTime: 0,
@@ -8,21 +20,15 @@ export const playerState = {
     wrongSteps: 0
 };
 
-export const minMax = {
+export const minMax: MinMax = {
     time: [0, 0],
     path: [0, 0],
     keys: [0, 0]
 };
 
-let timerInterval: number | null = null;
 
-export function startPlayerTimer() {
-    if (timerInterval !== null) clearInterval(timerInterval);
 
-    timerInterval = setInterval(() => {
-        playerState.currentTime++;
-    }, 1000);
-}
+
 
 
 export function resetPlayerState() {

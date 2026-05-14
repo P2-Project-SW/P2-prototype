@@ -1,4 +1,4 @@
-import type { PlayerState, MinMax, Weights } from '../Types.js';
+/*import type { PlayerState, MinMax, Weights } from '../Types.js';
 import { insertTestData } from './DDA.js';
 
 const minMax: MinMax = {
@@ -35,7 +35,7 @@ setInterval(() => {
 
 }, 1000);
 
-
+*/
 
     
     

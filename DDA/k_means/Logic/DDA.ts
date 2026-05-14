@@ -1,9 +1,25 @@
-import type { PlayerState, MinMax, Weights } from '../Types.js';
+import type { PlayerState, MinMax, } from "../../../PlayerState/PlayerState.js";
+export { normalize, invert, buildPerformanceVector, computeWeightedScore, computeStepRatio, weights, performanceHistory, sampleAndStore };
+export type { Weights };
 
-export { normalize, invert, buildPerformanceVector, computeWeightedScore, computeStepRatio, insertTestData };
+
+ type Weights = {
+    Time: number;
+    Path: number;
+    Keys: number;
+};
+
+ const weights: Weights = {
+    Time: 0.33,
+    Path: 0.33,
+    Keys: 0.33
+};
+
+ const performanceHistory: number[][] = [];
 
 // Normalizing function to turn values into a number between 0 and 1
 function normalize(value: number, minValue: number, maxValue: number): number {
+    if(maxValue === minValue) return 0;
     return Math.min(1, Math.max(0, (value - minValue) / (maxValue - minValue)));
 }
 
@@ -18,11 +34,11 @@ function computeWeightedScore(v: number, weight: number) {
 
 // Path efficiency = wrongSteps / (rightSteps + wrongSteps)
 function computeStepRatio(rightSteps: number, wrongSteps: number) {
-    if (rightSteps + wrongSteps === 0) return 0; // avoid NaN
+    if (rightSteps + wrongSteps === 0) return 0;
     return wrongSteps / (rightSteps + wrongSteps); // already 0–1
 }
 
-function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: Weights) {
+function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: Weights): number[] {
 
     // TIME 
     const timeNorm = normalize(state.currentTime, minMax.time[0], minMax.time[1]);
@@ -39,9 +55,18 @@ function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: Wei
     const weightedCollect = computeWeightedScore(keysInverted, weights.Keys);
 
     // Final vector: [time, keys, path]
-    return [[weightedTime, weightedCollect, weightedPath]];
+    return [weightedTime, weightedCollect, weightedPath];
 }
 
+function sampleAndStore(state: PlayerState, minMax: MinMax, weights: Weights) {
+    const vector = buildPerformanceVector(state, minMax, weights);
+    performanceHistory.push(vector);
+    return vector;
+}
+
+
+
+/*
 function insertTestData(vector: number[][], playerState: PlayerState, minMax: MinMax, weights: Weights) {
     const newData = buildPerformanceVector(playerState, minMax, weights);
     vector.push(...newData);
@@ -49,3 +74,4 @@ function insertTestData(vector: number[][], playerState: PlayerState, minMax: Mi
     console.log("Inserted:", newData);
     console.log("Vector now:", vector);
 }
+*/

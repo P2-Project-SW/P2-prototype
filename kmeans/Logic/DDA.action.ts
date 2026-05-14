@@ -39,7 +39,7 @@ export function calculateNextKey (
         return null;
     }
     
-    const pathLength = currentPath.length ? currentPath.length : 0;
+    const pathLength = currentPath ? currentPath.length: 0;
     let spawnInterval = 7000;
     let spawnRange = 10; 
 

@@ -1,12 +1,13 @@
 // main.ts
 import { AD } from './kmeans/Logic/DDA.action.js';
 import { playerPosition$, optimalPath$ } from './kmeans/Logic/DDA.observable.js';
-import { getActiveMap } from './2D_Array/2dArray.js';
-import { movePlayer, resetPlayerPosition } from './PlayerMovement/PlayerMovement.js';
+import { getActiveMap, STARTPOSITION } from './2D_Array/2dArray.js';
+import { movePlayer, resetPlayerPosition, computeOptimalPath } from './PlayerMovement/PlayerMovement.js';
 import { keyStateChanged$ } from './kmeans/Logic/DDA.observable.js';
 import { cancelActiveSpawnTimer } from './kmeans/Logic/DDA.observable.js';
 import { startSession } from './kmeans/Logic/DDA.observable.js';
 import { resetPlayerDiv } from './PlayerMovement/PlayerView.js';
+
 
 /**
  * Central initialisering af spillet
@@ -14,18 +15,18 @@ import { resetPlayerDiv } from './PlayerMovement/PlayerView.js';
 function initGame() {
 
     startSession();
-     console.log("[main] spil starter");
+
     keyStateChanged$.next();
-    console.log("[main] key state modtaget");
-   
 
     AD(null);
     const startingMap = getActiveMap();
     
     if (startingMap) {
+        const observePath = computeOptimalPath( startingMap.grid,  STARTPOSITION.x, STARTPOSITION.y);
+        optimalPath$.next([...observePath]);
         // Sæt de korrekte startværdier i dine adresser
         playerPosition$.next({ x: 0, y: 1 });
-        optimalPath$.next([{ x: 0, y: 1 }]);
+        
         
         console.log("DDA systemet er succesfuldt startet.");
     } else {
@@ -65,10 +66,12 @@ function changeDifficulty(mode: string | null) {
 
     const newMap = getActiveMap();
     if (newMap) {
+        const observePath = computeOptimalPath( newMap.grid,  STARTPOSITION.x, STARTPOSITION.y);
+        optimalPath$.next([...observePath]);
+
         // 2. Nulstil spillerens position og rute i RxJS til det nye map
         playerPosition$.next({ x: 0, y: 1 });
-        optimalPath$.next([{ x: 0, y: 1 }]);
-
+        
         // 3. Tving en ny nøgle til at spawne på det nye kort med det samme!
         keyStateChanged$.next();
     }

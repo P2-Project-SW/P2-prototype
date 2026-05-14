@@ -47,6 +47,22 @@ function computePath(map: any, grid: number[][], x: number, y: number): Point[] 
     return aStar(grid, start, goal);
 }
 
+export function computeOptimalPath( grid: number[][], x: number, y: number): Point[] {
+    const start: Point = { x, y };
+    let goal: Point;
+
+    // SIKRING: Hvis der ikke er en aktiv nøgle på kortet endnu, søger A* mod udgangen (EXIT) for at undgå Array(0) crash
+        const exit = findGoal(grid);
+        if(!exit){
+            console.error("Exit not found in grid");
+            return [{ x, y }]; // Sikkerhedsfallback
+        }
+        goal = exit;
+
+    return aStar(grid, start, goal);
+}
+
+
 function movePlayer(direction: number) {
     console.log("movePlayer() called, direction:", direction);
 
@@ -124,8 +140,6 @@ function movePlayer(direction: number) {
 
     // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
-    const observePath = computePath(map, map.grid, x, y);
-    optimalPath$.next(observePath);
 
     if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
         playerState.rightSteps++;

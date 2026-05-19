@@ -3,7 +3,7 @@ import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveB
 export { getTileSize, getActiveMap, generateDynamicMap };
 import { movePlayerPosition, resetPlayerDiv as resetPlayerPosition } from "../PlayerMovement/PlayerView.js";
 import { resetPlayerState, setMinMaxForMap, startPlayerTimer} from "../PlayerState/PlayerState.js";
-
+import { resetInternalPlayerPosition } from "../PlayerMovement/PlayerMovement.js";
  
 
 export const STARTPOSITION = { y: 1, x: 0 }
@@ -125,6 +125,7 @@ function renderMap(map: any) {
     resetPlayerPosition();
     movePlayerPosition(map, 1, 0);
     resetPlayerState();
+    resetInternalPlayerPosition();
 
     //const size = map.grid.length;
     setMinMaxForMap(rows);

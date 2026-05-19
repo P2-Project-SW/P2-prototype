@@ -15,6 +15,7 @@ import { movePlayerPosition, resetPlayerDiv } from "./PlayerView.js";
 
 // Eksportér de korrekte navne til resten af dit projekt
 export { movePlayerPosition, movePlayer, resetPlayerDiv as resetPlayerPosition };
+export {resetInternalPlayerPosition};
 
 let y = STARTPOSITION.y; 
 let x = STARTPOSITION.x;
@@ -69,12 +70,9 @@ function movePlayer(direction: number) {
     const map = getActiveMap();
     if (map === null) return;
 
-    // Kør A* efter hvert skridt
-    const path = computePath(map, map.grid, x, y);
-    console.log("Optimal path from current position:", path);
 
-    // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
-    const optimalNext = path && path.length > 1 ? path[1] : null;
+
+    
 
     if (direction === directions.UP) {
         nx = x;
@@ -131,21 +129,39 @@ function movePlayer(direction: number) {
         }
     }
 
+     // Kør A* efter hvert skridt
+    if(nx !== x || ny !== y) {
+        const pathOld = computePath(map, map.grid, x, y);
+
+        // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
+     
+        const expectedNextTile = pathOld && pathOld.length > 1 ? pathOld[1] : null;
+
+        const isCorrectMove =
+        expectedNextTile &&
+        expectedNextTile.x === nx &&
+        expectedNextTile.y === ny;
+
+        if (isCorrectMove) {
+        playerState.rightSteps++;
+        } else {
+        playerState.wrongSteps++;
+        }
+    }
+
     x = nx;
     y = ny;
     console.log("UPDATED POSITION:", x, y);
 
+    const pathCurrent = computePath(map, map.grid, x, y);
+    console.log("Optimal path from current position:", pathCurrent);
+
+
     const activeMap = getActiveMap();
     keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
 
-    // Stream opdateringerne synkront ud til RxJS
+     // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
-
-    if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
-        playerState.rightSteps++;
-    } else {
-        playerState.wrongSteps++;
-    }
 
     if (map.grid[ny]![nx] === TILE.KEY) {
         playerState.collectedKeys++;
@@ -254,3 +270,11 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
             break;
     }
 });
+
+function resetInternalPlayerPosition() {
+    x = STARTPOSITION.x;
+    y = STARTPOSITION.y;
+    nx = STARTPOSITION.x;
+    ny = STARTPOSITION.y;
+}
+

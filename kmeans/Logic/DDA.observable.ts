@@ -6,8 +6,7 @@ import { getActiveMap, STARTPOSITION, TILE } from '../../2D_Array/2dArray.js';
 import { clearKeyPosition, currentKeyPosition } from '../../KeyGeneration/KeyGeneration.js';
 import { playerState, minMax, weights } from '../../PlayerState/PlayerState.js';
 import type { Point } from '../../AStar/AStar.js';
-import type { KeySpawnTarget } from './DDA.action.js';
-import { buildPerformanceVector } from "./DDA.js";
+
 
 
 
@@ -134,16 +133,7 @@ function executeSpawnLogic(cluster: any) {
 
 
 
-setInterval(() => {
-    const vector = buildPerformanceVector(playerState, minMax, weights);
-
-    // Send vector into kMeans
-    DDA_updater.next({
-        vector: vector[0],
-        cluster: null 
-    });
-
-}, 15000); 
+startNewGame(PPI_array);
 
 
 

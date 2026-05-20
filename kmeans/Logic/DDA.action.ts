@@ -180,7 +180,8 @@ function generateCoordinates (
 //TODO: skal affect første periode i næste spil
 // AD (Architectural Difficulty / Map Generator)
 export function AD (cluster: ClusterInfo | null): mapConfig {
-    if (!cluster) {
+    if (!cluster || !cluster.label || Number.isNaN(cluster.index)) {
+        console.warn("Cluster undefined or invalid — using initial map config");
         generateDynamicMap(initialMapConfig.size, initialMapConfig.range, initialMapConfig.keys);
         return initialMapConfig;
     }

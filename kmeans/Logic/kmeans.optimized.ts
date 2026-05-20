@@ -5,6 +5,9 @@ import { startWith, map, pairwise, tap, take, scan,  } from 'rxjs/operators';
 
 import { centroids_array, makeData, PPI_array } from '../Elbow_method/data_gen.js'
 import { errorContext } from 'rxjs/internal/util/errorContext';
+import { buildPerformanceVector} from "./DDA.js";
+import { minMax } from "../../PlayerState/PlayerState.js";
+
 
 // CONSTANTS
 
@@ -29,13 +32,7 @@ export type StreamAcc = {
     latest: LatestData | null;
 };
 
-const initialAcc: StreamAcc = {
-    lastIndex: 1, // første cluster assigned er FLOW
-    sums: [[0,0,0], [0,0,0], [0,0,0]],
-    members: [0, 0, 0],
-    centroids: initialCen,
-    latest: null
-};
+
 
 type Centroids = {
     EASY: number[],
@@ -49,6 +46,14 @@ let initialCen: Centroids = {
     HARD: [0.25, 0.25, 0.15]
 }
 
+const initialAcc: StreamAcc = {
+    lastIndex: 1, // første cluster assigned er FLOW
+    sums: [[0,0,0], [0,0,0], [0,0,0]],
+    members: [0, 0, 0],
+    centroids: initialCen,
+    latest: null
+};
+
 
 const DIFFICULTY_LABELS = ["EASY", "FLOW", "HARD"]; // C1, C2, C3
 const CENTROID_COLORS = ['red', 'blue', 'green']; 
@@ -59,12 +64,12 @@ let currentSubscription: Subscription | null = null; //initiliazes Subscription
 // FUNCTION CALLS
 
 
+
 //TODO: kald startNewGame i playermovement når spillet starter 
-export function startNewGame (playerData: number[][] ) { 
-    // Start new stream
-    const dataStream = PPI_stream(playerData, 5000);
-    subscribeToStream(dataStream);
+export function startNewGame() {
+    console.log("DDA ready for real gameplay vectors");
 }
+
 
 //calculates euclidean distance from datapoints to centroids
 export function euclideanDistance (centroids: Centroids, newVector: number[]) {
@@ -329,4 +334,20 @@ if (TESTER) {
     }
 } else {
     console.error("Kunne ikke finde 'tester' elementet");
+}
+
+// ⭐ Minimal fix: push real gameplay vectors into k-means
+export function pushRealVector(vector: number[]) {
+    const dists = euclideanDistance(initialCen, vector);
+    const cluster = assignCluster(dists, initialAcc.lastIndex);
+
+    // Update accumulators
+    initialAcc.sums[cluster.index] = initialAcc.sums[cluster.index].map((v, i) => v + vector[i]);
+    initialAcc.members[cluster.index]++;
+
+    // Emit the real cluster
+    DDA_updater.next(cluster);
+
+    // Update lastIndex so cluster transitions work
+    initialAcc.lastIndex = cluster.index;
 }

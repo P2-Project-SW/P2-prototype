@@ -1,6 +1,6 @@
 import type { PlayerState, MinMax, Weights } from './types.js';
 
-export { normalize, invert, buildPerformanceVector, computeWeightedScore, computeStepRatio, insertTestData };
+export { normalize, invert, buildPerformanceVector, computeWeightedScore, computeStepRatio };
 
 // Normalizing function to turn values into a number between 0 and 1
 function normalize(value: number, minValue: number, maxValue: number): number {
@@ -42,10 +42,10 @@ function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: Wei
     return [[weightedTime, weightedCollect, weightedPath]];
 }
 
-function insertTestData(vector: number[][], playerState: PlayerState, minMax: MinMax, weights: Weights) {
+/*function insertTestData(vector: number[][], playerState: PlayerState, minMax: MinMax, weights: Weights) {
     const newData = buildPerformanceVector(playerState, minMax, weights);
     vector.push(...newData);
 
     console.log("Inserted:", newData);
     console.log("Vector now:", vector);
-}
+}*/

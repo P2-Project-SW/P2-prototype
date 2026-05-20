@@ -3,8 +3,8 @@ import { recursiveBacktracker } from "../MapGen/RecursiveBacktracking/RecursiveB
 export { getTileSize, getActiveMap, generateDynamicMap };
 import { movePlayerPosition, resetPlayerDiv as resetPlayerPosition } from "../PlayerMovement/PlayerView.js";
 import { resetPlayerState, setMinMaxForMap, startPlayerTimer} from "../PlayerState/PlayerState.js";
-import { resetInternalPlayerPosition } from "../PlayerMovement/PlayerMovement.js";
- 
+import { resetInternalPlayerPosition, computeOptimalPath } from "../PlayerMovement/PlayerMovement.js";
+import { playerPosition$, optimalPath$, keyStateChanged$, startSession } from "../kmeans/Logic/DDA.observable.js";
 
 export const STARTPOSITION = { y: 1, x: 0 }
 export const TILE = { WALL: 0, PATH: 1, START: 2, END: 3, KEY: 4 }
@@ -121,15 +121,38 @@ function renderMap(map: any) {
             container.appendChild(div);
         });
     });
-    //keyPosition(map, STARTPOSITION.y, STARTPOSITION.x);
-    resetPlayerPosition();
-    movePlayerPosition(map, 1, 0);
+    // Reset player state
     resetPlayerState();
     resetInternalPlayerPosition();
+    resetPlayerPosition();
+    movePlayerPosition(map, STARTPOSITION.y, STARTPOSITION.x);
 
-    //const size = map.grid.length;
+    // Set min/max for DDA
     setMinMaxForMap(rows);
+
+    // Start timer
     startPlayerTimer();
+
+    // Set player position in RxJS
+    playerPosition$.next({
+        x: STARTPOSITION.x,
+        y: STARTPOSITION.y
+    });
+
+    // Compute optimal path
+    const path = computeOptimalPath(
+        map.grid,
+        STARTPOSITION.x,
+        STARTPOSITION.y
+    );
+    optimalPath$.next([...path]);
+
+    // Trigger first key spawn
+    keyStateChanged$.next();
+
+    // Start DDA session AFTER map exists
+    setTimeout(() => startSession(),0);
 }
+
 
 

@@ -1,5 +1,5 @@
 console.log("playerState.ts LOADED");
-
+import type { MinMax } from '../kmeans/Logic/types.js';
 
 export const playerState = {
     currentTime: 0,
@@ -8,7 +8,7 @@ export const playerState = {
     wrongSteps: 0
 };
 
-export const minMax = {
+export const minMax: MinMax = {
     time: [0, 0],
     path: [0, 0],
     keys: [0, 0]

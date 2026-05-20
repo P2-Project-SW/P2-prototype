@@ -10,17 +10,18 @@ import { playerPosition$, optimalPath$, cancelActiveSpawnTimer } from "./../kmea
 import { AD } from "../kmeans/Logic/DDA.action.js";
 import { DDA_updater } from "../kmeans/Logic/kmeans.optimized.js";
 import { keyStateChanged$ } from "./../kmeans/Logic/DDA.observable.js";
-
+import { playerState$ } from "../kmeans/Logic/DDA.observable.js";
 import { movePlayerPosition, resetPlayerDiv } from "./PlayerView.js";
 
 // Eksportér de korrekte navne til resten af dit projekt
 export { movePlayerPosition, movePlayer, resetPlayerDiv as resetPlayerPosition };
 export {resetInternalPlayerPosition};
 
-let y = STARTPOSITION.y; 
-let x = STARTPOSITION.x;
-let ny = STARTPOSITION.y; 
-let nx = STARTPOSITION.x;
+let y = 0;
+let x = 0;
+let ny = 0;
+let nx = 0;
+
 
 enum directions {
     UP,
@@ -120,7 +121,8 @@ function movePlayer(direction: number) {
                     x = STARTPOSITION.x;
                     y = STARTPOSITION.y;
 
-                    keyPosition(map, y, x);
+                    keyStateChanged$.next();
+
                     score.textContent = "0";
                     movePlayerPosition(map, y, x);
                     resetTimer();
@@ -158,7 +160,11 @@ function movePlayer(direction: number) {
 
 
     const activeMap = getActiveMap();
-    keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
+
+    
+    if(currentKeyPosition){
+        keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
+    }
 
      // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
@@ -173,6 +179,7 @@ function movePlayer(direction: number) {
         wrong: playerState.wrongSteps,
         keys: playerState.collectedKeys
     });
+    playerState$.next({ ...playerState });
 
     playerWin(map);
 }

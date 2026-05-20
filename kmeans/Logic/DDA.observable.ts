@@ -1,5 +1,5 @@
 import { BehaviorSubject, combineLatest, Subject, startWith, map ,interval, merge } from 'rxjs';
-import { DDA_updater, startNewGame, type ClusterInfo } from './kmeans.optimized.js';
+import { pushRealVector, DDA_updater, startNewGame, type ClusterInfo } from './kmeans.optimized.js';
 import { calculateNextKey } from './DDA.action.js';
 import { PPI_array } from '../Elbow_method/data_gen.js';
 import { getActiveMap, STARTPOSITION, TILE } from '../../2D_Array/2dArray.js';
@@ -7,6 +7,8 @@ import { clearKeyPosition, currentKeyPosition } from '../../KeyGeneration/KeyGen
 import { playerState } from '../../PlayerState/PlayerState.js';
 import type { Point } from '../../AStar/AStar.js';
 import type { KeySpawnTarget } from './DDA.action.js';
+import { buildPerformanceVector } from "./DDA.js";
+import { minMax } from "../../PlayerState/PlayerState.js";
 
 const initialCluster: ClusterInfo = {
     index: 1,
@@ -19,6 +21,21 @@ const initialCluster: ClusterInfo = {
 export const playerPosition$ = new BehaviorSubject<Point | null>(null); 
 export const optimalPath$ = new BehaviorSubject<Point[]>([]);
 export const keyStateChanged$ = new Subject<void>();
+export const playerState$ = new BehaviorSubject({ ...playerState });
+
+const weights = { Time: 1, Keys: 1, Path: 1 };
+
+playerState$.subscribe(state => {
+    // Prevent running before map + minMax are initialized
+    const map = getActiveMap();
+    if (!minMax.time || minMax.time[1] === 0) return;
+    if (!getActiveMap() || !getActiveMap().active) return;
+
+    const vector = buildPerformanceVector(state, minMax, weights)[0];
+    if(!vector) return;
+    pushRealVector(vector);
+
+});
 
 //første kørsel uden kmeans -> startSession()
 export const gameStarted$ = new Subject<void>();
@@ -31,12 +48,10 @@ export const initialKeySpawn$ = gameStarted$.pipe(
 
 
 // Strømmen lytter udelukkende på din K-means AI og dine diskrete spilhændelser
-export const gameStatus$ = combineLatest({
-    trigger: keyStateChanged$,
-    currCluster: DDA_updater.pipe(startWith(initialCluster))
-}).pipe(
-    map(({currCluster}) => currCluster)
-)
+export const gameStatus$ = keyStateChanged$.pipe(
+    map(() => DDA_updater.getValue() ?? initialCluster)
+);
+
 
 //merger subscriber 
 merge(initialKeySpawn$, gameStatus$).subscribe((cluster) => {
@@ -95,7 +110,8 @@ function executeSpawnLogic(cluster: any) {
     if (keyTarget === null) return;
 
     // Dynamisk forsinkelse: Første nøgle spawner øjeblikkeligt (0ms), efterfølgende bruger cluster-intervallet
-    const spawnDelay = map.hasSpawnedKey ? keyTarget.interval : 0;
+    const spawnDelay = keyTarget.interval;
+
     console.log(`[DDA System] Cluster: ${cluster.label} | Spawn interval sat til: ${spawnDelay}ms.`);
 
     // Placer nøglen fysisk i DOM og dit 2D-array
@@ -127,4 +143,3 @@ function executeSpawnLogic(cluster: any) {
     }, spawnDelay);
 }
 
-startNewGame(PPI_array);

@@ -15,6 +15,7 @@ type MinMax = {
     keys: [number, number];
 };
 
+
 interface Weights {
     Time: number;
     Path: number;

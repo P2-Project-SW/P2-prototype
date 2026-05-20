@@ -7,6 +7,13 @@ const array = [
     [0.70, 0.90, 0.70],
     [0.52, 0.52, 0.37],
     [0.20, 0.20, 0.10],
+    [0.70, 0.90, 0.70],
+    [0.52, 0.52, 0.37],
+    [0.20, 0.20, 0.10],
+    [0.70, 0.90, 0.70],
+    [0.52, 0.52, 0.37],
+    [0.20, 0.20, 0.10],
+    [0.70, 0.90, 0.70],
 ];
  
 describe("euclideanDistance", () => {
@@ -26,7 +33,7 @@ describe("euclideanDistance", () => {
     });
  
     it("should return a distance that is a positive number", () => {
-        const result = euclideanDistance([0.5, 0.5, 0.5], array) as EuclideanResult;
+        const result = euclideanDistance([0.6, 0.6, 0.6], array) as EuclideanResult;
         expect(result.distance).toBeGreaterThan(0);
     });
  
@@ -35,4 +42,3 @@ describe("euclideanDistance", () => {
         expect([0, 1, 2]).toContain(result.newDifficultyIndex);
     });
 });
- 

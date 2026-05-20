@@ -4,9 +4,13 @@ import { calculateNextKey } from './DDA.action.js';
 import { PPI_array } from '../Elbow_method/data_gen.js';
 import { getActiveMap, STARTPOSITION, TILE } from '../../2D_Array/2dArray.js';
 import { clearKeyPosition, currentKeyPosition } from '../../KeyGeneration/KeyGeneration.js';
-import { playerState } from '../../PlayerState/PlayerState.js';
+import { playerState, minMax, weights } from '../../PlayerState/PlayerState.js';
 import type { Point } from '../../AStar/AStar.js';
 import type { KeySpawnTarget } from './DDA.action.js';
+import { buildPerformanceVector } from "./DDA.js";
+
+
+
 
 const initialCluster: ClusterInfo = {
     index: 1,
@@ -127,4 +131,19 @@ function executeSpawnLogic(cluster: any) {
     }, spawnDelay);
 }
 
-startNewGame(PPI_array);
+
+
+
+setInterval(() => {
+    const vector = buildPerformanceVector(playerState, minMax, weights);
+
+    // Send vector into kMeans
+    DDA_updater.next({
+        vector: vector[0],
+        cluster: null 
+    });
+
+}, 15000); 
+
+
+

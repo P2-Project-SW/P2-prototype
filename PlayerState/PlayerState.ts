@@ -9,10 +9,18 @@ export const playerState = {
 };
 
 export const minMax = {
-    time: [0, 0],
-    path: [0, 0],
-    keys: [0, 0]
+    time: [0, 0] as [number, number],
+    path: [0, 0] as [number, number],
+    keys: [0, 0] as [number, number]
 };
+
+export const weights = {
+    Time: 0.33,
+    Path: 0.33,
+    Keys: 0.33
+} as const;
+
+
 
 let timerInterval: number | null = null;
 
@@ -34,25 +42,28 @@ export function resetPlayerState() {
 
 export function setMinMaxForMap(size: number) {
     if (size === 15) {
-        minMax.time = [0, 60];
-        minMax.path = [0, 200];
-        minMax.keys = [0, 1];
+        minMax.time = [0, 60] as [number, number];
+        minMax.path = [0, 200] as [number, number];
+        minMax.keys = [0, 1] as [number, number];
+
     }
     else if (size === 25) {
-        minMax.time = [0, 120];
-        minMax.path = [0, 400];
-        minMax.keys = [0, 2];
+        minMax.time = [0, 120] as [number, number];
+        minMax.path = [0, 400] as [number, number];
+        minMax.keys = [0, 2] as [number, number];
+
+    
         
     }
     else if (size === 35) {
-        minMax.time = [0, 180];
-        minMax.path = [0, 700];
-        minMax.keys = [0, 3];
+        minMax.time = [0, 180] as [number, number];
+        minMax.path = [0, 700] as [number, number];
+        minMax.keys = [0, 3] as [number, number];
 
     }
     else if (size === 51) {
-        minMax.time = [0, 300];
-        minMax.path = [0, 1200];
-        minMax.keys = [0, 4];
+        minMax.time = [0, 300] as [number, number];
+        minMax.path = [0, 1200] as [number, number];
+        minMax.keys = [0, 4] as [number, number];
     }
 }

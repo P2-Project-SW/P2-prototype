@@ -23,8 +23,6 @@
     "@types/plotly.js": "^3.0.10",
     "esbuild": "^0.28.0",
     "typescript": "^5.0.0",
-     "vitest": "^4.1.5"
+    "vitest": "^4.1.5"
   }
 }
-
-

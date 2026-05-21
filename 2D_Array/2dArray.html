@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Map Output</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.rtl.min.css" integrity="sha384-CfCrinSRH2IR6a4e6fy2q6ioOX7O6Mtm1L9vRvFZ1trBncWmMePhzvafv7oIcWiW" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script type="module" src="../dist/bundle.js"></script>
-    
+    //Link til styles   
+    <link rel="stylesheet" href="../MainMenu/styles.css" />
+    // Link til boxicons
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <title>Document</title>
     <style>
+
         body {
+        display: block !important;
+    }
+        /*body {
             background: #1a1a1a;
             color: #ffffff;
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 30px;
         }
-
+*/
 
         #map {
             margin: 20px auto;
@@ -22,9 +31,10 @@
             padding: 10px;
             border-radius: 8px;
             width: max-content;
-            display: grid;
+            display: inline-grid;
             gap: 2px;
             position: relative;
+            z-index: 101; 
         }
 
         .cell {
@@ -33,38 +43,66 @@
             border-radius: 3px;
         }
 
-        .wall { background: #7e2121; }
-        .path { background: #1a1a2e; }
+        .wall { background: #2d4a2d; }
+        .path { background: #a07850; }
         .start { background: #4caf50; }
-        .end { background: #e91e63; }
+        .end { background: #00bcd4; }
     </style>
 </head>
 
 <body>
+     <nav>
+        <div class ="nav-bar">
+            <span class ="logo"><a href="../index.html">A-MaZe-Ing</a></span>
 
-    <h1>A-Maze-Ing</h1>
+            <div class="menu">
+                <div class="logo-toggle">
+                </div>
+                <ul class="nav-links">
+                   <li><a href="../index.html">Home</a></li>
+                   <li><a href="../MainMenu/About.html">About</a></li> 
+                   <li><a href="../MainMenu/Tutorial.html">Tutorial</a></li>
+                   
 
+                </ul>
+            </div>
+        </div>
+
+        <div id="fireflies"></div>
+
+        <script src="../MainMenu/MainMenu.js"></script>
+
+    </nav>
+
+ 
+    
+
+
+<!--  
         <div class="controls">
             <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('small')">Small (15x15)</button>
             <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('medium')">Medium (25x25)</button>
             <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('large')">Large (35x35)</button>
             <button type="button" class="btn btn-outline-secondary mb-3" onclick="pickMap('xl')">XL (51x51)</button>
         </div>
+        -->
 
+    <div style="width: 100%; display: block; text-align: center; margin-top: 90px;">
     <div id="map"></div>
+    </div>
 
+    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
     <div>
-        <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button> <!--UP-->
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button>
     </div>
-
-    <div class="controls">
-        <button type="button" class="btn_arrow_controls" onclick="movePlayer(3)"> &larr; </button> <!--LEFT-->
-        <button type="button" class="btn_arrow_controls" onclick="movePlayer(2)"> &rarr; </button> <!--RIGHT-->
-    </div>
-
     <div>
-        <button type="button" class="btn_arrow_controls" onclick="movePlayer(1)"> &darr; </button> <!--DOWN-->
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(3)"> &larr; </button>
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(2)"> &rarr; </button>
     </div>
+    <div>
+        <button type="button" class="btn_arrow_controls" onclick="movePlayer(1)"> &darr; </button>
+    </div>
+</div>
 
     <!-- <script>var exports = {};</script> -->
 

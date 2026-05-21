@@ -21,6 +21,13 @@ let x = STARTPOSITION.x;
 let ny = STARTPOSITION.y; 
 let nx = STARTPOSITION.x;
 
+export function resetPlayerCoords() {
+    x = STARTPOSITION.x;
+    y = STARTPOSITION.y;
+    nx = STARTPOSITION.x;
+    ny = STARTPOSITION.y;
+}
+
 enum directions {
     UP,
     DOWN,
@@ -69,12 +76,7 @@ function movePlayer(direction: number) {
     const map = getActiveMap();
     if (map === null) return;
 
-    // Kør A* efter hvert skridt
-    const path = computePath(map, map.grid, x, y);
-    console.log("Optimal path from current position:", path);
-
-    // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
-    const optimalNext = path && path.length > 1 ? path[1] : null;
+   
 
     if (direction === directions.UP) {
         nx = x;
@@ -101,6 +103,8 @@ function movePlayer(direction: number) {
         ny = y;
     }
 
+    const playerMoved = nx !== x || ny !== y;
+
     console.log("cell value:", map.grid[ny]![nx]);
     
     movePlayerPosition(map, ny, nx);
@@ -121,6 +125,8 @@ function movePlayer(direction: number) {
                     
                     x = STARTPOSITION.x;
                     y = STARTPOSITION.y;
+                    nx = STARTPOSITION.x;
+                    ny = STARTPOSITION.y;
 
                     keyPosition(map, y, x);
                     score.textContent = "0";
@@ -131,9 +137,18 @@ function movePlayer(direction: number) {
         }
     }
 
+    
+
+     // Kør A* efter hvert skridt
+    const path = computePath(map, map.grid, x, y);
+    console.log("Optimal path from current position:", path);
+
+    // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
+    const optimalNext = path && path.length > 1 ? path[1] : null;
+    console.log("UPDATED POSITION:", x, y);
+
     x = nx;
     y = ny;
-    console.log("UPDATED POSITION:", x, y);
 
     const activeMap = getActiveMap();
     keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);
@@ -141,15 +156,18 @@ function movePlayer(direction: number) {
     // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
 
-    if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
-        playerState.rightSteps++;
-    } else {
-        playerState.wrongSteps++;
+    if(playerMoved){
+        if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
+            playerState.rightSteps++;
+        } else {
+            playerState.wrongSteps++;
+        }
     }
 
     if (map.grid[ny]![nx] === TILE.KEY) {
         playerState.collectedKeys++;
     }   
+
 
     console.log("STATE:", {
         time: playerState.currentTime,
@@ -180,6 +198,8 @@ function playerWin(map: any) {
 
             x = STARTPOSITION.x;
             y = STARTPOSITION.y;
+            nx = STARTPOSITION.x;
+            ny = STARTPOSITION.y;
 
             const clusterAverage = DDA_updater.getValue(); 
             score.textContent = "0";

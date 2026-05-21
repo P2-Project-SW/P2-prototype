@@ -2,7 +2,7 @@
 import { AD } from './kmeans/Logic/DDA.action.js';
 import { playerPosition$, optimalPath$ } from './kmeans/Logic/DDA.observable.js';
 import { getActiveMap, STARTPOSITION } from './2D_Array/2dArray.js';
-import { movePlayer, resetPlayerPosition, computeOptimalPath } from './PlayerMovement/PlayerMovement.js';
+import { movePlayer, resetPlayerPosition, computeOptimalPath, resetPlayerCoords } from './PlayerMovement/PlayerMovement.js';
 import { keyStateChanged$ } from './kmeans/Logic/DDA.observable.js';
 import { cancelActiveSpawnTimer } from './kmeans/Logic/DDA.observable.js';
 import { startSession } from './kmeans/Logic/DDA.observable.js';
@@ -42,6 +42,7 @@ function changeDifficulty(mode: string | null) {
     
     // 1. Stop alle igangværende timere fra det gamle map, så de ikke spawner spøgelsesnøgler
     cancelActiveSpawnTimer();
+    resetPlayerCoords();
 
     if (mode === null) {
         // Hvis der trykkes på "Initial Start"

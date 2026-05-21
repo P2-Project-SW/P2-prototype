@@ -1,0 +1,28 @@
+{
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "build:browser": "esbuild 2D_array/2dArray.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/P2-Project-SW/P2-prototype.git"
+  },
+  "dependencies": {
+    "plotly.js-dist": "^3.5.0",
+    "plotly.js-dist-min": "^3.5.1",
+    "rxjs": "^7.8.2",
+    "tsc": "^2.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/plotly.js": "^3.0.10",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.5"
+  }
+}

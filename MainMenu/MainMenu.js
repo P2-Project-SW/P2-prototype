@@ -85,9 +85,11 @@ window.addEventListener("click",onMouseClick);
 generatedFireflies();
 animate();
 
+console.log("THIS IS A TEST");
+
 document.addEventListener("DOMContentLoaded", function() {
      document.querySelector(".play-button").addEventListener("click", function() {
-       window.location.href = "2D_Array/2dArray.html";
+        window.location.href = "../2D_Array/2dArray.html";
      });
    });
 

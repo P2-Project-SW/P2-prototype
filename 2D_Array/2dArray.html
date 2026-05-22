@@ -40,6 +40,21 @@
         /* Gør dit dynamiske DDA-nøglespawn synligt på kortet */
         .key { background: #ffeb3b !important; } 
 
+        #hud {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    gap: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    border-radius: 10px;
+    z-index: 100;
+}
+
     </style>
 </head>
 
@@ -57,7 +72,10 @@
 
 
     <div id="map"></div>
-    <div id="keyScore">0</div>
+    <div id="hud">
+    <span>🗝️ <span id="keyScore">0</span></span>
+    <span>⏱️ <span id="Timer">02:00</span></span>
+    </div>
 
     <div>
         <button type="button" class="btn_arrow_controls" onclick="movePlayer(0)"> &uarr; </button> <!--UP-->

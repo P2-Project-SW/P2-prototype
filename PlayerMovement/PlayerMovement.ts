@@ -139,16 +139,23 @@ function movePlayer(direction: number) {
 
     
 
+
+    
+    
+
      // Kør A* efter hvert skridt
     const path = computePath(map, map.grid, x, y);
-    console.log("Optimal path from current position:", path);
+    
 
     // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
     const optimalNext = path && path.length > 1 ? path[1] : null;
-    console.log("UPDATED POSITION:", x, y);
 
     x = nx;
     y = ny;
+
+
+    console.log("UPDATED POSITION:", x, y);
+    console.log("Optimal path from current position:", path);
 
     const activeMap = getActiveMap();
     keyCollisionDetection(activeMap, y, x, currentKeyPosition.y, currentKeyPosition.x);

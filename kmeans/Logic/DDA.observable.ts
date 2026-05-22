@@ -133,7 +133,7 @@ function executeSpawnLogic(cluster: any) {
 
 
 
-startNewGame(PPI_array);
+DDA_updater.next(initialCluster);
 
 
 

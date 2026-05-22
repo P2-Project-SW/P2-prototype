@@ -44,9 +44,9 @@ type Centroids = {
 }
 
 let initialCen: Centroids = {
-    EASY: [0.75, 1, 0.75],
+    EASY: [0.25, 0.9, 0.75],
     FLOW: [0.5, 0.5, 0.35],
-    HARD: [0.25, 0.25, 0.15]
+    HARD: [0.75, 0.1, 0.1]
 }
 
 
@@ -217,7 +217,7 @@ function subscribeToStream(stream: Observable<StreamAcc>) {
                 DDA_updater.next(clusterResult)
             }
 
-                Plotly.extendTraces('tester', {
+                if(TESTER)Plotly.extendTraces('tester', {
                 x: [[data.latest.vector[0]]],
                 y: [[data.latest.vector[1]]],
                 z: [[data.latest.vector[2]]],
@@ -232,7 +232,7 @@ function subscribeToStream(stream: Observable<StreamAcc>) {
             const finalCentroids = updateCentroids(lastState.sums, lastState.members)
 
             if (lastState) {
-                Plotly.update('tester', {
+                if(TESTER)Plotly.update('tester', {
                     x: [[finalCentroids.EASY[0]], [finalCentroids.FLOW[0]], [finalCentroids.HARD[0]]],
                     y: [[finalCentroids.EASY[1]], [finalCentroids.FLOW[1]], [finalCentroids.HARD[1]]],
                     z: [[finalCentroids.EASY[2]], [finalCentroids.FLOW[2]], [finalCentroids.HARD[2]]]

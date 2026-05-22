@@ -4,9 +4,9 @@ export {centroids_array, makeData, PPI_array, boxMullerData};
 //Manual centroids array
 const centroids_array: number[][] = [
     //[x: normal time, y: normal keys, z: normal step ratio]
-    [0.75, 0.75, 0.75], // EASY (Index 0)
-    [0.5, 0.5, 0.5], // FLOW (Index 1)
-    [0.25, 0.25, 0.25] // HARD (Index 2)
+    [0.25, 0.9, 0.75], // EASY (Index 0)
+    [0.5, 0.5, 0.35], // FLOW (Index 1)
+    [0.75, 0.1, 0.1] // HARD (Index 2)
 ]
 
 function makeData(samples: number, centroid: any[], stdDev: number) {

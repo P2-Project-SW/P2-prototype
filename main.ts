@@ -7,18 +7,25 @@ import { keyStateChanged$ } from './kmeans/Logic/DDA.observable.js';
 import { cancelActiveSpawnTimer } from './kmeans/Logic/DDA.observable.js';
 import { startSession } from './kmeans/Logic/DDA.observable.js';
 import { resetPlayerDiv } from './PlayerMovement/PlayerView.js';
-
+import { buildPerformanceVector } from './kmeans/Logic/DDA.js';
+import { playerState, minMax, weights } from './PlayerState/PlayerState.js';
+import { startNewGame } from './kmeans/Logic/kmeans.optimized.js';
 
 /**
  * Central initialisering af spillet
  */
 function initGame() {
 
+    AD(null);
     startSession();
 
-    keyStateChanged$.next();
+    
 
-    AD(null);
+    setInterval(() => {
+        const vector = buildPerformanceVector(playerState, minMax, weights);
+        startNewGame(vector);
+    }, 10000);
+
     const startingMap = getActiveMap();
     
     if (startingMap) {

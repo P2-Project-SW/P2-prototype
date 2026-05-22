@@ -1,6 +1,9 @@
+import { getActiveMap } from '../2D_Array/2dArray.js';
+
 export { startTimer, startTime, resetTimer }
 
-const timerDisplay = document.getElementById("Timer");
+
+let timerDisplay: HTMLElement | null = null;
 let timerInterval: ReturnType <typeof setInterval> | null = null;
 let startTime: Date | null = null;
 let timeOut: (()=> void) | null;
@@ -12,8 +15,13 @@ function startTimer(onTimeOut: ()=> void) {
 }
 
 function updateTimer() {
+    function updateTimer() {
+    timerDisplay = document.getElementById("Timer");
     const currentTime: any = new Date();
-    const maxTime = 120000;
+    
+    const activeMap = getActiveMap();
+    const mapSize = activeMap?.grid.length ?? 15;
+    const maxTime = mapSize <= 15 ? 120000 : mapSize <= 25 ? 180000 : 300000;
     const elapsedTime = currentTime.getTime() - startTime!.getTime();
     const timeLeft = maxTime - elapsedTime;
 

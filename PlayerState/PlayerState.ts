@@ -15,9 +15,9 @@ export const minMax = {
 };
 
 export const weights = {
-    Time: 0.33,
-    Path: 0.33,
-    Keys: 0.33
+    Time: 1,
+    Path: 1,
+    Keys: 1
 } as const;
 
 
@@ -43,13 +43,13 @@ export function resetPlayerState() {
 export function setMinMaxForMap(size: number) {
     if (size === 15) {
         minMax.time = [0, 60] as [number, number];
-        minMax.path = [0, 200] as [number, number];
+        minMax.path = [0, 1] as [number, number];
         minMax.keys = [0, 1] as [number, number];
 
     }
     else if (size === 25) {
         minMax.time = [0, 120] as [number, number];
-        minMax.path = [0, 400] as [number, number];
+        minMax.path = [0, 1] as [number, number];
         minMax.keys = [0, 2] as [number, number];
 
     
@@ -57,13 +57,13 @@ export function setMinMaxForMap(size: number) {
     }
     else if (size === 35) {
         minMax.time = [0, 180] as [number, number];
-        minMax.path = [0, 700] as [number, number];
+        minMax.path = [0, 1] as [number, number];
         minMax.keys = [0, 3] as [number, number];
 
     }
     else if (size === 51) {
         minMax.time = [0, 300] as [number, number];
-        minMax.path = [0, 1200] as [number, number];
+        minMax.path = [0, 1] as [number, number];
         minMax.keys = [0, 4] as [number, number];
     }
 }

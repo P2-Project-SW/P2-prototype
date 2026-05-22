@@ -1,6 +1,6 @@
 import { getActiveMap } from '../2D_Array/2dArray.js';
 
-export { startTimer, startTime, resetTimer }
+export { startTimer, startTime, resetTimer };
 
 
 let timerDisplay: HTMLElement | null = null;
@@ -15,7 +15,7 @@ function startTimer(onTimeOut: ()=> void) {
 }
 
 function updateTimer() {
-    function updateTimer() {
+    
     timerDisplay = document.getElementById("Timer");
     const currentTime: any = new Date();
     

@@ -6,7 +6,7 @@ export { startTimer, startTime, resetTimer };
 let timerDisplay: HTMLElement | null = null;
 let timerInterval: ReturnType <typeof setInterval> | null = null;
 let startTime: Date | null = null;
-let timeOut: (()=> void) | null;
+let timeOut: (()=> void) | null = null;
 
 function startTimer(onTimeOut: ()=> void) {
     startTime = new Date();
@@ -42,8 +42,13 @@ function updateTimer() {
 }
 
 function resetTimer() {
-    clearInterval(timerInterval!);
+    if (timerInterval !== null) {
+        clearInterval(timerInterval);
+    }
     timerInterval = null;
     startTime = null;
-    timerDisplay!.textContent = "00:00";
+
+    const el = document.getElementById("Timer");
+    if (el) el.textContent = "00:00";
+    timerDisplay = el;
 }

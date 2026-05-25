@@ -21,10 +21,10 @@ function initGame() {
 
     
 
-    setInterval(() => {
+   /* setInterval(() => {
         const vector = buildPerformanceVector(playerState, minMax, weights);
         startNewGame(vector);
-    }, 10000);
+    }, 10000);*/
 
     const startingMap = getActiveMap();
     
@@ -32,7 +32,7 @@ function initGame() {
         const observePath = computeOptimalPath( startingMap.grid,  STARTPOSITION.x, STARTPOSITION.y);
         optimalPath$.next([...observePath]);
         // Sæt de korrekte startværdier i dine adresser
-        playerPosition$.next({ x: 0, y: 1 });
+        playerPosition$.next({ x: STARTPOSITION.x, y: STARTPOSITION.y });
         
         
         console.log("DDA systemet er succesfuldt startet.");
@@ -78,7 +78,7 @@ function changeDifficulty(mode: string | null) {
         optimalPath$.next([...observePath]);
 
         // 2. Nulstil spillerens position og rute i RxJS til det nye map
-        playerPosition$.next({ x: 0, y: 1 });
+        playerPosition$.next({ x: STARTPOSITION.x, y: STARTPOSITION.y });
         
         // 3. Tving en ny nøgle til at spawne på det nye kort med det samme!
         keyStateChanged$.next();

@@ -29,14 +29,6 @@ export type StreamAcc = {
     latest: LatestData | null;
 };
 
-const initialAcc: StreamAcc = {
-    lastIndex: 1, // første cluster assigned er FLOW
-    sums: [[0,0,0], [0,0,0], [0,0,0]],
-    members: [0, 0, 0],
-    centroids: initialCen,
-    latest: null
-};
-
 type Centroids = {
     EASY: number[],
     FLOW: number[],
@@ -48,6 +40,16 @@ let initialCen: Centroids = {
     FLOW: [0.5, 0.5, 0.35],
     HARD: [0.75, 0.1, 0.1]
 }
+
+const initialAcc: StreamAcc = {
+    lastIndex: 1, // første cluster assigned er FLOW
+    sums: [[0,0,0], [0,0,0], [0,0,0]],
+    members: [0, 0, 0],
+    centroids: initialCen,
+    latest: null
+};
+
+
 
 
 const DIFFICULTY_LABELS = ["EASY", "FLOW", "HARD"]; // C1, C2, C3
@@ -62,7 +64,7 @@ let currentSubscription: Subscription | null = null; //initiliazes Subscription
 //TODO: kald startNewGame i playermovement når spillet starter 
 export function startNewGame (playerData: number[][] ) { 
     // Start new stream
-    const dataStream = PPI_stream(playerData, 5000);
+    const dataStream = PPI_stream(playerData, 0);
     subscribeToStream(dataStream);
 }
 

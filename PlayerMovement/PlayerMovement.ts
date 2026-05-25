@@ -6,7 +6,7 @@ import type { Point } from "../AStar/AStar.js";
 import { findGoal } from "../AStar/helpers.js";
 import { playerState, resetPlayerState } from "../PlayerState/PlayerState.js"; 
 
-import { playerPosition$, optimalPath$, cancelActiveSpawnTimer } from "./../kmeans/Logic/DDA.observable.js"; 
+import { playerPosition$, optimalPath$, cancelActiveSpawnTimer, startSession } from "./../kmeans/Logic/DDA.observable.js"; 
 import { AD } from "../kmeans/Logic/DDA.action.js";
 import { DDA_updater } from "../kmeans/Logic/kmeans.optimized.js";
 import { keyStateChanged$ } from "./../kmeans/Logic/DDA.observable.js";
@@ -128,10 +128,12 @@ function movePlayer(direction: number) {
                     nx = STARTPOSITION.x;
                     ny = STARTPOSITION.y;
 
-                    keyPosition(map, y, x);
+                    
                     score.textContent = "0";
                     movePlayerPosition(map, y, x);
                     resetTimer();
+                    cancelActiveSpawnTimer();
+                    startSession();
                 }, 200);
             });
         }
@@ -171,9 +173,7 @@ function movePlayer(direction: number) {
         }
     }
 
-    if (map.grid[ny]![nx] === TILE.KEY) {
-        playerState.collectedKeys++;
-    }   
+    
 
 
     console.log("STATE:", {
@@ -210,6 +210,7 @@ function playerWin(map: any) {
 
             const clusterAverage = DDA_updater.getValue(); 
             score.textContent = "0";
+            resetTimer();
             AD(clusterAverage);
         }, 200);
     }

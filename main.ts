@@ -22,6 +22,7 @@ function initGame() {
     // LIVE DDA UPDATE EVERY 15 SECONDS
     setInterval(() => {
         const vector = buildPerformanceVector(playerState, minMax, weights)[0]!;
+        console.log("[RAW STATE]", playerState);
         console.log("[LIVE DDA] Sending vector:", vector);
         updateWithLiveVector(vector);
     }, 15000);

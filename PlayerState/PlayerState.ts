@@ -24,7 +24,10 @@ export const weights = {
 
 let timerInterval: number | null = null;
 
-export function startPlayerTimer() {
+export function startPlayerTimer(maxTime: number) {
+    playerState.currentTime = 0;
+    let remaining = maxTime;
+
     if (timerInterval !== null) clearInterval(timerInterval);
 
     timerInterval = setInterval(() => {
@@ -40,30 +43,9 @@ export function resetPlayerState() {
     playerState.wrongSteps = 0;
 }
 
-export function setMinMaxForMap(size: number) {
-    if (size === 15) {
-        minMax.time = [0, 60] as [number, number];
-        minMax.path = [0, 1] as [number, number];
-        minMax.keys = [0, 1] as [number, number];
-
-    }
-    else if (size === 25) {
-        minMax.time = [0, 120] as [number, number];
-        minMax.path = [0, 1] as [number, number];
-        minMax.keys = [0, 2] as [number, number];
-
-    
-        
-    }
-    else if (size === 35) {
-        minMax.time = [0, 180] as [number, number];
-        minMax.path = [0, 1] as [number, number];
-        minMax.keys = [0, 3] as [number, number];
-
-    }
-    else if (size === 51) {
-        minMax.time = [0, 300] as [number, number];
-        minMax.path = [0, 1] as [number, number];
-        minMax.keys = [0, 4] as [number, number];
-    }
+export function setMinMaxForMap(map: any) {
+    minMax.time = [0, map.maxTime] as [number, number];
+    minMax.keys = [0, map.keys] as [number, number];
+    minMax.path = [0, 1] as [number, number];
 }
+

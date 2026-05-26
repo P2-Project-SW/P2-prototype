@@ -21,6 +21,10 @@ function generateDynamicMap (size: number, range: number, keys: number) {
         size: size,
         range: range,
         keys: keys,
+        maxTime: size === 15 ? 120 :
+         size === 25 ? 180 :
+         size === 35 ? 240 :
+         size === 51 ? 300 : 120,
         active: true,
         activeKey: null,
         hasSpawnedKey: false,
@@ -127,8 +131,8 @@ function renderMap(map: any) {
     resetPlayerState();
 
     //const size = map.grid.length;
-    setMinMaxForMap(rows);
-    startPlayerTimer();
+    setMinMaxForMap(map);
+    startPlayerTimer(map.maxTime);
 }
 
 

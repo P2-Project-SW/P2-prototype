@@ -113,7 +113,7 @@ function movePlayer(direction: number) {
 
     if (playerMoved) {
         const prevPath = computePath(map, map.grid, prevX, prevY);
-        optimalNextFromPrev = prevPath && prevPath.length > 1 ? prevPath[1] : null;
+        optimalNextFromPrev = (prevPath && prevPath.length > 1 ? prevPath[1] : null) ?? null;
     }
 
 
@@ -180,7 +180,7 @@ function movePlayer(direction: number) {
     }
 
     
-
+    
 
     console.log("STATE:", {
         time: playerState.currentTime,

@@ -197,6 +197,20 @@ function PPI_stream (playerData: number[][], dataInterval: number) {
 }
 
 
+// LIVE DDA UPDATE - kaldes i main.ts :)
+export function updateWithLiveVector(vector: number[]) {
+    const dists = euclideanDistance(initialCen, vector);
+    const cluster = assignCluster(dists, DDA_updater.getValue()?.index ?? 1);
+
+    // Push updated cluster to DDA system
+    DDA_updater.next(cluster);
+}
+
+
+
+
+
+
 
 // Subscribe or unsubscribes to stream
 function subscribeToStream(stream: Observable<StreamAcc>) {

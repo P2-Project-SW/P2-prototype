@@ -9,7 +9,7 @@ import { startSession } from './kmeans/Logic/DDA.observable.js';
 import { resetPlayerDiv } from './PlayerMovement/PlayerView.js';
 import { buildPerformanceVector } from './kmeans/Logic/DDA.js';
 import { playerState, minMax, weights } from './PlayerState/PlayerState.js';
-import { startNewGame } from './kmeans/Logic/kmeans.optimized.js';
+import { updateWithLiveVector } from './kmeans/Logic/kmeans.optimized.js';
 
 /**
  * Central initialisering af spillet
@@ -19,12 +19,12 @@ function initGame() {
     AD(null);
     startSession();
 
-    
-
-   /* setInterval(() => {
-        const vector = buildPerformanceVector(playerState, minMax, weights);
-        startNewGame(vector);
-    }, 10000);*/
+    // LIVE DDA UPDATE EVERY 15 SECONDS
+    setInterval(() => {
+        const vector = buildPerformanceVector(playerState, minMax, weights)[0]!;
+        console.log("[LIVE DDA] Sending vector:", vector);
+        updateWithLiveVector(vector);
+    }, 15000);
 
     const startingMap = getActiveMap();
     

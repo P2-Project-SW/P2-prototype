@@ -105,6 +105,19 @@ function movePlayer(direction: number) {
 
     const playerMoved = nx !== x || ny !== y;
 
+    
+    const prevX = x;
+    const prevY = y;
+
+    let optimalNextFromPrev: Point | null = null;
+
+    if (playerMoved) {
+        const prevPath = computePath(map, map.grid, prevX, prevY);
+        optimalNextFromPrev = prevPath && prevPath.length > 1 ? prevPath[1] : null;
+    }
+
+
+
     console.log("cell value:", map.grid[ny]![nx]);
     
     movePlayerPosition(map, ny, nx);
@@ -139,22 +152,15 @@ function movePlayer(direction: number) {
         }
     }
 
-    
+    x = nx;
+    y = ny;
 
-
-    
-    
 
      // Kør A* efter hvert skridt
     const path = computePath(map, map.grid, x, y);
     
-
     // FIX: Sikr mod crash hvis stien er tom under hurtige tastaturskift
     const optimalNext = path && path.length > 1 ? path[1] : null;
-
-    x = nx;
-    y = ny;
-
 
     console.log("UPDATED POSITION:", x, y);
     console.log("Optimal path from current position:", path);
@@ -165,8 +171,8 @@ function movePlayer(direction: number) {
     // Stream opdateringerne synkront ud til RxJS
     playerPosition$.next({x: x, y: y });
 
-    if(playerMoved){
-        if (optimalNext && optimalNext.x === x && optimalNext.y === y) {
+    if (playerMoved) {
+        if (optimalNextFromPrev && nx === optimalNextFromPrev.x && ny === optimalNextFromPrev.y) {
             playerState.rightSteps++;
         } else {
             playerState.wrongSteps++;

@@ -5,7 +5,7 @@
     "test:run": "vitest run",
     "build": "tsc",
     "watch": "tsc --watch",
-    "build:browser": "esbuild 2D_Array/2dArray.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
+    "build:browser": "esbuild main.ts  --bundle --outfile=dist/bundle.js --sourcemap --format=esm --platform=browser",
     "dev": "npm run build:browser || python3 -m http.server || python -m http.server "
   },
   "repository": {
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@types/plotly.js": "^3.0.10",
+    "concurrently": "^9.2.1",
     "esbuild": "^0.28.0",
     "typescript": "^5.0.0",
     "vitest": "^4.1.5"

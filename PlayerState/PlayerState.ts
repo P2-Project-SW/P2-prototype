@@ -16,8 +16,8 @@ export const minMax = {
 
 export const weights = {
     Time: 1,
-    Path: 1,
-    Keys: 1
+    Path: 1.5,
+    Keys: 1.2
 } as const;
 
 

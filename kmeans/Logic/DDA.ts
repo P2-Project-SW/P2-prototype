@@ -23,31 +23,23 @@ function computeStepRatio(rightSteps: number, wrongSteps: number) {
 }
 
 function buildPerformanceVector(state: PlayerState, minMax: MinMax, weights: Weights) {
-
-    //Collect values
-    const timeRaw = state.currentTime;
-    const pathRaw = computeStepRatio(state.rightSteps, state.wrongSteps); // already 0–1
-    const keysRaw = state.collectedKeys;
-
-    //Normalize
-    const timeNorm = normalize(timeRaw, minMax.time[0], minMax.time[1]);
-    const pathNorm = normalize(pathRaw, minMax.path[0], minMax.path[1]);
-    const keysNorm = normalize(keysRaw, minMax.keys[0], minMax.keys[1]);
-
-    // multiply by weights
-    const wTime = timeNorm * weights.Time;
-    const wPath = pathNorm * weights.Path;
-    //invert keys aswell
-    const wKeys = (1 - keysNorm) * weights.Keys;
-
-    //normalize again. This helps prevent one metric from dominating the others
-    const vector: [number, number, number] = [wTime, wKeys, wPath];
-
-    const mag = Math.sqrt(vector[0]**2 + vector[1]**2 + vector[2]**2) || 1;
-
-    const finalVector = vector.map(v => v / mag);
     
-    return [finalVector];
+    // TIME 
+    const timeNorm = normalize(state.currentTime, minMax.time[0], minMax.time[1]);
+    const weightedTime = computeWeightedScore(timeNorm, weights.Time);
+
+    // PATH 
+    const rawPathEfficiency = computeStepRatio(state.rightSteps, state.wrongSteps);
+    const pathNorm = normalize(rawPathEfficiency, minMax.path[0], minMax.path[1]);
+    const weightedPath = computeWeightedScore(pathNorm, weights.Path);
+
+    // KEYS 
+    const keysNorm = normalize(state.collectedKeys, minMax.keys[0], minMax.keys[1]);
+    const keysInverted = invert(keysNorm);
+    const weightedCollect = computeWeightedScore(keysInverted, weights.Keys);
+
+    // Final vector: [time, keys, path]
+    return [[weightedTime, weightedCollect, weightedPath]];
 }
 
 

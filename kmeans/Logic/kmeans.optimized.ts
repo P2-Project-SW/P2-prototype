@@ -207,11 +207,6 @@ export function updateWithLiveVector(vector: number[]) {
 }
 
 
-
-
-
-
-
 // Subscribe or unsubscribes to stream
 function subscribeToStream(stream: Observable<StreamAcc>) {
 
